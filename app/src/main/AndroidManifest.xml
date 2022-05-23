@@ -14,15 +14,42 @@
         android:theme="@style/Theme.CheckIn"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".TaskActivity"
+            android:exported="false"
+            android:label="@string/title_activity_task"
+            android:theme="@style/Theme.CheckIn.NoActionBar" />
+        <activity
+            android:name=".LicenseActivity"
+            android:exported="false"
+            android:label="@string/title_activity_license"
+            android:theme="@style/Theme.CheckIn.NoActionBar" />
+        <activity
+            android:name=".AboutActivity"
+            android:exported="false"
+            android:label="@string/title_activity_about"
+            android:theme="@style/Theme.CheckIn.NoActionBar" />
+        <activity
+            android:name=".SplashActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.CheckIn.NoActionBar">
+            android:label="@string/title_activity_splash"
+            android:theme="@style/Theme.CheckIn.Fullscreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_settings" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.CheckIn.NoActionBar">
+
         </activity>
     </application>
 
