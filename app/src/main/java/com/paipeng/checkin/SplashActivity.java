@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +15,9 @@ import android.view.View;
 import android.view.WindowInsets;
 
 import com.paipeng.checkin.databinding.ActivitySplashBinding;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -39,6 +43,8 @@ public class SplashActivity extends AppCompatActivity {
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler(Looper.myLooper());
     private View mContentView;
+    private Timer splashTimer;
+    private SplashTimerTask splashTimerTask;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -127,6 +133,10 @@ public class SplashActivity extends AppCompatActivity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         binding.dummyButton.setOnTouchListener(mDelayHideTouchListener);
+
+        splashTimer = new Timer();
+        splashTimerTask = new SplashTimerTask();
+        splashTimer.schedule(splashTimerTask, 2000);
     }
 
     @Override
@@ -184,5 +194,24 @@ public class SplashActivity extends AppCompatActivity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    class SplashTimerTask extends TimerTask {
+        @Override
+        public void run() {
+
+            Intent intent = new Intent();
+            intent.setClass(SplashActivity.this, MainActivity.class);
+
+            startActivity(intent);
+            finish();
+            splashTimer.cancel();
+            splashTimerTask.cancel();
+
+        }
+
+        public long scheduledExecutionTime() {
+            return super.scheduledExecutionTime();
+        }
     }
 }
