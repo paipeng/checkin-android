@@ -77,6 +77,12 @@
             android:label="@string/app_name"
             android:theme="@style/Theme.CheckIn.NoActionBar">
 
+            <intent-filter>
+                <action android:name="android.nfc.action.TECH_DISCOVERED"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/tag_type" />
         </activity>
     </application>
 
