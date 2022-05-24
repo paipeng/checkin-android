@@ -34,6 +34,11 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.paipeng.checkin.databinding.ActivityMainBinding;
+import com.paipeng.checkin.restclient.CheckInRestClient;
+import com.paipeng.checkin.restclient.base.HttpClientCallback;
+import com.paipeng.checkin.restclient.module.Task;
+import com.paipeng.checkin.restclient.module.User;
+import com.paipeng.checkin.utils.CommonUtil;
 import com.paipeng.checkin.utils.M1CardUtil;
 
 import android.view.Menu;
@@ -42,6 +47,7 @@ import android.view.MenuItem;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -49,9 +55,10 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
     private NfcAdapter nfcAdapter;
-    private NdefMessage mNdefPushMessage;
     private Tag tag;
     private FirstFragment firstFragment;
+
+    private CheckInRestClient checkInRestClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,13 +80,11 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
-
-
-
         nfcAdapter = M1CardUtil.isNfcAble(this);
         M1CardUtil.setPendingIntent(PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0));
 
+        getTasks();
     }
 
     @Override
@@ -249,6 +254,30 @@ public class MainActivity extends AppCompatActivity {
             }
             // Setup the views
             //buildTagViews(msgs);
+        }
+    }
+
+    public void getTasks() {
+        String token = CommonUtil.getUserToken(this);
+        Log.d(TAG, "getTasks: " + token);
+        if (token != null) {
+            checkInRestClient = new CheckInRestClient(CommonUtil.SERVER_URL, token, new HttpClientCallback<List<Task>>() {
+                @Override
+                public void onSuccess(List<Task> tasks) {
+                    Log.d(TAG, "onSuccess: " + tasks.size());
+                    for (Task task : tasks) {
+                        Log.d(TAG, "task: " + task.getId() + " name: " + task.getName());
+                    }
+                }
+
+                @Override
+                public void onFailure(int code, String message) {
+                    Log.e(TAG, "getTicketData error: " + code + " msg: " + message);
+                }
+            });
+            checkInRestClient.queryTasks();
+        } else {
+            Log.e(TAG, "token invalid");
         }
     }
 }

@@ -6,15 +6,24 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowInsets;
+import android.widget.Toast;
 
+import com.paipeng.checkin.data.model.LoggedInUser;
 import com.paipeng.checkin.databinding.ActivitySplashBinding;
+import com.paipeng.checkin.restclient.CheckInRestClient;
+import com.paipeng.checkin.restclient.base.HttpClientCallback;
+import com.paipeng.checkin.restclient.module.User;
+import com.paipeng.checkin.ui.login.LoginActivity;
+import com.paipeng.checkin.utils.CommonUtil;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -24,6 +33,7 @@ import java.util.TimerTask;
  * status bar and navigation/system bar) with user interaction.
  */
 public class SplashActivity extends AppCompatActivity {
+    private static final String TAG = SplashActivity.class.getSimpleName();
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -199,19 +209,66 @@ public class SplashActivity extends AppCompatActivity {
     class SplashTimerTask extends TimerTask {
         @Override
         public void run() {
-
-            Intent intent = new Intent();
-            intent.setClass(SplashActivity.this, MainActivity.class);
-
-            startActivity(intent);
-            finish();
-            splashTimer.cancel();
-            splashTimerTask.cancel();
+            LoggedInUser loggedInUser = CommonUtil.getLoggedInUser(SplashActivity.this);
+            if (loggedInUser == null) {
+                gotoLogin();
+            } else {
+                login(loggedInUser);
+                //intent.setClass(SplashActivity.this, MainActivity.class);
+            }
 
         }
 
         public long scheduledExecutionTime() {
             return super.scheduledExecutionTime();
         }
+    }
+    private void gotoLogin() {
+        Intent intent = new Intent();
+        intent.setClass(SplashActivity.this, LoginActivity.class);
+        startActivity(intent);
+        finish();
+        splashTimer.cancel();
+        splashTimerTask.cancel();
+    }
+
+    private void gotoMain() {
+        Intent intent = new Intent();
+        intent.setClass(SplashActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
+        splashTimer.cancel();
+        splashTimerTask.cancel();
+    }
+
+    private void login(LoggedInUser loggedInUser) {
+        CheckInRestClient checkInRestClient = new CheckInRestClient(CommonUtil.SERVER_URL);
+        checkInRestClient.setHttpClientCallback(new HttpClientCallback<User>() {
+            @Override
+            public void onSuccess(User user) {
+                Log.d(TAG, "onSuccess: " + user.getToken());
+
+                CommonUtil.setUserToken(SplashActivity.this, user.getToken());
+                gotoMain();
+            }
+
+            @Override
+            public void onFailure(int code, String message) {
+                Log.e(TAG, "getTicketData error: " + code + " msg: " + message);
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(SplashActivity.this, ("getTicketData error: " + code + " msg: " + message), Toast.LENGTH_LONG);
+                    }
+                });
+                gotoLogin();
+            }
+        });
+
+        User user = new User();
+        user.setUsername(loggedInUser.getUsername());
+        user.setPassword(loggedInUser.getPassword());
+        user.setTenant("tenant_1");
+
+        checkInRestClient.login(user);
     }
 }

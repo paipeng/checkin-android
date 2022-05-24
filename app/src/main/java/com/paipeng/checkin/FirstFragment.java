@@ -14,11 +14,13 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.paipeng.checkin.databinding.FragmentFirstBinding;
+import com.paipeng.checkin.restclient.module.Task;
 import com.paipeng.checkin.utils.NdefUtil;
 import com.paipeng.checkin.utils.StringUtil;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 
 public class FirstFragment extends Fragment {
     private static final String TAG = FirstFragment.class.getSimpleName();
@@ -65,5 +67,9 @@ public class FirstFragment extends Fragment {
                 binding.textviewFirst.setText(NdefUtil.parseTextRecord(ndefRecord));
             }
         }
+    }
+
+    public void showTasks(List<Task> task) {
+        Log.d(TAG, "showTasks: " + task.size());
     }
 }
