@@ -188,6 +188,105 @@ public class M1CardUtil {
         return false;
     }
 
+
+    /**
+     * 扇区写
+     * @param tag
+     * @param sectorIndex  扇区索引  一般16个扇区 64块
+     * @return
+     */
+    public boolean writeTAG(Tag tag,int sectorIndex) {
+        MifareClassic mfc = MifareClassic.get(tag);
+        try {
+            mfc.connect();
+            if (mfc.authenticateSectorWithKeyA(sectorIndex, new byte[]{0x42,0x53,0x4B, (byte) sectorIndex,0x4C,0x53})) {   //已知密码认证    r
+                // the last block of the sector is used for KeyA and KeyB cannot be overwritted
+                int block = mfc.sectorToBlock(sectorIndex);
+                mfc.writeBlock(block, "sgn-old000000000".getBytes());
+                mfc.close();
+                //shotToast("旧卡 写入成功");
+                return true;
+            }else if(mfc.authenticateSectorWithKeyA(sectorIndex, MifareClassic.KEY_NFC_FORUM)){     //新卡 未设密码认证  r
+                int block = mfc.sectorToBlock(sectorIndex);
+                mfc.writeBlock(block, "SGN-new000000000".getBytes());
+                mfc.close();
+                //shotToast("新卡 写入成功");
+            } else{
+                //shotToast("未认证");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            //shotToast("扇区连接异常");
+
+            try {
+                mfc.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * 读扇区
+     * @return
+     */
+    private String readTag(Tag tag,MifareClassic mfc,int sectorIndex){
+        for (String tech : tag.getTechList()) {
+            System.out.println("------------"+tech);
+        }
+        //读取TAG
+        try {
+            String metaInfo = "";
+            //Enable I/O operations to the tag from this TagTechnology object.
+            mfc.connect();
+            int type = mfc.getType();//获取TAG的类型
+            int sectorCount = mfc.getSectorCount();//获取TAG中包含的扇区数
+            String typeS = "";
+            switch (type) {
+                case MifareClassic.TYPE_CLASSIC:
+                    typeS = "TYPE_CLASSIC";
+                    break;
+                case MifareClassic.TYPE_PLUS:
+                    typeS = "TYPE_PLUS";
+                    break;
+                case MifareClassic.TYPE_PRO:
+                    typeS = "TYPE_PRO";
+                    break;
+                case MifareClassic.TYPE_UNKNOWN:
+                    typeS = "TYPE_UNKNOWN";
+                    break;
+            }
+            metaInfo += "卡片类型：" + typeS + "\n共" + sectorCount + "个扇区\n共" 	+ mfc.getBlockCount() + "个块\n存储空间: " + mfc.getSize() + "B\n";
+            int blockIndex;
+            if (mfc.authenticateSectorWithKeyA(sectorIndex, new byte[]{0x42,0x53,0x4B, (byte) sectorIndex,0x4C,0x53}) ) {
+                blockIndex = mfc.sectorToBlock(sectorIndex);
+                byte[] data = mfc.readBlock(blockIndex);
+                metaInfo += "旧卡 Block " + blockIndex + " : " + new String(data) + "\n";
+            }else if( mfc.authenticateSectorWithKeyA(sectorIndex, MifareClassic.KEY_NFC_FORUM)){
+                blockIndex = mfc.sectorToBlock(sectorIndex);
+                byte[] data = mfc.readBlock(blockIndex);
+                metaInfo += "新卡 Block " + blockIndex + " : " + new String(data) + "\n";
+
+            }else {
+                metaInfo += "Sector " + sectorIndex + ":验证失败\n";
+            }
+            return metaInfo;
+        } catch (Exception e) {
+            //Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        } finally {
+            if (mfc != null) {
+                try {
+                    mfc.close();
+                } catch (IOException e) {
+                    //Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+        return null;
+    }
     private static String bytesToHexString(byte[] src) {
         StringBuilder stringBuilder = new StringBuilder();
         if (src == null || src.length <= 0) {

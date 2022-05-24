@@ -7,7 +7,15 @@ import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.nfc.tech.IsoDep;
+import android.nfc.tech.MifareClassic;
+import android.nfc.tech.MifareUltralight;
+import android.nfc.tech.NdefFormatable;
+import android.nfc.tech.NfcA;
+import android.nfc.tech.NfcB;
+import android.nfc.tech.NfcBarcode;
 import android.nfc.tech.NfcF;
+import android.nfc.tech.NfcV;
 import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -99,7 +107,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        String[][] mTechLists = new String[][] { new String[] { NfcF.class.getName() } };
+        String[][] mTechLists = new String[][] {
+                new String[] {
+                    NfcF.class.getName()
+                },
+                new String [] { MifareClassic.class.getName () },
+                new String [] { MifareUltralight.class.getName () },
+                new String [] { NfcA.class.getName () },
+                new String [] { NfcB.class.getName () },
+                new String [] { NfcV.class.getName () },
+                //new String [] { IsoDep.class.getName () },
+                new String [] { NfcBarcode.class.getName () },
+                new String [] { NdefFormatable.class.getName () }
+        };
 
         nfcAdapter.enableForegroundDispatch(this, pendingIntent,
                 new IntentFilter[] {
@@ -194,22 +214,6 @@ public class MainActivity extends AppCompatActivity {
                 msgs = new NdefMessage[rawMsgs.length];
                 for (int i = 0; i < rawMsgs.length; i++) {
                     msgs[i] = (NdefMessage) rawMsgs[i];
-                    /*
-                    NdefRecord ndefRecord = Arrays.stream(((NdefMessage) rawMsgs[i]).getRecords()).findFirst().orElse(null);
-                    Log.d(TAG, "NdefMessage: " +  ndefRecord);
-                    if (ndefRecord != null) {
-                        if (ndefRecord.getType()[0] == 0x54) {
-                            Log.d(TAG, "ndef type text");
-                            int offset = 3;
-                            // byte 0: the length of language code
-                            // byte 1: language code byte 1: 'z' 0x7A
-                            // byte 2: language code byte 2: 'h' 0x68
-                            String text = new String(ndefRecord.getPayload(), offset, ndefRecord.getPayload().length - offset, StandardCharsets.UTF_8);
-
-                            Log.d(TAG, "text: " + text);
-                        }
-                    }
-                     */
                 }
                 Log.d(TAG, "NDEF: " + msgs.length);
 
@@ -230,18 +234,19 @@ public class MainActivity extends AppCompatActivity {
                 // Unknown tag type
                 byte[] empty = new byte[0];
                 byte[] id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
-                Tag tag = (Tag) intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
-                if (tag != null) {
-                    Log.d(TAG, "tag: " + tag);
+                IsoDep isoDep = IsoDep.get(tag);
+
+                try {
+                    String data = M1CardUtil.readIsoCard(tag);
+                    Log.d(TAG, "cpu data: " + data);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                /*
-                byte[] payload = dumpTagData(tag).getBytes();
-                NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, id, payload);
-                NdefMessage msg = new NdefMessage(new NdefRecord[] { record });
-                msgs = new NdefMessage[] { msg };
 
-                 */
+                //byte[] payload = dumpTagData(tag).getBytes();
+                //NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, id, payload);
+
                 //mTags.add(tag);
             }
             // Setup the views

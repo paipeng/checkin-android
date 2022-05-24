@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.paipeng.checkin.databinding.FragmentFirstBinding;
+import com.paipeng.checkin.utils.NdefUtil;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -62,18 +63,7 @@ public class FirstFragment extends Fragment {
             NdefRecord ndefRecord = Arrays.stream(((NdefMessage) ndefMessages[i]).getRecords()).findFirst().orElse(null);
             Log.d(TAG, "NdefMessage: " +  ndefRecord);
             if (ndefRecord != null) {
-                if (ndefRecord.getType()[0] == 0x54) {
-                    Log.d(TAG, "ndef type text");
-                    int offset = 3;
-                    // byte 0: the length of language code
-                    // byte 1: language code byte 1: 'z' 0x7A
-                    // byte 2: language code byte 2: 'h' 0x68
-                    String text = new String(ndefRecord.getPayload(), offset, ndefRecord.getPayload().length - offset, StandardCharsets.UTF_8);
-
-                    Log.d(TAG, "text: " + text);
-
-                    binding.textviewFirst.setText(text);
-                }
+                binding.textviewFirst.setText(NdefUtil.parseTextRecord(ndefRecord));
             }
         }
     }
