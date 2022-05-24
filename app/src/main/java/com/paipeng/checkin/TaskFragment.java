@@ -11,6 +11,7 @@ import android.widget.DatePicker;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.paipeng.checkin.databinding.FragmentTaskBinding;
@@ -43,9 +44,17 @@ public class TaskFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 NavHostFragment.findNavController(TaskFragment.this)
+                        .navigate(R.id.action_TaskFragment_to_FirstFragment);
+            }
+        });
+        binding.recordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavHostFragment.findNavController(TaskFragment.this)
                         .navigate(R.id.action_TaskFragment_to_RecordFragment);
             }
         });
+
 
         binding.taskStartTextDate.setInputType(InputType.TYPE_NULL);
         binding.taskEndTextDate.setInputType(InputType.TYPE_NULL);

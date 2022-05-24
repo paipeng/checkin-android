@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private GoogleLocationService googleLocationService;
 
     private Task selectedTask;
+    private List<Task> tasks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -319,6 +320,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(List<Task> tasks) {
                     Log.d(TAG, "onSuccess: " + tasks.size());
+                    MainActivity.this.tasks = tasks;
                     runOnUiThread(new Runnable() {
                         public void run() {
                             if (firstFragment != null) {
@@ -356,5 +358,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void setSelectedTask(Task task) {
         this.selectedTask = task;
+    }
+
+    public List<Task> getTaskList() {
+        return this.tasks;
     }
 }

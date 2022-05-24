@@ -66,8 +66,13 @@ public class FirstFragment extends Fragment {
             }
         });
 
+        if (this.tasks == null) {
+            this.tasks = ((MainActivity)getActivity()).getTaskList();
+        }
         if (this.tasks != null) {
             updateTaskListView(this.tasks);
+        } else {
+            Log.e(TAG, "task invalid: null");
         }
     }
 
