@@ -15,6 +15,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.paipeng.checkin.databinding.FragmentFirstBinding;
 import com.paipeng.checkin.utils.NdefUtil;
+import com.paipeng.checkin.utils.StringUtil;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -47,8 +48,6 @@ public class FirstFragment extends Fragment {
                         .navigate(R.id.action_FirstFragment_to_SecondFragment);
             }
         });
-
-
     }
 
     @Override
@@ -57,8 +56,8 @@ public class FirstFragment extends Fragment {
         binding = null;
     }
 
-    public void showNdefMessage(NdefMessage[] ndefMessages) {
-        Log.d(TAG, "showNdefMessage size: " + ndefMessages.length);
+    public void showNdefMessage(byte[] tagId, NdefMessage[] ndefMessages) {
+        Log.d(TAG, "showNdefMessage size: " + ndefMessages.length + " tagId: " + StringUtil.bytesToHexString(tagId));
         for (int i = 0; i < ndefMessages.length; i++) {
             NdefRecord ndefRecord = Arrays.stream(((NdefMessage) ndefMessages[i]).getRecords()).findFirst().orElse(null);
             Log.d(TAG, "NdefMessage: " +  ndefRecord);
@@ -67,5 +66,4 @@ public class FirstFragment extends Fragment {
             }
         }
     }
-
 }
