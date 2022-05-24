@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.paipeng.checkin.databinding.FragmentFirstBinding;
 import com.paipeng.checkin.restclient.module.Task;
+import com.paipeng.checkin.ui.TaskArrayAdapter;
 import com.paipeng.checkin.utils.NdefUtil;
 import com.paipeng.checkin.utils.StringUtil;
 
@@ -69,7 +71,16 @@ public class FirstFragment extends Fragment {
         }
     }
 
-    public void showTasks(List<Task> task) {
-        Log.d(TAG, "showTasks: " + task.size());
+    public void updateTaskListView(List<Task> tasks) {
+        TaskArrayAdapter taskArrayAdapter = new TaskArrayAdapter(this.getActivity(), R.layout.task_array_adapter, tasks);
+
+        binding.taskListView.setAdapter(taskArrayAdapter);
+        binding.taskListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final Task task = (Task) parent.getItemAtPosition(position);
+                Log.d(TAG, "onItemClick: " + task.getName());
+            }
+        });
     }
 }

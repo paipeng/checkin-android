@@ -38,11 +38,13 @@ import com.paipeng.checkin.restclient.CheckInRestClient;
 import com.paipeng.checkin.restclient.base.HttpClientCallback;
 import com.paipeng.checkin.restclient.module.Task;
 import com.paipeng.checkin.restclient.module.User;
+import com.paipeng.checkin.ui.TaskArrayAdapter;
 import com.paipeng.checkin.utils.CommonUtil;
 import com.paipeng.checkin.utils.M1CardUtil;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -265,9 +267,13 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(List<Task> tasks) {
                     Log.d(TAG, "onSuccess: " + tasks.size());
-                    for (Task task : tasks) {
-                        Log.d(TAG, "task: " + task.getId() + " name: " + task.getName());
-                    }
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            if (firstFragment != null) {
+                                firstFragment.updateTaskListView(tasks);
+                            }
+                        }
+                    });
                 }
 
                 @Override
@@ -280,4 +286,5 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "token invalid");
         }
     }
+
 }
