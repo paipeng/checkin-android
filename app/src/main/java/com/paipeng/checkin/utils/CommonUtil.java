@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.paipeng.checkin.data.model.LoggedInUser;
+import com.paipeng.checkin.restclient.module.User;
 
 public class CommonUtil {
     private static final String TAG = CommonUtil.class.getSimpleName();
@@ -18,6 +19,7 @@ public class CommonUtil {
     public static final String USER_TOKEN = "USER_TOKEN";
 
     public static final String SERVER_URL = "http://114.115.137.22";
+    private static User user;
 
     public static boolean isUserExists(Activity activity) {
         SharedPreferences sharedPreferences = activity.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
@@ -80,4 +82,11 @@ public class CommonUtil {
 
     }
 
+    public static User getUser() {
+        return user;
+    }
+
+    public static void setUser(User user) {
+        CommonUtil.user = user;
+    }
 }

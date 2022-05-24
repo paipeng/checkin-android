@@ -223,6 +223,8 @@ public class GoogleLocationService implements LocationServiceInterface {
             cLocation.setCity(city);
             cLocation.setDistrict(addresses.get(0).getLocality());
             cLocation.setAddress(address);
+            cLocation.setLatitude(location.getLatitude());
+            cLocation.setLongitude(location.getLongitude());
         } catch (IOException e) {
             Log.e(TAG, "Geocoder exception: " + e.getMessage());
         }

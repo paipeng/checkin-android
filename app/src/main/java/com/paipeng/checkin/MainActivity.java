@@ -37,6 +37,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.paipeng.checkin.databinding.ActivityMainBinding;
+import com.paipeng.checkin.location.CLocation;
 import com.paipeng.checkin.location.GoogleLocationService;
 import com.paipeng.checkin.restclient.CheckInRestClient;
 import com.paipeng.checkin.restclient.base.HttpClientCallback;
@@ -316,6 +317,10 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.e(TAG, "token invalid");
         }
+    }
+
+    public CLocation getLocation() {
+        return googleLocationService.getLocation();
     }
 
 }

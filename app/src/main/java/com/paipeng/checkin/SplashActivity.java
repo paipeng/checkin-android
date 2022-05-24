@@ -249,6 +249,7 @@ public class SplashActivity extends AppCompatActivity {
                 Log.d(TAG, "onSuccess: " + user.getToken());
 
                 CommonUtil.setUserToken(SplashActivity.this, user.getToken());
+                CommonUtil.setUser(user);
                 gotoMain();
             }
 
