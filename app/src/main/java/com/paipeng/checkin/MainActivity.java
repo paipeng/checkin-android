@@ -87,6 +87,12 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         Log.d(TAG, "onStart");
 
+        NavHostFragment navHostFragment = (NavHostFragment)(getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main));
+        if (navHostFragment.getChildFragmentManager().getFragments().size() > 0) {
+            if (navHostFragment.getChildFragmentManager().getFragments().get(0) != null && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof FirstFragment) {
+                firstFragment = (FirstFragment) navHostFragment.getChildFragmentManager().getFragments().get(0);
+            }
+        }
     }
 
     @Override
@@ -217,18 +223,10 @@ public class MainActivity extends AppCompatActivity {
                 }
                 Log.d(TAG, "NDEF: " + msgs.length);
                 byte[] tagId = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
-                NavHostFragment navHostFragment = (NavHostFragment)(getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main));
-
-//                FirstFragment firstFragment = (FirstFragment)navHostFragment.getChildFragmentManager().findFragmentById(R.id.FirstFragment);
-                if (navHostFragment.getChildFragmentManager().getFragments().size() > 0) {
-                    if (navHostFragment.getChildFragmentManager().getFragments().get(0) != null && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof FirstFragment) {
-                        FirstFragment firstFragment = (FirstFragment) navHostFragment.getChildFragmentManager().getFragments().get(0);
-                        firstFragment.showNdefMessage(tagId, msgs);
-                    } else {
-                        Log.d(TAG, "firstFragment is null");
-                    }
+                if (firstFragment != null) {
+                    firstFragment.showNdefMessage(tagId, msgs);
                 } else {
-                    Log.d(TAG, "no fragment in NavHostFragment");
+                Log.d(TAG, "firstFragment is null");
                 }
             } else {
                 // Unknown tag type
