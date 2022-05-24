@@ -40,4 +40,6 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="action_logout">退出登录</string>
+    <string name="action_create_task">创建打卡任务</string>
 </resources>

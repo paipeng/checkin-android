@@ -10,10 +10,12 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.paipeng.checkin.databinding.FragmentSecondBinding;
+import com.paipeng.checkin.restclient.module.Task;
 
 public class SecondFragment extends Fragment {
 
     private FragmentSecondBinding binding;
+    private Task task;
 
     @Override
     public View onCreateView(
@@ -36,6 +38,15 @@ public class SecondFragment extends Fragment {
                         .navigate(R.id.action_SecondFragment_to_FirstFragment);
             }
         });
+
+        task = ((MainActivity)getActivity()).getSelectedTask();
+        if (task != null) {
+            binding.taskNameEditText.setText(task.getName());
+            binding.taskDescriptionEditText.setText(task.getDescription());
+            binding.taskCompanyNameEditText.setText(task.getCompany().getName());
+            binding.taskStateSwitch.setChecked(task.getState()==1);
+            //binding.taskStartDatePicker.set
+        }
     }
 
     @Override

@@ -41,6 +41,7 @@ import com.paipeng.checkin.location.CLocation;
 import com.paipeng.checkin.location.GoogleLocationService;
 import com.paipeng.checkin.restclient.CheckInRestClient;
 import com.paipeng.checkin.restclient.base.HttpClientCallback;
+import com.paipeng.checkin.restclient.module.Role;
 import com.paipeng.checkin.restclient.module.Task;
 import com.paipeng.checkin.restclient.module.User;
 import com.paipeng.checkin.ui.TaskArrayAdapter;
@@ -68,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
     private CheckInRestClient checkInRestClient;
 
     private GoogleLocationService googleLocationService;
+
+    private Task selectedTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,6 +186,19 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        User user = CommonUtil.getUser();
+        if (user != null) {
+            if (user.getRoles() != null) {
+                for (Role role : user.getRoles()) {
+                    if ("ADMIN".equals(role.getRole())) {
+                        menu.findItem(R.id.action_create_task).setVisible(true);
+                        break;
+                    }
+                }
+            }
+        } else {
+            menu.findItem(R.id.action_logout).setVisible(false);
+        }
         return true;
     }
 
@@ -195,6 +211,10 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            gotoSettings();
+            return true;
+        } else if (id == R.id.action_create_task) {
+            firstFragment.switchTaskDetail(null);
             return true;
         }
 
@@ -323,4 +343,18 @@ public class MainActivity extends AppCompatActivity {
         return googleLocationService.getLocation();
     }
 
+    private void gotoSettings() {
+        Intent intent = new Intent();
+        intent.setClass(this, SettingsActivity.class);
+        startActivity(intent);
+        //finish();
+    }
+
+    public Task getSelectedTask() {
+        return selectedTask;
+    }
+
+    public void setSelectedTask(Task task) {
+        this.selectedTask = task;
+    }
 }

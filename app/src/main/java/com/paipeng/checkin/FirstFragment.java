@@ -59,8 +59,7 @@ public class FirstFragment extends Fragment {
         binding.buttonFirst.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NavHostFragment.findNavController(FirstFragment.this)
-                        .navigate(R.id.action_FirstFragment_to_SecondFragment);
+                switchTaskDetail(null);
             }
         });
     }
@@ -94,6 +93,7 @@ public class FirstFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final Task task = (Task) parent.getItemAtPosition(position);
                 Log.d(TAG, "onItemClick: " + task.getName());
+                switchTaskDetail(task);
             }
         });
     }
@@ -161,5 +161,12 @@ public class FirstFragment extends Fragment {
         } else {
             Log.e(TAG, "token invalid");
         }
+    }
+
+    public void switchTaskDetail(Task task) {
+        ((MainActivity)getActivity()).setSelectedTask(task);
+        NavHostFragment.findNavController(FirstFragment.this)
+                .navigate(R.id.action_FirstFragment_to_SecondFragment);
+
     }
 }
