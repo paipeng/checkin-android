@@ -1,5 +1,7 @@
 package com.paipeng.checkin;
 
+import android.app.Activity;
+import android.content.Context;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.os.Bundle;
@@ -15,8 +17,12 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.paipeng.checkin.databinding.FragmentFirstBinding;
+import com.paipeng.checkin.restclient.CheckInRestClient;
+import com.paipeng.checkin.restclient.base.HttpClientCallback;
+import com.paipeng.checkin.restclient.module.Code;
 import com.paipeng.checkin.restclient.module.Task;
 import com.paipeng.checkin.ui.TaskArrayAdapter;
+import com.paipeng.checkin.utils.CommonUtil;
 import com.paipeng.checkin.utils.NdefUtil;
 import com.paipeng.checkin.utils.StringUtil;
 
@@ -67,6 +73,7 @@ public class FirstFragment extends Fragment {
             Log.d(TAG, "NdefMessage: " +  ndefRecord);
             if (ndefRecord != null) {
                 binding.textviewFirst.setText(NdefUtil.parseTextRecord(ndefRecord));
+                getCode(StringUtil.bytesToHexString(tagId));
             }
         }
     }
@@ -82,5 +89,32 @@ public class FirstFragment extends Fragment {
                 Log.d(TAG, "onItemClick: " + task.getName());
             }
         });
+    }
+
+    private void getCode(String serialNumber) {
+        final Activity activity = this.getActivity();
+        String token = CommonUtil.getUserToken(activity);
+        Log.d(TAG, "getTasks: " + token);
+        if (token != null) {
+            CheckInRestClient checkInRestClient = new CheckInRestClient(CommonUtil.SERVER_URL, token, new HttpClientCallback<Code>() {
+                @Override
+                public void onSuccess(Code code) {
+                    Log.d(TAG, "onSuccess: " + code.getName());
+                    activity.runOnUiThread(new Runnable() {
+                        public void run() {
+
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(int code, String message) {
+                    Log.e(TAG, "getTicketData error: " + code + " msg: " + message);
+                }
+            });
+            checkInRestClient.queryCodeBySerialNumber(serialNumber);
+        } else {
+            Log.e(TAG, "token invalid");
+        }
     }
 }
