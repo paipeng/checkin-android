@@ -1,6 +1,7 @@
 package com.paipeng.checkin;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -40,7 +41,9 @@ public class FirstFragment extends Fragment {
     private FragmentFirstBinding binding;
     private TextView textView;
     private boolean loading;
+    private ProgressDialog progressDialog;
 
+    private List<Task> tasks;
 
     @Override
     public View onCreateView(
@@ -62,6 +65,10 @@ public class FirstFragment extends Fragment {
                 switchTaskDetail(null);
             }
         });
+
+        if (this.tasks != null) {
+            updateTaskListView(this.tasks);
+        }
     }
 
     @Override
@@ -85,6 +92,7 @@ public class FirstFragment extends Fragment {
     }
 
     public void updateTaskListView(List<Task> tasks) {
+        this.tasks = tasks;
         TaskArrayAdapter taskArrayAdapter = new TaskArrayAdapter(this.getActivity(), R.layout.task_array_adapter, tasks);
 
         binding.taskListView.setAdapter(taskArrayAdapter);
@@ -99,7 +107,8 @@ public class FirstFragment extends Fragment {
     }
 
     private void getCode(String serialNumber) {
-        loading = true;
+        showWaitDialog(true);
+
         final Activity activity = this.getActivity();
         String token = CommonUtil.getUserToken(activity);
         Log.d(TAG, "getCode: " + serialNumber);
@@ -115,7 +124,8 @@ public class FirstFragment extends Fragment {
                 @Override
                 public void onFailure(int code, String message) {
                     Log.e(TAG, "getTicketData error: " + code + " msg: " + message);
-                    loading = false;
+                    showWaitDialog(false);
+
                 }
             });
             checkInRestClient.queryCodeBySerialNumber(serialNumber);
@@ -124,6 +134,19 @@ public class FirstFragment extends Fragment {
         }
     }
 
+    private void showWaitDialog(boolean loading) {
+        this.loading = loading;
+        if (loading) {
+            progressDialog = ProgressDialog.show(this.getActivity(), "",
+                    "Loading. Please wait...", true);
+            progressDialog.show();
+        } else {
+            if (progressDialog!= null && progressDialog.isShowing()) {
+                progressDialog.cancel();
+            }
+
+        }
+    }
     private void addRecord(Code code) {
         final Activity activity = this.getActivity();
         String token = CommonUtil.getUserToken(activity);
@@ -133,7 +156,7 @@ public class FirstFragment extends Fragment {
                 @Override
                 public void onSuccess(Record record) {
                     Log.d(TAG, "onSuccess: " + record.getId());
-                    loading = false;
+                    showWaitDialog(false);
                     activity.runOnUiThread(new Runnable() {
                         public void run() {
                             Toast.makeText(activity, "record logged: " + record.getId(), Toast.LENGTH_LONG).show();
@@ -144,7 +167,7 @@ public class FirstFragment extends Fragment {
                 @Override
                 public void onFailure(int code, String message) {
                     Log.e(TAG, "getTicketData error: " + code + " msg: " + message);
-                    loading = false;
+                    showWaitDialog(false);
                 }
             });
 
