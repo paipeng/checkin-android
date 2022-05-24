@@ -13,18 +13,16 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.paipeng.checkin.databinding.FragmentSecondBinding;
+import com.paipeng.checkin.databinding.FragmentTaskBinding;
 import com.paipeng.checkin.restclient.module.Task;
 
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 import java.util.TimeZone;
 
-public class SecondFragment extends Fragment {
+public class TaskFragment extends Fragment {
 
-    private FragmentSecondBinding binding;
+    private FragmentTaskBinding binding;
     private Task task;
 
     @Override
@@ -33,7 +31,7 @@ public class SecondFragment extends Fragment {
             Bundle savedInstanceState
     ) {
 
-        binding = FragmentSecondBinding.inflate(inflater, container, false);
+        binding = FragmentTaskBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
     }
@@ -44,8 +42,8 @@ public class SecondFragment extends Fragment {
         binding.buttonSecond.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NavHostFragment.findNavController(SecondFragment.this)
-                        .navigate(R.id.action_SecondFragment_to_FirstFragment);
+                NavHostFragment.findNavController(TaskFragment.this)
+                        .navigate(R.id.action_TaskFragment_to_RecordFragment);
             }
         });
 

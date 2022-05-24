@@ -13,13 +13,23 @@
 
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            app:destination="@id/TaskFragment" />
     </fragment>
     <fragment
-        android:id="@+id/SecondFragment"
-        android:name="com.paipeng.checkin.SecondFragment"
-        android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second">
+        android:id="@+id/TaskFragment"
+        android:name="com.paipeng.checkin.TaskFragment"
+        android:label="@string/task_fragment_label"
+        tools:layout="@layout/fragment_task">
+
+        <action
+            android:id="@+id/action_TaskFragment_to_RecordFragment"
+            app:destination="@id/RecordFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/RecordFragment"
+        android:name="com.paipeng.checkin.RecordFragment"
+        android:label="@string/record_fragment_label"
+        tools:layout="@layout/fragment_record">
 
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
