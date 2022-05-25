@@ -96,7 +96,7 @@ public class FirstFragment extends Fragment {
             }
         }*/
 
-        switchIdCard();
+        switchIdCard(tagId, ndefMessages);
     }
 
     public void updateTaskListView(List<Task> tasks) {
@@ -200,9 +200,12 @@ public class FirstFragment extends Fragment {
                 .navigate(R.id.action_FirstFragment_to_SecondFragment);
     }
 
-    public void switchIdCard() {
+    public void switchIdCard(byte[] tagId, NdefMessage[] ndefMessages) {
         Bundle bundle = new Bundle();
         bundle.putString("key","abc"); // Put anything what you want
+        bundle.putByteArray("ID", tagId);
+        bundle.putParcelableArray("NDEF", ndefMessages);
+
         NavHostFragment.findNavController(FirstFragment.this)
                 .navigate(R.id.action_FirstFragment_to_IdCardFragment, bundle);
     }

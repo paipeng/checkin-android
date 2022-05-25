@@ -1,6 +1,7 @@
 package com.paipeng.checkin;
 
 import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +13,10 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.paipeng.checkin.databinding.FragmentIdcardBinding;
+import com.paipeng.checkin.utils.NdefUtil;
+import com.paipeng.checkin.utils.StringUtil;
+
+import java.util.Arrays;
 
 public class IdCardFragment extends Fragment {
     private static final String TAG = IdCardFragment.class.getSimpleName();
@@ -49,6 +54,22 @@ public class IdCardFragment extends Fragment {
             // handle your code here.
             String value = bundle.getString("key");
             Log.d(TAG, "value: " + value);
+
+
+            byte[] tagId = bundle.getByteArray("ID");
+
+            Log.d(TAG, "tagId: " + StringUtil.bytesToHexString(tagId));
+            NdefMessage[] ndefMessages = (NdefMessage[])bundle.getParcelableArray("NDEF");
+            Log.d(TAG, "ndef size: " + ndefMessages.length);
+
+            for (int i = 0; i < ndefMessages.length; i++) {
+                NdefRecord ndefRecord = Arrays.stream(((NdefMessage) ndefMessages[i]).getRecords()).findFirst().orElse(null);
+                Log.d(TAG, "NdefMessage: " +  ndefRecord);
+                if (ndefRecord != null) {
+                    Log.d(TAG, "Msg: " + NdefUtil.parseTextRecord(ndefRecord));
+                }
+            }
+
         } else {
             Log.e(TAG, "bundle invalid");
         }
