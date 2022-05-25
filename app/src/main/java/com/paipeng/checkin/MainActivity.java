@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.nfc.NdefMessage;
-import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
@@ -21,15 +20,13 @@ import android.nfc.tech.NfcBarcode;
 import android.nfc.tech.NfcF;
 import android.nfc.tech.NfcV;
 import android.os.Bundle;
-
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -46,17 +43,11 @@ import com.paipeng.checkin.restclient.base.HttpClientCallback;
 import com.paipeng.checkin.restclient.module.Role;
 import com.paipeng.checkin.restclient.module.Task;
 import com.paipeng.checkin.restclient.module.User;
-import com.paipeng.checkin.ui.TaskArrayAdapter;
 import com.paipeng.checkin.utils.CommonUtil;
 import com.paipeng.checkin.utils.M1CardUtil;
-
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
+import com.paipeng.checkin.utils.StringUtil;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -107,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
         getTasks();
 
-        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
     }
 
@@ -159,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         Log.d(TAG, "onStart");
 
-        NavHostFragment navHostFragment = (NavHostFragment)(getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main));
+        NavHostFragment navHostFragment = (NavHostFragment) (getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main));
         if (navHostFragment.getChildFragmentManager().getFragments().size() > 0) {
             if (navHostFragment.getChildFragmentManager().getFragments().get(0) != null && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof FirstFragment) {
                 firstFragment = (FirstFragment) navHostFragment.getChildFragmentManager().getFragments().get(0);
@@ -180,26 +171,25 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter ndef = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
         try {
             ndef.addDataType("*/*");    /* Handles all MIME based dispatches. You should specify only the ones that you need. */
-        }
-        catch (IntentFilter.MalformedMimeTypeException e) {
+        } catch (IntentFilter.MalformedMimeTypeException e) {
             throw new RuntimeException("fail", e);
         }
-        String[][] mTechLists = new String[][] {
-                new String[] {
+        String[][] mTechLists = new String[][]{
+                new String[]{
                         NfcF.class.getName()
                 },
-                new String [] { MifareClassic.class.getName () },
-                new String [] { MifareUltralight.class.getName () },
-                new String [] { NfcA.class.getName () },
-                new String [] { NfcB.class.getName () },
-                new String [] { NfcV.class.getName () },
+                new String[]{MifareClassic.class.getName()},
+                new String[]{MifareUltralight.class.getName()},
+                new String[]{NfcA.class.getName()},
+                new String[]{NfcB.class.getName()},
+                new String[]{NfcV.class.getName()},
                 //new String [] { IsoDep.class.getName () },
-                new String [] { NfcBarcode.class.getName () },
-                new String [] { NdefFormatable.class.getName () }
+                new String[]{NfcBarcode.class.getName()},
+                new String[]{NdefFormatable.class.getName()}
         };
 
         nfcAdapter.enableForegroundDispatch(this, pendingIntent,
-                new IntentFilter[] {
+                new IntentFilter[]{
                         ndef,
                 },
                 mTechLists);
@@ -278,7 +268,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     public String readCPUCardData() throws IOException {
         Log.d(TAG, "readCPUCardData");
         tag = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -293,7 +282,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     private void resolveIntent(Intent intent) {
         Log.d(TAG, "resolveIntent");
         String action = intent.getAction();
@@ -304,40 +292,46 @@ public class MainActivity extends AppCompatActivity {
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
             Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-            NdefMessage[] msgs;
+            NdefMessage[] ndefMessages;
             if (rawMsgs != null) {
-                msgs = new NdefMessage[rawMsgs.length];
+                ndefMessages = new NdefMessage[rawMsgs.length];
                 for (int i = 0; i < rawMsgs.length; i++) {
-                    msgs[i] = (NdefMessage) rawMsgs[i];
+                    ndefMessages[i] = (NdefMessage) rawMsgs[i];
                 }
-                Log.d(TAG, "NDEF: " + msgs.length);
+                Log.d(TAG, "NDEF: " + ndefMessages.length);
                 byte[] tagId = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
-                if (firstFragment != null) {
-                    firstFragment.showNdefMessage(tagId, msgs);
-                } else {
-                    Log.d(TAG, "firstFragment is null");
-                }
+
+                showNdefMessage(tagId, ndefMessages);
             } else {
                 // Unknown tag type
                 byte[] empty = new byte[0];
                 byte[] id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
-
                 IsoDep isoDep = IsoDep.get(tag);
-
                 try {
                     String data = M1CardUtil.readIsoCard(tag);
                     Log.d(TAG, "cpu data: " + data);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
                 //byte[] payload = dumpTagData(tag).getBytes();
                 //NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, id, payload);
-
                 //mTags.add(tag);
             }
             // Setup the views
             //buildTagViews(msgs);
+        }
+    }
+
+    private void showNdefMessage(byte[] tagId, NdefMessage[] ndefMessages) {
+        Log.d(TAG, "showNdefMessage size: " + ndefMessages.length + " tagId: " + StringUtil.bytesToHexString(tagId));
+        NavHostFragment navHostFragment = (NavHostFragment) (getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main));
+        if (navHostFragment.getChildFragmentManager().getFragments().size() > 0) {
+            Fragment fragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
+            if (fragment != null && fragment instanceof FirstFragment) {
+                ((FirstFragment) fragment).showNdefMessage(tagId, ndefMessages);
+            } else if (fragment != null && fragment instanceof IdCardFragment) {
+                ((IdCardFragment) fragment).showNdefMessage(tagId, ndefMessages);
+            }
         }
     }
 

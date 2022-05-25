@@ -11,13 +11,10 @@ import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.paipeng.checkin.databinding.FragmentIdcardBinding;
 import com.paipeng.checkin.model.IdCard;
-import com.paipeng.checkin.restclient.module.Task;
 import com.paipeng.checkin.ui.IdCardAdapter;
-import com.paipeng.checkin.ui.TaskArrayAdapter;
 import com.paipeng.checkin.utils.CommonUtil;
 import com.paipeng.checkin.utils.NdefUtil;
 import com.paipeng.checkin.utils.StringUtil;
@@ -57,7 +54,7 @@ public class IdCardFragment extends Fragment {
 
         Bundle bundle = this.getArguments();
 
-        if(bundle != null){
+        if (bundle != null) {
             // handle your code here.
             String value = bundle.getString("key");
             Log.d(TAG, "value: " + value);
@@ -65,7 +62,7 @@ public class IdCardFragment extends Fragment {
             byte[] tagId = bundle.getByteArray("ID");
 
             Log.d(TAG, "tagId: " + StringUtil.bytesToHexString(tagId));
-            NdefMessage[] ndefMessages = (NdefMessage[])bundle.getParcelableArray("NDEF");
+            NdefMessage[] ndefMessages = (NdefMessage[]) bundle.getParcelableArray("NDEF");
             Log.d(TAG, "ndef size: " + ndefMessages.length);
 
             showNdefMessage(tagId, ndefMessages);
@@ -94,7 +91,7 @@ public class IdCardFragment extends Fragment {
     public void showNdefMessage(byte[] tagId, NdefMessage[] ndefMessages) {
         for (int i = 0; i < ndefMessages.length; i++) {
             NdefRecord ndefRecord = Arrays.stream(((NdefMessage) ndefMessages[i]).getRecords()).findFirst().orElse(null);
-            Log.d(TAG, "NdefMessage: " +  ndefRecord);
+            Log.d(TAG, "NdefMessage: " + ndefRecord);
             if (ndefRecord != null) {
                 Log.d(TAG, "Msg: " + NdefUtil.parseTextRecord(ndefRecord));
             }

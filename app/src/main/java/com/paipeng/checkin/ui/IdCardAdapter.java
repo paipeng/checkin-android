@@ -11,14 +11,13 @@ import androidx.annotation.NonNull;
 
 import com.paipeng.checkin.R;
 import com.paipeng.checkin.model.IdCard;
-import com.paipeng.checkin.restclient.module.Task;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class IdCardAdapter extends ArrayAdapter<String> {
 
     private IdCard idCard;
+
     public IdCardAdapter(@NonNull Context context, int resource) {
         super(context, resource);
     }

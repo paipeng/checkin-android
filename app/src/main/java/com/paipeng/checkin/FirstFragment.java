@@ -2,9 +2,7 @@ package com.paipeng.checkin;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.nfc.NdefMessage;
-import android.nfc.NdefRecord;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,12 +25,9 @@ import com.paipeng.checkin.restclient.module.Record;
 import com.paipeng.checkin.restclient.module.Task;
 import com.paipeng.checkin.ui.TaskArrayAdapter;
 import com.paipeng.checkin.utils.CommonUtil;
-import com.paipeng.checkin.utils.NdefUtil;
 import com.paipeng.checkin.utils.StringUtil;
 
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 
 public class FirstFragment extends Fragment {
