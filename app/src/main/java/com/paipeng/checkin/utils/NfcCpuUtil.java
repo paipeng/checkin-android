@@ -54,6 +54,9 @@ public class NfcCpuUtil {
     private final byte[] CMD_ACCESS_FILE_CHOOICE = {(byte) 0x00, (byte) 0xA4, (byte) 0x00, (byte) 0x00, (byte) 0x02, (byte) 0x00, (byte) 0x05};
     private final byte[] CMD_ACCESS_FILE_WRITE = {(byte) 0x00, (byte) 0xD6, (byte) 0x00, (byte) 0x00, (byte) 0x06, (byte) 0x88, (byte) 0x88, (byte) 0x88, (byte) 0x44, (byte) 0x55, (byte) 0x66};
 
+    // 00 B0 81 00 80
+    private final byte[] CMD_ACCESS_FILE_READ = {(byte) 0x00, (byte) 0xB0, (byte) 0x81, (byte) 0x00, (byte) 0x00};
+
     // ISO-DEP // Declare Tag protocol operation example of
     private final IsoDep tag;
 
@@ -99,13 +102,22 @@ public class NfcCpuUtil {
         Log.d(TAG, "auth with random + key");
         printByte(request);
 
+        /*
         resp = tag.transceive(request);
         if (!checkRs(resp)) {
             return null;
         }
         // 0x6A 0x88
+         */
 
-        return null;
+        Log.d(TAG, "read file data");
+        request = new byte[CMD_ACCESS_FILE_READ.length];
+        request[CMD_ACCESS_FILE_READ.length-1] = (byte)dataLen;
+        resp = tag.transceive(CMD_ACCESS_FILE_READ);
+        if (!checkRs(resp)) {
+            return null;
+        }
+        return request;
     }
 
     public byte[] wirte() throws IOException {

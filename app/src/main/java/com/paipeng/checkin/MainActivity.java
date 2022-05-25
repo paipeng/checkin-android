@@ -49,6 +49,7 @@ import com.paipeng.checkin.utils.NfcCpuUtil;
 import com.paipeng.checkin.utils.StringUtil;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -265,18 +266,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public String readCPUCardData() throws IOException {
+    public String readCPUCardData(byte[] id , IsoDep isoDep) throws IOException {
         Log.d(TAG, "readCPUCardData");
-        tag = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        if (tag != null) {
-            if (M1CardUtil.hasCardType(tag, this, "IsoDep")) {
-                return M1CardUtil.readIsoCard(tag);
-            } else {
-                return "no IsoDep card found!";
+
+        NfcCpuUtil nfcCpuUtil = new NfcCpuUtil(isoDep);
+        //String data = M1CardUtil.readIsoCard(tag);
+        //Log.d(TAG, "cpu data: " + data);
+
+        byte[] data = nfcCpuUtil.read(100);
+        int dataLen = 0;
+        for (int i = 0; i < data.length; i++) {
+            if (data[i] == 0) {
+                dataLen = i+1;
+                break;
             }
-        } else {
-            return "no IsoDep card found 2!";
         }
+
+        String text = new String(data, 0, dataLen, "GB18030");
+        Log.d(TAG, "cpu data: " + text);
+        return text;
     }
 
     private void resolveIntent(Intent intent) {
@@ -301,15 +309,10 @@ public class MainActivity extends AppCompatActivity {
                 showNdefMessage(tagId, ndefMessages);
             } else {
                 // Unknown tag type
-                byte[] empty = new byte[0];
                 byte[] id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
                 IsoDep isoDep = IsoDep.get(tag);
                 try {
-                    NfcCpuUtil nfcCpuUtil = new NfcCpuUtil(isoDep);
-                    //String data = M1CardUtil.readIsoCard(tag);
-                    //Log.d(TAG, "cpu data: " + data);
-
-                    nfcCpuUtil.read(100);
+                    readCPUCardData(id, isoDep);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
