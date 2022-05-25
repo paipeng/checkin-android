@@ -259,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
         setIntent(intent);
         resolveIntent(intent);
 
-        if (waitScanDialog.isShowing()) {
+        if (waitScanDialog != null && waitScanDialog.isShowing()) {
             waitScanDialog.dismiss();//dismiss dialog
             stopNFCListener();
         }
