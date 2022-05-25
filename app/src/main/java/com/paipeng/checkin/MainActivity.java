@@ -129,20 +129,16 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case 1: {
-                // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
                     googleLocationService = new GoogleLocationService(this, null, 5000, GoogleLocationService.Language.LANGUAGE_ZH);
                     googleLocationService.start();
                 } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
+                    // permission denied, boo! Disable the functionality that depends on this permission.
                 }
                 return;
             }
-            // other 'case' lines to check for other
-            // permissions this app might request
+            // other 'case' lines to check for other permissions this app might request
         }
     }
 
