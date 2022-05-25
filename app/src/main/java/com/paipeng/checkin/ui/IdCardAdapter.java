@@ -47,7 +47,17 @@ public class IdCardAdapter extends ArrayAdapter<String> {
         TextView tvHome = (TextView) convertView.findViewById(R.id.secondLine);
         // Populate the data into the template view using the data object
         tvName.setText(data);
-        tvHome.setText(data);
+
+        //tvHome.setText(data);
+        if (position == 0) {
+            tvHome.setText("部门");
+        } else if (position == 1) {
+            tvHome.setText("公司");
+        } else if (position == 2) {
+            tvHome.setText("签发日期");
+        } else if (position == 3) {
+            tvHome.setText("有效期");
+        }
         // Return the completed view to render on screen
         return convertView;
     }

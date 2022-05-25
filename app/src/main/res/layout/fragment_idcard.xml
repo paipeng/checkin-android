@@ -26,11 +26,14 @@
 
     <TextView
         android:id="@+id/nameTextView"
-        android:layout_width="146dp"
-        android:layout_height="34dp"
+        android:layout_width="192dp"
+        android:layout_height="56dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="64dp"
+        android:fontFamily="sans-serif-black"
         android:text="TextView"
+        android:textSize="38sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/photoImageView"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,8 +42,9 @@
         android:layout_width="141dp"
         android:layout_height="33dp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="80dp"
         android:text="TextView"
+        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/photoImageView"
         app:layout_constraintTop_toBottomOf="@+id/nameTextView" />
 
