@@ -78,14 +78,14 @@ public class NfcCpuUtil {
         }
         Log.d(TAG, "2 Get random code success");
 
-        byte [] random = { resp[0], resp[1], resp[2], resp[3], resp[4], resp[5], resp[6], resp[7]}; // 3 random code 4 bytes + 4 bytes 0
-        byte [] desKey;
+        byte[] random = {resp[0], resp[1], resp[2], resp[3], resp[4], resp[5], resp[6], resp[7]}; // 3 random code 4 bytes + 4 bytes 0
+        byte[] desKey;
         try {
             desKey = NfcCpuUtil.desEncrypt(random, CMD_KEY); // production. 4 random code encrypted
             Log.d(TAG, "3 random code encryption production after");
-            printByte (desKey);
+            printByte(desKey);
         } catch (Exception e) {
-            e.printStackTrace ();
+            e.printStackTrace();
             desKey = null;
         }
 
@@ -97,7 +97,7 @@ public class NfcCpuUtil {
             request[i + 5] = desKey[i];
         }
         Log.d(TAG, "auth with random + key");
-        printByte (request);
+        printByte(request);
 
         resp = tag.transceive(request);
         if (!checkRs(resp)) {
@@ -211,7 +211,8 @@ public class NfcCpuUtil {
     }
 
     public static byte[] encrypt(byte[] data, byte[] key) throws Exception {
-        KeySpec keySpec = new DESedeKeySpec(key);;
+        KeySpec keySpec = new DESedeKeySpec(key);
+        ;
         SecretKeyFactory secretKeyFactory;
         secretKeyFactory = SecretKeyFactory.getInstance("DESede");
         SecretKey secretKey = secretKeyFactory.generateSecret(keySpec);
@@ -229,9 +230,9 @@ public class NfcCpuUtil {
 
     public static byte[] desEncrypt(byte[] data, byte[] key) throws Exception {
         char[] k = new char[key.length];
-        for (int i = 0; i < key.length; i ++) {
+        for (int i = 0; i < key.length; i++) {
 
-            k[i] = (char)key[i];
+            k[i] = (char) key[i];
         }
         DES des = new DES(k);
 
@@ -253,9 +254,9 @@ public class NfcCpuUtil {
 
          */
         char[] k = new char[key.length];
-        for (int i = 0; i < key.length; i ++) {
+        for (int i = 0; i < key.length; i++) {
 
-            k[i] = (char)key[i];
+            k[i] = (char) key[i];
         }
         DES des = new DES(k);
 
@@ -280,9 +281,9 @@ public class NfcCpuUtil {
 
          */
         char[] k = new char[key.length];
-        for (int i = 0; i < key.length; i ++) {
+        for (int i = 0; i < key.length; i++) {
 
-            k[i] = (char)key[i];
+            k[i] = (char) key[i];
         }
         DES des = new DES(k);
 
