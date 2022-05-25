@@ -14,6 +14,10 @@
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"
             app:destination="@id/TaskFragment" />
+
+        <action
+            android:id="@+id/action_FirstFragment_to_IdCardFragment"
+            app:destination="@id/IdCardFragment" />
     </fragment>
     <fragment
         android:id="@+id/TaskFragment"

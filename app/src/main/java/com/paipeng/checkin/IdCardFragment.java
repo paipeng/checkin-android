@@ -1,6 +1,8 @@
 package com.paipeng.checkin;
 
+import android.nfc.NdefMessage;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.paipeng.checkin.databinding.FragmentIdcardBinding;
 
 public class IdCardFragment extends Fragment {
+    private static final String TAG = IdCardFragment.class.getSimpleName();
 
     private FragmentIdcardBinding binding;
 
@@ -29,6 +32,7 @@ public class IdCardFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        /*
         binding.buttonSecond.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -36,6 +40,18 @@ public class IdCardFragment extends Fragment {
                         .navigate(R.id.action_Second2Fragment_to_First2Fragment);
             }
         });
+
+         */
+
+        Bundle bundle = this.getArguments();
+
+        if(bundle != null){
+            // handle your code here.
+            String value = bundle.getString("key");
+            Log.d(TAG, "value: " + value);
+        } else {
+            Log.e(TAG, "bundle invalid");
+        }
     }
 
     @Override
@@ -44,4 +60,6 @@ public class IdCardFragment extends Fragment {
         binding = null;
     }
 
+    public void showNdefMessage(byte[] tagId, NdefMessage[] ndefMessages) {
+    }
 }

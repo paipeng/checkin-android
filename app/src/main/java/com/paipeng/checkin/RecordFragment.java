@@ -9,16 +9,13 @@ import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.paipeng.checkin.databinding.FragmentRecordBinding;
 import com.paipeng.checkin.restclient.CheckInRestClient;
 import com.paipeng.checkin.restclient.base.HttpClientCallback;
-import com.paipeng.checkin.restclient.module.Code;
 import com.paipeng.checkin.restclient.module.Record;
 import com.paipeng.checkin.restclient.module.Task;
 import com.paipeng.checkin.ui.RecordArrayAdapter;
-import com.paipeng.checkin.ui.TaskArrayAdapter;
 import com.paipeng.checkin.utils.CommonUtil;
 
 import java.util.List;

@@ -84,6 +84,7 @@ public class FirstFragment extends Fragment {
 
     public void showNdefMessage(byte[] tagId, NdefMessage[] ndefMessages) {
         Log.d(TAG, "showNdefMessage size: " + ndefMessages.length + " tagId: " + StringUtil.bytesToHexString(tagId));
+        /*
         for (int i = 0; i < ndefMessages.length; i++) {
             NdefRecord ndefRecord = Arrays.stream(((NdefMessage) ndefMessages[i]).getRecords()).findFirst().orElse(null);
             Log.d(TAG, "NdefMessage: " +  ndefRecord);
@@ -93,7 +94,9 @@ public class FirstFragment extends Fragment {
                     getCode(StringUtil.bytesToHexString(tagId));
                 }
             }
-        }
+        }*/
+
+        switchIdCard();
     }
 
     public void updateTaskListView(List<Task> tasks) {
@@ -195,6 +198,12 @@ public class FirstFragment extends Fragment {
         ((MainActivity)getActivity()).setSelectedTask(task);
         NavHostFragment.findNavController(FirstFragment.this)
                 .navigate(R.id.action_FirstFragment_to_SecondFragment);
+    }
 
+    public void switchIdCard() {
+        Bundle bundle = new Bundle();
+        bundle.putString("key","abc"); // Put anything what you want
+        NavHostFragment.findNavController(FirstFragment.this)
+                .navigate(R.id.action_FirstFragment_to_IdCardFragment, bundle);
     }
 }

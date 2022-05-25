@@ -235,18 +235,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onNewIntent");
         setIntent(intent);
         resolveIntent(intent);
-
-        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
-            Parcelable[] rawMessages =
-                    intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-            if (rawMessages != null) {
-                NdefMessage[] messages = new NdefMessage[rawMessages.length];
-                for (int i = 0; i < rawMessages.length; i++) {
-                    messages[i] = (NdefMessage) rawMessages[i];
-                }
-                // Process the messages array.
-            }
-        }
     }
 
 
@@ -286,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
                 if (firstFragment != null) {
                     firstFragment.showNdefMessage(tagId, msgs);
                 } else {
-                Log.d(TAG, "firstFragment is null");
+                    Log.d(TAG, "firstFragment is null");
                 }
             } else {
                 // Unknown tag type
