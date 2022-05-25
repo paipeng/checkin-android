@@ -45,6 +45,7 @@ import com.paipeng.checkin.restclient.module.Task;
 import com.paipeng.checkin.restclient.module.User;
 import com.paipeng.checkin.utils.CommonUtil;
 import com.paipeng.checkin.utils.M1CardUtil;
+import com.paipeng.checkin.utils.NfcCpuUtil;
 import com.paipeng.checkin.utils.StringUtil;
 
 import java.io.IOException;
@@ -308,8 +309,11 @@ public class MainActivity extends AppCompatActivity {
                 byte[] id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
                 IsoDep isoDep = IsoDep.get(tag);
                 try {
-                    String data = M1CardUtil.readIsoCard(tag);
-                    Log.d(TAG, "cpu data: " + data);
+                    NfcCpuUtil nfcCpuUtil = new NfcCpuUtil(isoDep);
+                    //String data = M1CardUtil.readIsoCard(tag);
+                    //Log.d(TAG, "cpu data: " + data);
+
+                    nfcCpuUtil.read(100);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
