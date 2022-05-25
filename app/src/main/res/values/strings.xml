@@ -44,4 +44,5 @@
     <string name="action_create_task">创建打卡任务</string>
     <string name="task_fragment_label">打卡任务</string>
     <string name="record_fragment_label">打卡记录</string>
+    <string name="idcard_fragment_label">证卡查验</string>
 </resources>

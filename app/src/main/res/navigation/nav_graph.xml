@@ -38,4 +38,14 @@
             android:id="@+id/action_SecondFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/IdCardFragment"
+        android:name="com.paipeng.checkin.IdCardFragment"
+        android:label="@string/idcard_fragment_label"
+        tools:layout="@layout/fragment_idcard">
+
+        <action
+            android:id="@+id/action_IdCardFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
+    </fragment>
 </navigation>
