@@ -123,10 +123,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 waitScanDialog.dismiss();//dismiss dialog
+                stopNFCListener();
             }
         });
 
+        startNFCListener();
         waitScanDialog.show();
+
     }
 
     @Override
@@ -167,24 +170,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+    }
 
+    private void startNFCListener() {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
                 0);
 
         IntentFilter ndef = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
         try {
-            ndef.addDataType("*/*");    /* Handles all MIME based dispatches.
-                                       You should specify only the ones that you need. */
+            ndef.addDataType("*/*");    /* Handles all MIME based dispatches. You should specify only the ones that you need. */
         }
         catch (IntentFilter.MalformedMimeTypeException e) {
             throw new RuntimeException("fail", e);
         }
-
-
         String[][] mTechLists = new String[][] {
                 new String[] {
-                    NfcF.class.getName()
+                        NfcF.class.getName()
                 },
                 new String [] { MifareClassic.class.getName () },
                 new String [] { MifareUltralight.class.getName () },
@@ -203,10 +205,18 @@ public class MainActivity extends AppCompatActivity {
                 mTechLists);
     }
 
+    private void stopNFCListener() {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                nfcAdapter.disableReaderMode(MainActivity.this);
+            }
+        });
+    }
+
     @Override
     public void onPause() {
         super.onPause();
-        nfcAdapter.disableForegroundDispatch(this);
+        nfcAdapter.disableForegroundDispatch(MainActivity.this);
     }
 
     @Override
@@ -261,6 +271,11 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onNewIntent");
         setIntent(intent);
         resolveIntent(intent);
+
+        if (waitScanDialog.isShowing()) {
+            waitScanDialog.dismiss();//dismiss dialog
+            stopNFCListener();
+        }
     }
 
 
