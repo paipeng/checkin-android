@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.paipeng.checkin.data.model.LoggedInUser;
+import com.paipeng.checkin.model.IdCard;
 import com.paipeng.checkin.restclient.module.User;
 
 public class CommonUtil {
@@ -88,5 +89,33 @@ public class CommonUtil {
 
     public static void setUser(User user) {
         CommonUtil.user = user;
+    }
+
+    public static IdCard convertToIdCard(String text) {
+        // 姓名：黛丝斯 部门：业务部 单位：NFC证卡测试 签发日期：2021年10月22日 有效期：2022年12月31日
+        String[] data = text.split(" ");
+        IdCard idCard = new IdCard();
+        if (data != null && data.length > 0) {
+            for (String tt : data) {
+                String[] ttt = tt.split("：");
+
+                if (ttt.length == 2) {
+                    Log.d(TAG, "t2: " + ttt[0]);
+                    if ("姓名".equals(ttt[0])) {
+                        idCard.setName(ttt[1]);
+                    } else if ("部门".equals(ttt[0])) {
+                        idCard.setDepartment(ttt[1]);
+                    } else if ("单位".equals(ttt[0])) {
+                        idCard.setCompany(ttt[1]);
+                    } else if ("签发日期".equals(ttt[0])) {
+                        idCard.setIssuedDate(ttt[1]);
+                    } else if ("有效期".equals(ttt[0])) {
+                        idCard.setExpireDate(ttt[1]);
+                    }
+                }
+            }
+        }
+
+        return idCard;
     }
 }
