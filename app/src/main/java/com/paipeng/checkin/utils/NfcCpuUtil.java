@@ -210,4 +210,29 @@ public class NfcCpuUtil {
         byte[] cipherText = c3des.doFinal(data);
         return cipherText;
     }
+
+    public static byte[] tripleDesEncrypt(byte[] data, byte[] key) throws Exception {
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key, "TripleDES");
+        byte[] iv = "a76nb5h9".getBytes();
+        IvParameterSpec ivSpec = new IvParameterSpec(iv);
+
+        Cipher encryptCipher = Cipher.getInstance("TripleDES/CBC/PKCS5Padding");
+        encryptCipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivSpec);
+
+        byte[] encryptedMessageBytes = encryptCipher.doFinal(data);
+        return encryptedMessageBytes;
+    }
+
+
+    public static byte[] tripleDesDecrypt(byte[] data, byte[] key) throws Exception {
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key, "TripleDES");
+        byte[] iv = "a76nb5h9".getBytes();
+        IvParameterSpec ivSpec = new IvParameterSpec(iv);
+
+        Cipher decryptCipher = Cipher.getInstance("TripleDES/CBC/PKCS5Padding");
+        decryptCipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivSpec);
+
+        byte[] decryptedMessageBytes = decryptCipher.doFinal(data);
+        return decryptedMessageBytes;
+    }
 }

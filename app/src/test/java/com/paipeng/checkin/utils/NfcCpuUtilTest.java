@@ -2,6 +2,9 @@ package com.paipeng.checkin.utils;
 
 import junit.framework.TestCase;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 public class NfcCpuUtilTest extends TestCase {
 
     public void testEncrypt() throws Exception {
@@ -20,5 +23,22 @@ public class NfcCpuUtilTest extends TestCase {
         byte[] encryptedData = NfcCpuUtil.encrypt(d, k);
         String text = NfcCpuUtil.printByte(encryptedData);
         System.out.println(text);
+    }
+
+    public void testTripleDes() throws Exception {
+        byte[] secretKey = "9mng65v8jf4lxn93nabf981m".getBytes();
+        String secretMessage = "Baeldung secret message";
+        System.out.println(secretMessage);
+        byte[] secretMessagesBytes = secretMessage.getBytes(StandardCharsets.UTF_8);
+
+        byte[] encryptedData = NfcCpuUtil.tripleDesEncrypt(secretMessagesBytes, secretKey);
+        String text = NfcCpuUtil.printByte(encryptedData);
+        System.out.println(text);
+        String encodedMessage = Base64.getEncoder().encodeToString(encryptedData);
+        System.out.println(encodedMessage);
+
+        byte[] decryptedMessageBytes = NfcCpuUtil.tripleDesDecrypt(encryptedData, secretKey);
+        String decryptedMessage = new String(decryptedMessageBytes, StandardCharsets.UTF_8);
+        System.out.println(decryptedMessage);
     }
 }
