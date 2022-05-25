@@ -212,6 +212,7 @@ public class NfcCpuUtil {
     }
 
     public static byte[] tripleDesEncrypt(byte[] data, byte[] key) throws Exception {
+        /*
         SecretKeySpec secretKeySpec = new SecretKeySpec(key, "TripleDES");
         byte[] iv = "a76nb5h9".getBytes();
         IvParameterSpec ivSpec = new IvParameterSpec(iv);
@@ -221,10 +222,24 @@ public class NfcCpuUtil {
 
         byte[] encryptedMessageBytes = encryptCipher.doFinal(data);
         return encryptedMessageBytes;
+
+         */
+        char[] k = new char[key.length];
+        for (int i = 0; i < key.length; i ++) {
+
+            k[i] = (char)key[i];
+        }
+        DES des = new DES(k);
+
+        byte[] encryptedData = des.encrypt(data);
+        encryptedData = des.encrypt(encryptedData);
+        encryptedData = des.encrypt(encryptedData);
+        return encryptedData;
     }
 
 
     public static byte[] tripleDesDecrypt(byte[] data, byte[] key) throws Exception {
+        /*
         SecretKeySpec secretKeySpec = new SecretKeySpec(key, "TripleDES");
         byte[] iv = "a76nb5h9".getBytes();
         IvParameterSpec ivSpec = new IvParameterSpec(iv);
@@ -234,5 +249,18 @@ public class NfcCpuUtil {
 
         byte[] decryptedMessageBytes = decryptCipher.doFinal(data);
         return decryptedMessageBytes;
+
+         */
+        char[] k = new char[key.length];
+        for (int i = 0; i < key.length; i ++) {
+
+            k[i] = (char)key[i];
+        }
+        DES des = new DES(k);
+
+        byte[] decryptedData = des.decrypt(data);
+        decryptedData = des.decrypt(decryptedData);
+        decryptedData = des.decrypt(decryptedData);
+        return decryptedData;
     }
 }

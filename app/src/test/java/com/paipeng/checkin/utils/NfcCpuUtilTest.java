@@ -2,6 +2,8 @@ package com.paipeng.checkin.utils;
 
 import junit.framework.TestCase;
 
+import org.junit.Assert;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
@@ -40,5 +42,22 @@ public class NfcCpuUtilTest extends TestCase {
         byte[] decryptedMessageBytes = NfcCpuUtil.tripleDesDecrypt(encryptedData, secretKey);
         String decryptedMessage = new String(decryptedMessageBytes, StandardCharsets.UTF_8);
         System.out.println(decryptedMessage);
+    }
+
+
+    public void testTripleDes2() throws Exception {
+        byte[] data = {(byte)0xB9, (byte) 0xF8, 0x3E, (byte)0xA8, 0x64, (byte)0xD7, 0x0C, (byte)0x9C};
+        String text = NfcCpuUtil.printByte(data);
+        System.out.println(text);
+
+        byte[] encryptedData = NfcCpuUtil.tripleDesEncrypt(data, NfcCpuUtil.CMD_KEY);
+        String text1 = NfcCpuUtil.printByte(encryptedData);
+        System.out.println(text1);
+
+        byte[] decryptedData = NfcCpuUtil.tripleDesDecrypt(encryptedData, NfcCpuUtil.CMD_KEY);
+        String text2 = NfcCpuUtil.printByte(decryptedData);
+        System.out.println(text2);
+
+        Assert.assertEquals(text, text2);
     }
 }
