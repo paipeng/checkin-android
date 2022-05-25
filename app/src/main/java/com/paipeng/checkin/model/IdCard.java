@@ -6,6 +6,9 @@ public class IdCard {
     private String company;
     private String issuedDate;
     private String expireDate;
+    private String serialNumber;
+    private String chipUID;
+    private int type;
 
     public String getName() {
         return name;
@@ -45,5 +48,29 @@ public class IdCard {
 
     public void setExpireDate(String expireDate) {
         this.expireDate = expireDate;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    public String getChipUID() {
+        return chipUID;
+    }
+
+    public void setChipUID(String chipUID) {
+        this.chipUID = chipUID;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }

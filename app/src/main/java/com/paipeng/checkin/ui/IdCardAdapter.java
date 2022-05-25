@@ -26,10 +26,17 @@ public class IdCardAdapter extends ArrayAdapter<String> {
     public void setIdCard(IdCard idCard) {
         this.idCard = idCard;
         ArrayList<String> data = new ArrayList<>();
-        data.add(idCard.getDepartment());
-        data.add(idCard.getCompany());
-        data.add(idCard.getIssuedDate());
-        data.add(idCard.getExpireDate());
+        if (idCard.getType() == 0) {
+            data.add(idCard.getDepartment());
+            data.add(idCard.getCompany());
+            data.add(idCard.getIssuedDate());
+            data.add(idCard.getExpireDate());
+        } else {
+            data.add(idCard.getCompany());
+            data.add(idCard.getExpireDate());
+            data.add(idCard.getSerialNumber());
+            data.add(idCard.getChipUID());
+        }
         addAll(data);
     }
 
@@ -49,14 +56,26 @@ public class IdCardAdapter extends ArrayAdapter<String> {
         tvName.setText(data);
 
         //tvHome.setText(data);
-        if (position == 0) {
-            tvHome.setText("部门");
-        } else if (position == 1) {
-            tvHome.setText("公司");
-        } else if (position == 2) {
-            tvHome.setText("签发日期");
-        } else if (position == 3) {
-            tvHome.setText("有效期");
+        if (idCard.getType() == 0) {
+            if (position == 0) {
+                tvHome.setText("部门");
+            } else if (position == 1) {
+                tvHome.setText("公司");
+            } else if (position == 2) {
+                tvHome.setText("签发日期");
+            } else if (position == 3) {
+                tvHome.setText("有效日期");
+            }
+        } else {
+            if (position == 0) {
+                tvHome.setText("单位");
+            } else if (position == 1) {
+                tvHome.setText("有效日期");
+            } else if (position == 2) {
+                tvHome.setText("证卡编号");
+            } else if (position == 3) {
+                tvHome.setText("芯片序号");
+            }
         }
         // Return the completed view to render on screen
         return convertView;

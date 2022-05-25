@@ -93,11 +93,17 @@ public class CommonUtil {
 
     public static IdCard convertToIdCard(String text) {
         // 姓名：黛丝斯 部门：业务部 单位：NFC证卡测试 签发日期：2021年10月22日 有效期：2022年12月31日
-        String[] data = text.split(" ");
         IdCard idCard = new IdCard();
-        if (data != null && data.length > 0) {
-            for (String tt : data) {
-                String[] ttt = tt.split("：");
+        String[] w = text.split("\n");
+        if (w.length > 1) {
+            idCard.setType(1);
+            // 姓名: 诸葛亮
+            //    单位: 三国蜀
+            //    证卡编号: S1234567
+            //    过期日期: 2022-12-01
+            //    芯片序号: 0443671E196180
+            for (String tt : w) {
+                String[] ttt = tt.split(": ");
 
                 if (ttt.length == 2) {
                     Log.d(TAG, "t2: " + ttt[0]);
@@ -109,12 +115,42 @@ public class CommonUtil {
                         idCard.setCompany(ttt[1]);
                     } else if ("签发日期".equals(ttt[0])) {
                         idCard.setIssuedDate(ttt[1]);
-                    } else if ("有效期".equals(ttt[0])) {
+                    } else if ("过期日期".equals(ttt[0])) {
                         idCard.setExpireDate(ttt[1]);
+                    } else if ("证卡编号".equals(ttt[0])) {
+                        idCard.setSerialNumber(ttt[1]);
+                    } else if ("芯片序号".equals(ttt[0])) {
+                        idCard.setChipUID(ttt[1]);
+                    }
+                }
+            }
+        } else {
+            idCard.setType(0);
+            String[] data = text.split(" ");
+            if (data != null && data.length > 0) {
+                for (String tt : data) {
+                    String[] ttt = tt.split("：");
+
+                    if (ttt.length == 2) {
+                        Log.d(TAG, "t2: " + ttt[0]);
+                        if ("姓名".equals(ttt[0])) {
+                            idCard.setName(ttt[1]);
+                        } else if ("部门".equals(ttt[0])) {
+                            idCard.setDepartment(ttt[1]);
+                        } else if ("单位".equals(ttt[0])) {
+                            idCard.setCompany(ttt[1]);
+                        } else if ("签发日期".equals(ttt[0])) {
+                            idCard.setIssuedDate(ttt[1]);
+                        } else if ("有效期".equals(ttt[0])) {
+                            idCard.setExpireDate(ttt[1]);
+                        }
                     }
                 }
             }
         }
+
+
+
 
         return idCard;
     }
