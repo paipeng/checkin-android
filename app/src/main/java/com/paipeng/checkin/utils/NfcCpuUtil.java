@@ -29,6 +29,9 @@ public class NfcCpuUtil {
      */
     private final byte[] CMD_GET_RANDOM = {0x00, (byte) 0x84, 0x00, 0x00, 0x08};
 
+
+    private final byte[] CMD_EXTERN_AUTH = {0x00, (byte) 0x82, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
     // 3 deletes all files in the home directory:. 800E000000 (Note: this command deletes all files in the main directory)
     private final byte[] CMD_DEL = {(byte) 0x80, 0x0E, 0x00, 0x00, 0x00};
 
@@ -75,19 +78,32 @@ public class NfcCpuUtil {
         }
         Log.d(TAG, "2 Get random code success");
 
-        /*
-        byte [] random = { resp [0], resp [1], resp [2], resp[3], 0x00, 0x00, 0x00, 0x00}; // 3 random code 4 bytes + 4 bytes 0
+        byte [] random = { resp[0], resp[1], resp[2], resp[3], resp[4], resp[5], resp[6], resp[7]}; // 3 random code 4 bytes + 4 bytes 0
         byte [] desKey;
         try {
-            desKey = encrypt (random, CMD_KEY); // production. 4 random code encrypted
-            Log.d(TAG, "random code encryption production after 3");
+            desKey = NfcCpuUtil.desEncrypt(random, CMD_KEY); // production. 4 random code encrypted
+            Log.d(TAG, "3 random code encryption production after");
             printByte (desKey);
         } catch (Exception e) {
             e.printStackTrace ();
             desKey = null;
         }
 
-         */
+        byte[] request = new byte[CMD_EXTERN_AUTH.length];
+        for (int i = 0; i < CMD_EXTERN_AUTH.length; i++) {
+            request[i] = CMD_EXTERN_AUTH[i];
+        }
+        for (int i = 0; i < 8; i++) {
+            request[i + 5] = desKey[i];
+        }
+        Log.d(TAG, "auth with random + key");
+        printByte (request);
+
+        resp = tag.transceive(request);
+        if (!checkRs(resp)) {
+            return null;
+        }
+        // 0x6A 0x88
 
         return null;
     }
@@ -186,7 +202,7 @@ public class NfcCpuUtil {
             bf.append("-");
             i++;
         }
-        //Log.i(TAG, bf.toString());
+        Log.i(TAG, bf.toString());
         return bf.toString();
     }
 
@@ -209,6 +225,18 @@ public class NfcCpuUtil {
 
         byte[] cipherText = c3des.doFinal(data);
         return cipherText;
+    }
+
+    public static byte[] desEncrypt(byte[] data, byte[] key) throws Exception {
+        char[] k = new char[key.length];
+        for (int i = 0; i < key.length; i ++) {
+
+            k[i] = (char)key[i];
+        }
+        DES des = new DES(k);
+
+        byte[] encryptedData = des.encrypt(data);
+        return encryptedData;
     }
 
     public static byte[] tripleDesEncrypt(byte[] data, byte[] key) throws Exception {
