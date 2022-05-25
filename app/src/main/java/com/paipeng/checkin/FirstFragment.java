@@ -65,6 +65,7 @@ public class FirstFragment extends Fragment {
                 switchTaskDetail(null);
             }
         });
+        binding.buttonFirst.setVisibility(View.GONE);
 
         if (this.tasks == null) {
             this.tasks = ((MainActivity)getActivity()).getTaskList();

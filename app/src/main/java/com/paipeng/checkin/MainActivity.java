@@ -2,6 +2,8 @@ package com.paipeng.checkin;
 
 import android.Manifest;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -73,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
     private Task selectedTask;
     private List<Task> tasks;
 
+    private ProgressDialog waitScanDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,8 +93,12 @@ public class MainActivity extends AppCompatActivity {
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                /*
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
+                 */
+                showWaitingDialog();
             }
         });
         nfcAdapter = M1CardUtil.isNfcAble(this);
@@ -101,6 +109,24 @@ public class MainActivity extends AppCompatActivity {
 
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
+    }
+
+    private void showWaitingDialog() {
+        if (waitScanDialog == null) {
+            waitScanDialog = new ProgressDialog(MainActivity.this);
+        }
+        waitScanDialog.setTitle(getResources().getString(R.string.wait_scan_dialog_title));
+        waitScanDialog.setMessage(getResources().getString(R.string.scan_chip));
+        waitScanDialog.setIndeterminate(true);
+        waitScanDialog.setCancelable(true);
+        waitScanDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                waitScanDialog.dismiss();//dismiss dialog
+            }
+        });
+
+        waitScanDialog.show();
     }
 
     @Override

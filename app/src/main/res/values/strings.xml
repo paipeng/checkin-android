@@ -45,4 +45,7 @@
     <string name="task_fragment_label">打卡任务</string>
     <string name="record_fragment_label">打卡记录</string>
     <string name="idcard_fragment_label">证卡查验</string>
+    <string name="wait_scan_dialog_title">芯片扫码</string>
+    <string name="scan_chip">请把证卡芯片靠近手机进行扫码...</string>
+    <string name="cancel">取消</string>
 </resources>

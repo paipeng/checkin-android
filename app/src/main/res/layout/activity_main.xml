@@ -29,6 +29,11 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="16dp"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        android:backgroundTint="#FF66CEFD"
+        android:backgroundTintMode="screen"
+        android:foregroundTintMode="multiply"
+        android:tint="@android:color/white"
+        app:tint="@android:color/white"
+        android:src="@drawable/scan_icon" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
