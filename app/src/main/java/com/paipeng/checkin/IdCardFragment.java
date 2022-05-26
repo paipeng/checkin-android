@@ -52,6 +52,13 @@ public class IdCardFragment extends Fragment {
 
          */
 
+        binding.ocrButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ocrIdCard();
+            }
+        });
+
         Bundle bundle = this.getArguments();
 
         if (bundle != null) {
@@ -111,7 +118,7 @@ public class IdCardFragment extends Fragment {
             for (int i = 0; i < data.length; i++) {
                 System.out.print(data[i] + " ");
                 if (data[i] == 0) {
-                    dataLen = i+1;
+                    dataLen = i + 1;
                     break;
                 }
             }
@@ -141,4 +148,11 @@ public class IdCardFragment extends Fragment {
             }
         });
     }
+
+    private void ocrIdCard() {
+        Log.d(TAG, "ocrIdCard");
+        ((MainActivity) getActivity()).tryTakePhoto();
+    }
+
+
 }

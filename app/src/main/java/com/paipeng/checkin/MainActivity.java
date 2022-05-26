@@ -3,10 +3,16 @@ package com.paipeng.checkin;
 import android.Manifest;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
+import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
@@ -20,14 +26,18 @@ import android.nfc.tech.NfcBarcode;
 import android.nfc.tech.NfcF;
 import android.nfc.tech.NfcV;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -44,12 +54,15 @@ import com.paipeng.checkin.restclient.module.Role;
 import com.paipeng.checkin.restclient.module.Task;
 import com.paipeng.checkin.restclient.module.User;
 import com.paipeng.checkin.utils.CommonUtil;
+import com.paipeng.checkin.utils.ImageUtil;
 import com.paipeng.checkin.utils.M1CardUtil;
 import com.paipeng.checkin.utils.NfcCpuUtil;
 import com.paipeng.checkin.utils.StringUtil;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -69,6 +82,17 @@ public class MainActivity extends AppCompatActivity {
     private List<Task> tasks;
 
     private ProgressDialog waitScanDialog;
+
+    private String currentPhotoPath;
+    public static final int OPEN_GALLERY_REQUEST_CODE = 0;
+    public static final int TAKE_PHOTO_REQUEST_CODE = 1;
+
+
+
+    public static final int PERMISSION_LOCATION = 1;
+    public static final int PERMISSION_CAMERA = 2;
+
+    private Bitmap cur_predict_image = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
         getTasks();
 
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION);
 
     }
 
@@ -129,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
-            case 1: {
+            case PERMISSION_LOCATION: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     googleLocationService = new GoogleLocationService(this, null, 5000, GoogleLocationService.Language.LANGUAGE_ZH);
@@ -138,6 +162,14 @@ public class MainActivity extends AppCompatActivity {
                     // permission denied, boo! Disable the functionality that depends on this permission.
                 }
                 return;
+            }
+            case PERMISSION_CAMERA: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    takePhoto();
+                } else {
+                    // permission denied, boo! Disable the functionality that depends on this permission.
+                }
             }
             // other 'case' lines to check for other permissions this app might request
         }
@@ -267,7 +299,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void readCPUCardData(byte[] id , IsoDep isoDep) throws IOException {
+    public void readCPUCardData(byte[] id, IsoDep isoDep) throws IOException {
         Log.d(TAG, "readCPUCardData");
 
         NfcCpuUtil nfcCpuUtil = new NfcCpuUtil(isoDep);
@@ -396,5 +428,103 @@ public class MainActivity extends AppCompatActivity {
 
     public List<Task> getTaskList() {
         return this.tasks;
+    }
+
+    public void tryTakePhoto() {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
+    }
+
+    public void takePhoto() {
+        Log.d(TAG, "takePhoto");
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                Log.e("MainActitity", ex.getMessage(), ex);
+                Toast.makeText(this,
+                        "Create Camera temp file failed: " + ex.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Log.i(TAG, "FILEPATH " + getExternalFilesDir("Pictures").getAbsolutePath());
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.paipeng.checkin.fileprovider",
+                        photoFile);
+                currentPhotoPath = photoFile.getAbsolutePath();
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, TAKE_PHOTO_REQUEST_CODE);
+                Log.i(TAG, "startActivityForResult finished");
+            }
+        }
+    }
+
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".bmp",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        return image;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case OPEN_GALLERY_REQUEST_CODE:
+                    if (data == null) {
+                        break;
+                    }
+                    try {
+                        ContentResolver resolver = getContentResolver();
+                        Uri uri = data.getData();
+                        Bitmap image = MediaStore.Images.Media.getBitmap(resolver, uri);
+                        String[] proj = {MediaStore.Images.Media.DATA};
+                        Cursor cursor = managedQuery(uri, proj, null, null, null);
+                        cursor.moveToFirst();
+                        if (image != null) {
+                            cur_predict_image = image;
+                            //ivInputImage.setImageBitmap(image);
+                        }
+                    } catch (IOException e) {
+                        Log.e(TAG, e.toString());
+                    }
+                    break;
+                case TAKE_PHOTO_REQUEST_CODE:
+                    if (currentPhotoPath != null) {
+                        ExifInterface exif = null;
+                        try {
+                            exif = new ExifInterface(currentPhotoPath);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                                ExifInterface.ORIENTATION_UNDEFINED);
+                        Log.i(TAG, "rotation " + orientation);
+                        Bitmap image = BitmapFactory.decodeFile(currentPhotoPath);
+                        image = ImageUtil.rotateBitmap(image, orientation);
+                        if (image != null) {
+                            cur_predict_image = image;
+                            //ivInputImage.setImageBitmap(image);
+                        }
+                    } else {
+                        Log.e(TAG, "currentPhotoPath is null");
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }
