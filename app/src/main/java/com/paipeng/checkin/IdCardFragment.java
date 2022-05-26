@@ -1,5 +1,6 @@
 package com.paipeng.checkin;
 
+import android.graphics.Bitmap;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.os.Bundle;
@@ -11,9 +12,11 @@ import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.paipeng.checkin.databinding.FragmentIdcardBinding;
 import com.paipeng.checkin.model.IdCard;
+import com.paipeng.checkin.orc.Predictor;
 import com.paipeng.checkin.ui.IdCardAdapter;
 import com.paipeng.checkin.utils.CommonUtil;
 import com.paipeng.checkin.utils.NdefUtil;
@@ -27,6 +30,7 @@ public class IdCardFragment extends Fragment {
     private FragmentIdcardBinding binding;
     private IdCard idCard;
 
+    protected Predictor predictor = new Predictor();
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
@@ -154,5 +158,18 @@ public class IdCardFragment extends Fragment {
         ((MainActivity) getActivity()).tryTakePhoto();
     }
 
+
+    public void ocrImage(Bitmap image) {
+        Log.d(TAG, "ocrImage");
+        Bundle bundle = new Bundle();
+        bundle.putString("key","abc"); // Put anything what you want
+
+        bundle.putParcelable("IMAGE", image);
+
+        //((MainActivity)getActivity()).setSelectedTask(task);
+        NavHostFragment.findNavController(IdCardFragment.this)
+                .navigate(R.id.action_IdCardFragment_to_OcrFragment, bundle);
+
+    }
 
 }

@@ -517,6 +517,7 @@ public class MainActivity extends AppCompatActivity {
                         if (image != null) {
                             cur_predict_image = image;
                             //ivInputImage.setImageBitmap(image);
+                            idCardOcr(image);
                         }
                     } else {
                         Log.e(TAG, "currentPhotoPath is null");
@@ -524,6 +525,16 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 default:
                     break;
+            }
+        }
+    }
+
+    private void idCardOcr(Bitmap image) {
+        NavHostFragment navHostFragment = (NavHostFragment) (getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main));
+        if (navHostFragment.getChildFragmentManager().getFragments().size() > 0) {
+            Fragment fragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
+            if (fragment != null && fragment instanceof IdCardFragment) {
+                ((IdCardFragment) fragment).ocrImage(image);
             }
         }
     }

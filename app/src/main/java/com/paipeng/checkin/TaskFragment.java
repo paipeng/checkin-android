@@ -22,6 +22,7 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 public class TaskFragment extends Fragment {
+    private static final String TAG = TaskFragment.class.getSimpleName();
 
     private FragmentTaskBinding binding;
     private Task task;

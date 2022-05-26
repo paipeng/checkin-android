@@ -51,5 +51,20 @@
         <action
             android:id="@+id/action_IdCardFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
+
+
+        <action
+            android:id="@+id/action_IdCardFragment_to_OcrFragment"
+            app:destination="@id/OcrFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/OcrFragment"
+        android:name="com.paipeng.checkin.OcrFragment"
+        android:label="@string/orc_fragment_label"
+        tools:layout="@layout/fragment_orc">
+
+        <action
+            android:id="@+id/action_OcrFragment_to_OcrFragment"
+            app:destination="@id/OcrFragment" />
     </fragment>
 </navigation>

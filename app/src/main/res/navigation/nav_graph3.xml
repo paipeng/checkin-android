@@ -17,9 +17,9 @@
     </fragment>
     <fragment
         android:id="@+id/Second3Fragment"
-        android:name="com.paipeng.checkin.Second3Fragment"
+        android:name="com.paipeng.checkin.OcrFragment"
         android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second3">
+        tools:layout="@layout/fragment_orc">
 
         <action
             android:id="@+id/action_Second3Fragment_to_First3Fragment"

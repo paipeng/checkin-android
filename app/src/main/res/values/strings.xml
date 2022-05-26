@@ -50,4 +50,5 @@
     <string name="cancel">取消</string>
     <string name="ocr_check">OCR 查验</string>
     <string name="face_check">人脸识别</string>
+    <string name="orc_fragment_label">OCR 证卡信息识别</string>
 </resources>
