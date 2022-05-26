@@ -29,8 +29,6 @@ public class IdCardFragment extends Fragment {
 
     private FragmentIdcardBinding binding;
     private IdCard idCard;
-
-    protected Predictor predictor = new Predictor();
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
