@@ -117,7 +117,7 @@ public class NfcCpuUtil {
         if (!checkRs(resp)) {
             return null;
         }
-        return request;
+        return resp;
     }
 
     public byte[] wirte() throws IOException {
@@ -191,7 +191,7 @@ public class NfcCpuUtil {
 
     private boolean checkRs(byte[] resp) {
         String r = printByte(resp);
-        Log.i(TAG, "response " + r);
+        //Log.i(TAG, "response " + r);
         int status = ((0xff & resp[resp.length - 2]) << 8) | (0xff & resp[resp.length - 1]);
         return status == 0x9000;
     }

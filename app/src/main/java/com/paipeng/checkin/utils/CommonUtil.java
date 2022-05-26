@@ -148,10 +148,10 @@ public class CommonUtil {
                 }
             }
         }
-
-
-
-
         return idCard;
+    }
+
+    public static String convertHexToString(byte[] data) {
+        return null;
     }
 }

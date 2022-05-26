@@ -63,9 +63,12 @@ public class IdCardFragment extends Fragment {
 
             Log.d(TAG, "tagId: " + StringUtil.bytesToHexString(tagId));
             NdefMessage[] ndefMessages = (NdefMessage[]) bundle.getParcelableArray("NDEF");
-            Log.d(TAG, "ndef size: " + ndefMessages.length);
+            if (ndefMessages != null) {
+                Log.d(TAG, "ndef size: " + ndefMessages.length);
+            }
+            byte[] data = bundle.getByteArray("DATA");
 
-            showNdefMessage(tagId, ndefMessages);
+            showNdefMessage(tagId, ndefMessages, data);
 
             /*
             for (int i = 0; i < ndefMessages.length; i++) {
@@ -88,19 +91,38 @@ public class IdCardFragment extends Fragment {
         binding = null;
     }
 
-    public void showNdefMessage(byte[] tagId, NdefMessage[] ndefMessages) {
-        for (int i = 0; i < ndefMessages.length; i++) {
-            NdefRecord ndefRecord = Arrays.stream(((NdefMessage) ndefMessages[i]).getRecords()).findFirst().orElse(null);
-            Log.d(TAG, "NdefMessage: " + ndefRecord);
-            if (ndefRecord != null) {
-                Log.d(TAG, "Msg: " + NdefUtil.parseTextRecord(ndefRecord));
+    public void showNdefMessage(byte[] tagId, NdefMessage[] ndefMessages, byte[] data) {
+        if (ndefMessages != null) {
+            for (int i = 0; i < ndefMessages.length; i++) {
+                NdefRecord ndefRecord = Arrays.stream(((NdefMessage) ndefMessages[i]).getRecords()).findFirst().orElse(null);
+                Log.d(TAG, "NdefMessage: " + ndefRecord);
+                if (ndefRecord != null) {
+                    Log.d(TAG, "Msg: " + NdefUtil.parseTextRecord(ndefRecord));
+                }
+                // 姓名：黛丝斯 部门：业务部 单位：NFC证卡测试 签发日期：2021年10月22日 有效期：2022年12月31日
+                IdCard idCard = CommonUtil.convertToIdCard(NdefUtil.parseTextRecord(ndefRecord));
+                binding.nameTextView.setText(idCard.getName());
+                binding.serialNumberTextView.setText(StringUtil.bytesToHexString(tagId));
+                updateIdCardListView(idCard);
+                break;
             }
-            // 姓名：黛丝斯 部门：业务部 单位：NFC证卡测试 签发日期：2021年10月22日 有效期：2022年12月31日
-            IdCard idCard = CommonUtil.convertToIdCard(NdefUtil.parseTextRecord(ndefRecord));
+        } else if (data != null) {
+            int dataLen = 0;
+            for (int i = 0; i < data.length; i++) {
+                System.out.print(data[i] + " ");
+                if (data[i] == 0) {
+                    dataLen = i+1;
+                    break;
+                }
+            }
+            String text = new String(data, 0, dataLen);
+            //String text = new String(data, 0, dataLen, "GB18030");
+            Log.d(TAG, "cpu data: " + text);
+
+            IdCard idCard = CommonUtil.convertToIdCard(text);
             binding.nameTextView.setText(idCard.getName());
             binding.serialNumberTextView.setText(StringUtil.bytesToHexString(tagId));
             updateIdCardListView(idCard);
-            break;
         }
     }
 

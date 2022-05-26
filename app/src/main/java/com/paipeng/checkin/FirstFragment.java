@@ -78,8 +78,8 @@ public class FirstFragment extends Fragment {
         binding = null;
     }
 
-    public void showNdefMessage(byte[] tagId, NdefMessage[] ndefMessages) {
-        Log.d(TAG, "showNdefMessage size: " + ndefMessages.length + " tagId: " + StringUtil.bytesToHexString(tagId));
+    public void showNdefMessage(byte[] tagId, NdefMessage[] ndefMessages, byte[] data) {
+        Log.d(TAG, "showNdefMessage  tagId: " + StringUtil.bytesToHexString(tagId));
         /*
         for (int i = 0; i < ndefMessages.length; i++) {
             NdefRecord ndefRecord = Arrays.stream(((NdefMessage) ndefMessages[i]).getRecords()).findFirst().orElse(null);
@@ -92,7 +92,7 @@ public class FirstFragment extends Fragment {
             }
         }*/
 
-        switchIdCard(tagId, ndefMessages);
+        switchIdCard(tagId, ndefMessages, data);
     }
 
     public void updateTaskListView(List<Task> tasks) {
@@ -196,11 +196,12 @@ public class FirstFragment extends Fragment {
                 .navigate(R.id.action_FirstFragment_to_SecondFragment);
     }
 
-    public void switchIdCard(byte[] tagId, NdefMessage[] ndefMessages) {
+    public void switchIdCard(byte[] tagId, NdefMessage[] ndefMessages, byte[] data) {
         Bundle bundle = new Bundle();
         bundle.putString("key","abc"); // Put anything what you want
         bundle.putByteArray("ID", tagId);
         bundle.putParcelableArray("NDEF", ndefMessages);
+        bundle.putByteArray("DATA", data);
 
         NavHostFragment.findNavController(FirstFragment.this)
                 .navigate(R.id.action_FirstFragment_to_IdCardFragment, bundle);

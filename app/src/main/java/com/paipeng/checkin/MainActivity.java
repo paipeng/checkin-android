@@ -159,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        startNFCListener();
     }
 
     private void startNFCListener() {
@@ -266,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public String readCPUCardData(byte[] id , IsoDep isoDep) throws IOException {
+    public void readCPUCardData(byte[] id , IsoDep isoDep) throws IOException {
         Log.d(TAG, "readCPUCardData");
 
         NfcCpuUtil nfcCpuUtil = new NfcCpuUtil(isoDep);
@@ -274,17 +275,24 @@ public class MainActivity extends AppCompatActivity {
         //Log.d(TAG, "cpu data: " + data);
 
         byte[] data = nfcCpuUtil.read(100);
+
+        showNdefMessage(id, null, data);
+
+        /*
         int dataLen = 0;
         for (int i = 0; i < data.length; i++) {
+            System.out.print(data[i] + " ");
             if (data[i] == 0) {
                 dataLen = i+1;
                 break;
             }
         }
-
-        String text = new String(data, 0, dataLen, "GB18030");
+        String text = new String(data, 0, dataLen);
+        //String text = new String(data, 0, dataLen, "GB18030");
         Log.d(TAG, "cpu data: " + text);
         return text;
+
+         */
     }
 
     private void resolveIntent(Intent intent) {
@@ -306,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "NDEF: " + ndefMessages.length);
                 byte[] tagId = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
 
-                showNdefMessage(tagId, ndefMessages);
+                showNdefMessage(tagId, ndefMessages, null);
             } else {
                 // Unknown tag type
                 byte[] id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
@@ -325,15 +333,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showNdefMessage(byte[] tagId, NdefMessage[] ndefMessages) {
-        Log.d(TAG, "showNdefMessage size: " + ndefMessages.length + " tagId: " + StringUtil.bytesToHexString(tagId));
+    private void showNdefMessage(byte[] tagId, NdefMessage[] ndefMessages, byte[] data) {
+        Log.d(TAG, "showNdefMessage  tagId: " + StringUtil.bytesToHexString(tagId));
         NavHostFragment navHostFragment = (NavHostFragment) (getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main));
         if (navHostFragment.getChildFragmentManager().getFragments().size() > 0) {
             Fragment fragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
             if (fragment != null && fragment instanceof FirstFragment) {
-                ((FirstFragment) fragment).showNdefMessage(tagId, ndefMessages);
+                ((FirstFragment) fragment).showNdefMessage(tagId, ndefMessages, data);
             } else if (fragment != null && fragment instanceof IdCardFragment) {
-                ((IdCardFragment) fragment).showNdefMessage(tagId, ndefMessages);
+                ((IdCardFragment) fragment).showNdefMessage(tagId, ndefMessages, data);
             }
         }
     }
