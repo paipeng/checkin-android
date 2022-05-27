@@ -1,5 +1,6 @@
 package com.paipeng.checkin;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -14,9 +15,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.arcsoft.arcfacedemo.activity.RegisterAndRecognizeActivity;
 import com.paipeng.checkin.databinding.FragmentIdcardBinding;
 import com.paipeng.checkin.model.IdCard;
-import com.paipeng.checkin.orc.Predictor;
 import com.paipeng.checkin.ui.IdCardAdapter;
 import com.paipeng.checkin.utils.CommonUtil;
 import com.paipeng.checkin.utils.NdefUtil;
@@ -29,6 +30,7 @@ public class IdCardFragment extends Fragment {
 
     private FragmentIdcardBinding binding;
     private IdCard idCard;
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
@@ -58,6 +60,12 @@ public class IdCardFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 ocrIdCard();
+            }
+        });
+        binding.faceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                faceValidate();
             }
         });
 
@@ -92,6 +100,12 @@ public class IdCardFragment extends Fragment {
         } else {
             Log.e(TAG, "bundle invalid");
         }
+    }
+
+    private void faceValidate() {
+        Intent intent = new Intent();
+        intent.setClass(getActivity(), RegisterAndRecognizeActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -160,7 +174,7 @@ public class IdCardFragment extends Fragment {
     public void ocrImage(Bitmap image) {
         Log.d(TAG, "ocrImage");
         Bundle bundle = new Bundle();
-        bundle.putString("key","abc"); // Put anything what you want
+        bundle.putString("key", "abc"); // Put anything what you want
 
         bundle.putParcelable("IMAGE", image);
 
