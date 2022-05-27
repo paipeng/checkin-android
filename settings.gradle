@@ -17,8 +17,10 @@ include ':app'
 include ':restclient'
 
 include ':paddle_ocr'
+include ':arcface'
 
 project(':restclient').projectDir = new File('../RestClient/app')
 
 
 project(':paddle_ocr').projectDir = new File('../paddle_ocr/app')
+project(':arcface').projectDir = new File('../Arcface/app')

@@ -30,6 +30,7 @@
 -->
     <application
         android:allowBackup="true"
+        tools:replace="android:label"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -90,15 +91,6 @@
         </activity>
 
 
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="com.paipeng.checkin.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
-        </provider>
     </application>
 
 </manifest>

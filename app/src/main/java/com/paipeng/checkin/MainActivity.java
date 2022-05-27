@@ -452,7 +452,7 @@ public class MainActivity extends AppCompatActivity {
             if (photoFile != null) {
                 Log.i(TAG, "FILEPATH " + getExternalFilesDir("Pictures").getAbsolutePath());
                 Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.paipeng.checkin.fileprovider",
+                        "com.paipeng.checkin.provider",
                         photoFile);
                 currentPhotoPath = photoFile.getAbsolutePath();
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
