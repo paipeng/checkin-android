@@ -71,7 +71,7 @@ public class FirstFragment extends Fragment {
             Log.e(TAG, "task invalid: null");
         }
 
-        switchIdCard(null, null, null);
+        //switchIdCard(null, null, null);
     }
 
     @Override
