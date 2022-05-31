@@ -177,13 +177,13 @@ public class NfcCpuUtil {
                 if (!checkRs(resp)) {
                     return null;
                 }
-                System.arraycopy(read_data,
-                        read_len,
-                        resp,
-                        0,
-                        resp.length-2);
+                for (int i = 0; i < resp.length-2; i++) {
+                    read_data[read_len+i] = resp[i];
+                }
                 read_len += (block_size & 0xFF);
             }
+
+            Log.i(TAG, "read_data: " + read_data);
             printByte(read_data);
             return read_data;
         } else {
