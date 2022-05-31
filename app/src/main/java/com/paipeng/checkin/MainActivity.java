@@ -57,6 +57,7 @@ import com.paipeng.checkin.utils.CommonUtil;
 import com.paipeng.checkin.utils.ImageUtil;
 import com.paipeng.checkin.utils.M1CardUtil;
 import com.paipeng.checkin.utils.NfcCpuUtil;
+import com.paipeng.checkin.utils.SM4Util;
 import com.paipeng.checkin.utils.StringUtil;
 
 import java.io.File;
@@ -299,16 +300,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void readCPUCardData(byte[] id, IsoDep isoDep) throws IOException {
+    public void readCPUCardData(byte[] id, IsoDep isoDep) throws Exception {
         Log.d(TAG, "readCPUCardData");
 
         NfcCpuUtil nfcCpuUtil = new NfcCpuUtil(isoDep);
         //String data = M1CardUtil.readIsoCard(tag);
         //Log.d(TAG, "cpu data: " + data);
 
-        byte[] data = nfcCpuUtil.read(100);
+        byte[] data = nfcCpuUtil.readFileData((short)2);
 
-        showNdefMessage(id, null, data);
+        // SM4 decode
+        byte[] decoded_data = SM4Util.decrypt_Ecb(SM4Util.DEFAULT_KEY, data);
+        Log.d(TAG, "decoded_data: " + decoded_data.length);
+
+        for (int i = decoded_data.length-16; i < decoded_data.length; i++) {
+            Log.d(TAG, "decoded_data: " + decoded_data[i]);
+        }
+        showNdefMessage(id, null, decoded_data);
 
         /*
         int dataLen = 0;
@@ -353,7 +361,7 @@ public class MainActivity extends AppCompatActivity {
                 IsoDep isoDep = IsoDep.get(tag);
                 try {
                     readCPUCardData(id, isoDep);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 //byte[] payload = dumpTagData(tag).getBytes();
