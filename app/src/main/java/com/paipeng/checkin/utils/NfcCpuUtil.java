@@ -67,17 +67,17 @@ public class NfcCpuUtil {
         tag.connect();
     }
 
-    public byte[] read(int dataLen) throws IOException {
+    private boolean init() throws IOException {
         // 1 enter the main directory.
         byte[] resp = tag.transceive(CMD_START);
         if (!checkRs(resp)) {
-            return null;
+            return false;
         }
         Log.d(TAG, "1 successful access main menu.");
         resp = tag.transceive(CMD_GET_RANDOM); // 2 to obtain random code
 
         if (!checkRs(resp)) {
-            return null;
+            return false;
         }
         Log.d(TAG, "2 Get random code success");
 
@@ -109,15 +109,86 @@ public class NfcCpuUtil {
         }
         // 0x6A 0x88
          */
+        return true;
+    }
 
-        Log.d(TAG, "read file data");
-        request = new byte[CMD_ACCESS_FILE_READ.length];
-        request[CMD_ACCESS_FILE_READ.length-1] = (byte)dataLen;
-        resp = tag.transceive(CMD_ACCESS_FILE_READ);
-        if (!checkRs(resp)) {
+    public byte[] read(int dataLen) throws IOException {
+        if (init()) {
+            Log.d(TAG, "read file data: " + dataLen);
+            byte[] request = new byte[CMD_ACCESS_FILE_READ.length];
+            for (int i = 0; i < CMD_ACCESS_FILE_READ.length; i++) {
+                request[i] = CMD_ACCESS_FILE_READ[i];
+            }
+            request[2] = (byte) 0x82;
+            request[CMD_ACCESS_FILE_READ.length - 1] = (byte) dataLen;
+            printByte(request);
+            byte[] resp = tag.transceive(request);
+            if (!checkRs(resp)) {
+                return null;
+            }
+            printByte(resp);
+            return resp;
+        } else {
             return null;
         }
-        return resp;
+    }
+
+    public byte[] readFileData(short fileId) throws IOException {
+        Log.d(TAG, "readFileData: " + fileId);
+        if (init()) {
+            byte[] request = new byte[CMD_ACCESS_FILE_READ.length];
+            for (int i = 0; i < CMD_ACCESS_FILE_READ.length; i++) {
+                request[i] = CMD_ACCESS_FILE_READ[i];
+            }
+
+            // read the first two byte for get data size
+            request[2] = (byte) (0x80 | fileId);
+            request[CMD_ACCESS_FILE_READ.length - 1] = (byte) 2;
+            printByte(request);
+            byte[] resp = tag.transceive(request);
+            if (!checkRs(resp)) {
+                return null;
+            }
+            printByte(resp);
+
+            int data_len = (resp[0] & 0xff) << 8 | (resp[1] & 0xff);
+            Log.d(TAG, "file data len: " + data_len);
+            if (data_len <= 0) {
+                Log.e(TAG, "no data");
+                return null;
+            }
+            byte[] read_data = new byte[data_len];
+            int read_len = 0;
+            while (read_len < data_len) {
+                Log.d(TAG, "read_len: " + read_len);
+                // set offset P1/P2 (the fist bit of P1 shouldn't be 1)
+                request[2] = (byte) (((read_len + 2) >> 8) & 0xFF);
+                request[3] = (byte) ((read_len + 2) & 0xFF);
+                byte block_size = 0;
+                if (read_len + 255 < data_len) {
+                    block_size = (byte) 0xFF;
+                } else {
+                    block_size = (byte) (data_len - read_len);
+                }
+
+                request[4] = block_size;
+                printByte(request);
+                resp = tag.transceive(request);
+                if (!checkRs(resp)) {
+                    return null;
+                }
+                System.arraycopy(read_data,
+                        read_len,
+                        resp,
+                        0,
+                        resp.length-2);
+                read_len += (block_size & 0xFF);
+            }
+            printByte(read_data);
+            return read_data;
+        } else {
+            return null;
+        }
     }
 
     public byte[] wirte() throws IOException {
