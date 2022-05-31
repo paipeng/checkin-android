@@ -129,8 +129,9 @@ public class IdCardFragment extends Fragment {
                 Log.d(TAG, "ndef size: " + ndefMessages.length);
             }
             byte[] data = bundle.getByteArray("DATA");
+            byte[] textData = bundle.getByteArray("TEXTDATA");
 
-            showNdefMessage(tagId, ndefMessages, data);
+            showNdefMessage(tagId, ndefMessages, textData, data);
 
             /*
             for (int i = 0; i < ndefMessages.length; i++) {
@@ -164,7 +165,7 @@ public class IdCardFragment extends Fragment {
         binding = null;
     }
 
-    public void showNdefMessage(byte[] tagId, NdefMessage[] ndefMessages, byte[] data) {
+    public void showNdefMessage(byte[] tagId, NdefMessage[] ndefMessages, byte[] textData, byte[] data) {
         if (ndefMessages != null) {
             for (int i = 0; i < ndefMessages.length; i++) {
                 NdefRecord ndefRecord = Arrays.stream(((NdefMessage) ndefMessages[i]).getRecords()).findFirst().orElse(null);
@@ -179,7 +180,7 @@ public class IdCardFragment extends Fragment {
                 updateIdCardListView(idCard);
                 break;
             }
-        } else if (data != null) {
+        } else if (data != null && textData != null) {
             int dataLen = 0;
             for (int i = 0; i < data.length; i++) {
                 System.out.print(data[i] + " ");
@@ -209,17 +210,13 @@ public class IdCardFragment extends Fragment {
                 Log.e(TAG, "bitmap invalid");
             }
 
-            /*
-            String text = new String(data, 0, dataLen);
-            //String text = new String(data, 0, dataLen, "GB18030");
+            String text = new String(textData);
             Log.d(TAG, "cpu data: " + text);
 
             IdCard idCard = CommonUtil.convertToIdCard(text);
             binding.nameTextView.setText(idCard.getName());
             binding.serialNumberTextView.setText(StringUtil.bytesToHexString(tagId));
             updateIdCardListView(idCard);
-
-             */
         }
     }
 
