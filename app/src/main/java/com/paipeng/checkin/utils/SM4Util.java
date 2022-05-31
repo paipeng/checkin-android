@@ -28,6 +28,8 @@ public class SM4Util {
     // PKCS5Padding-以8个字节为一组进行分组加密
     // 定义分组加密模式使用：PKCS5Padding
     public static final String ALGORITHM_NAME_ECB_PADDING = "SM4/ECB/PKCS5Padding";
+
+    public static final String ALGORITHM_NAME_ECB_NOPADDING = "SM4/ECB/NoPadding";
     // 128-32位16进制；256-64位16进制
     public static final int DEFAULT_KEY_SIZE = 128;
 
@@ -149,6 +151,17 @@ public class SM4Util {
         Cipher cipher = generateEcbCipher(ALGORITHM_NAME_ECB_PADDING, Cipher.DECRYPT_MODE, key);//生成Ecb暗号,通过第二个参数判断加密还是解密
         return cipher.doFinal(cipherText);
     }
+
+    public static byte[] encrypt_Ecb(byte[] key, byte[] cipherText) throws Exception {
+        Cipher cipher = generateEcbCipher(ALGORITHM_NAME_ECB_NOPADDING, Cipher.ENCRYPT_MODE, key);
+        return cipher.doFinal(cipherText);
+    }
+    public static byte[] decrypt_Ecb(byte[] key, byte[] cipherText) throws Exception {
+        Cipher cipher = generateEcbCipher(ALGORITHM_NAME_ECB_NOPADDING, Cipher.DECRYPT_MODE, key);
+        return cipher.doFinal(cipherText);
+    }
+
+
 
     /**
      * 校验加密前后的字符串是否为同一数据
