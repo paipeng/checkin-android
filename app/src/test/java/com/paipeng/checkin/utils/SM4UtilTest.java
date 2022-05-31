@@ -132,6 +132,38 @@ public class SM4UtilTest extends TestCase {
         System.out.println("\n");
     }
 
+
+
+    public void testEncrypt_Ecb_Padding4() throws Exception {
+
+        byte[] input = new byte[1024];
+        for (int i = 0; i < 1024; i++) {
+            input[i] = (byte)(i%255);
+        }
+
+        System.out.println("input:\n");
+        for (int i = 0; i < input.length; i++) {
+            System.out.print(Integer.toHexString(input[i] & 0xFF) + ((i<(input.length-1))?"-":""));
+        }
+        System.out.println("\n");
+
+
+        byte[] encoded = SM4Util.encrypt_Ecb_Padding(SM4Util.DEFAULT_KEY, input);
+        System.out.println("encoded: " + encoded.length + "\n");
+        for (int i = 0; i < encoded.length; i++) {
+            System.out.print(Integer.toHexString(encoded[i] & 0xFF) + ((i<(encoded.length-1))?"-":""));
+        }
+        System.out.println("\n");
+
+        byte[] decoded = SM4Util.decrypt_Ecb_Padding(SM4Util.DEFAULT_KEY, encoded);
+        System.out.println("decoded:\n");
+        for (int i = 0; i < decoded.length; i++) {
+            System.out.print(Integer.toHexString(decoded[i] & 0xFF) + ((i<(decoded.length-1))?"-":""));
+            Assert.assertEquals(input[i], decoded[i]);
+        }
+        System.out.println("\n");
+    }
+
     public void testTestEncryptEcb() throws Exception {
         String input = "ABCDEFG12345678";
         System.out.println("input: " + input);
@@ -144,5 +176,34 @@ public class SM4UtilTest extends TestCase {
         System.out.println("decodedText: " + decodedText);
 
 
+    }
+
+    public void testEncrypt_Ecb() throws Exception {
+        byte[] input = new byte[1024];
+        for (int i = 0; i < 1024; i++) {
+            input[i] = (byte)(i%255);
+        }
+
+        System.out.println("input:\n");
+        for (int i = 0; i < input.length; i++) {
+            System.out.print(Integer.toHexString(input[i] & 0xFF) + ((i<(input.length-1))?"-":""));
+        }
+        System.out.println("\n");
+
+
+        byte[] encoded = SM4Util.encrypt_Ecb(SM4Util.DEFAULT_KEY, input);
+        System.out.println("encoded: " + encoded.length + "\n");
+        for (int i = 0; i < encoded.length; i++) {
+            System.out.print(Integer.toHexString(encoded[i] & 0xFF) + ((i<(encoded.length-1))?"-":""));
+        }
+        System.out.println("\n");
+
+        byte[] decoded = SM4Util.decrypt_Ecb(SM4Util.DEFAULT_KEY, encoded);
+        System.out.println("decoded:\n");
+        for (int i = 0; i < decoded.length; i++) {
+            System.out.print(Integer.toHexString(decoded[i] & 0xFF) + ((i<(decoded.length-1))?"-":""));
+            Assert.assertEquals(input[i], decoded[i]);
+        }
+        System.out.println("\n");
     }
 }
