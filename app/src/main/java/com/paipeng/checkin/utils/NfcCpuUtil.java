@@ -144,12 +144,12 @@ public class NfcCpuUtil {
             // read the first two byte for get data size
             request[2] = (byte) (0x80 | fileId);
             request[CMD_ACCESS_FILE_READ.length - 1] = (byte) 2;
-            printByte(request);
+            //printByte(request);
             byte[] resp = tag.transceive(request);
             if (!checkRs(resp)) {
                 return null;
             }
-            printByte(resp);
+            //printByte(resp);
 
             int data_len = (resp[0] & 0xff) << 8 | (resp[1] & 0xff);
             Log.d(TAG, "file data len: " + data_len);
@@ -160,7 +160,7 @@ public class NfcCpuUtil {
             byte[] read_data = new byte[data_len];
             int read_len = 0;
             while (read_len < data_len) {
-                Log.d(TAG, "read_len: " + read_len);
+                //Log.d(TAG, "read_len: " + read_len);
                 // set offset P1/P2 (the fist bit of P1 shouldn't be 1)
                 request[2] = (byte) (((read_len + 2) >> 8) & 0xFF);
                 request[3] = (byte) ((read_len + 2) & 0xFF);
@@ -172,7 +172,7 @@ public class NfcCpuUtil {
                 }
 
                 request[4] = block_size;
-                printByte(request);
+                //printByte(request);
                 resp = tag.transceive(request);
                 if (!checkRs(resp)) {
                     return null;
@@ -184,7 +184,7 @@ public class NfcCpuUtil {
             }
 
             Log.i(TAG, "read_data: " + read_data);
-            printByte(read_data);
+            //printByte(read_data);
             return read_data;
         } else {
             return null;
@@ -261,7 +261,7 @@ public class NfcCpuUtil {
     }
 
     private boolean checkRs(byte[] resp) {
-        String r = printByte(resp);
+        //String r = printByte(resp);
         //Log.i(TAG, "response " + r);
         int status = ((0xff & resp[resp.length - 2]) << 8) | (0xff & resp[resp.length - 1]);
         return status == 0x9000;
