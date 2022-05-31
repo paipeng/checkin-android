@@ -42,7 +42,8 @@ public class SM4Util {
      * @explain ECB模式（电子密码本模式：Electronic codebook）
      */
     private static Cipher generateEcbCipher(String algorithmName, int mode, byte[] key) throws Exception {
-        Cipher cipher = Cipher.getInstance(algorithmName, BouncyCastleProvider.PROVIDER_NAME);
+        //Cipher cipher = Cipher.getInstance(algorithmName, BouncyCastleProvider.PROVIDER_NAME);
+        Cipher cipher = Cipher.getInstance(algorithmName, new BouncyCastleProvider());
         Key sm4Key = new SecretKeySpec(key, ALGORITHM_NAME);
         cipher.init(mode, sm4Key);
         return cipher;
