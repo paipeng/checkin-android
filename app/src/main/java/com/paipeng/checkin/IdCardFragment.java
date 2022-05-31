@@ -20,6 +20,7 @@ import com.paipeng.checkin.databinding.FragmentIdcardBinding;
 import com.paipeng.checkin.model.IdCard;
 import com.paipeng.checkin.ui.IdCardAdapter;
 import com.paipeng.checkin.utils.CommonUtil;
+import com.paipeng.checkin.utils.ImageUtil;
 import com.paipeng.checkin.utils.NdefUtil;
 import com.paipeng.checkin.utils.StringUtil;
 
@@ -138,6 +139,18 @@ public class IdCardFragment extends Fragment {
                     break;
                 }
             }
+
+            // convert byte[] to bitmap
+            Bitmap bitmap = ImageUtil.convertByteToBitmap(data);
+            if (bitmap != null) {
+                Log.d(TAG, "bitmap size: " + bitmap.getWidth() + "-" + bitmap.getHeight());
+
+                binding.photoImageView.setImageBitmap(bitmap);
+            } else {
+                Log.e(TAG, "bitmap invalid");
+            }
+
+            /*
             String text = new String(data, 0, dataLen);
             //String text = new String(data, 0, dataLen, "GB18030");
             Log.d(TAG, "cpu data: " + text);
@@ -146,6 +159,8 @@ public class IdCardFragment extends Fragment {
             binding.nameTextView.setText(idCard.getName());
             binding.serialNumberTextView.setText(StringUtil.bytesToHexString(tagId));
             updateIdCardListView(idCard);
+
+             */
         }
     }
 
