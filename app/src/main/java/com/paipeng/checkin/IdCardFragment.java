@@ -48,19 +48,25 @@ public class IdCardFragment extends Fragment {
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         Log.d(TAG, "onActivityResult");
                         Intent intent = result.getData();
+
+                        Bitmap photo = ((BitmapDrawable)binding.photoImageView.getDrawable()).getBitmap();
+                        Bitmap frame;
                         if (intent.getBooleanExtra("FACE_COMPARE", false)) {
                             float score = intent.getFloatExtra("FACE_COMPARE_SCORE", -1f);
                             Log.d(TAG, "face compare success: " + score);
 
-                            Bitmap photo = ((BitmapDrawable)binding.photoImageView.getDrawable()).getBitmap();
-                            Bitmap frame = BitmapFactory.decodeResource(getResources(), R.drawable.face_compare_success);
-                            Bitmap bitmap = ImageUtil.createSingleImageFromMultipleImages(photo, ImageUtil.resize(frame, photo.getWidth(), photo.getHeight()));
-
-
-                            binding.photoImageView.setImageBitmap(bitmap);
+                            frame = BitmapFactory.decodeResource(getResources(), R.drawable.face_compare_success);
+                            
                         } else {
                             Log.e(TAG, "face compare error");
+                            float score = intent.getFloatExtra("FACE_COMPARE_SCORE", -1f);
+                            Log.d(TAG, "face compare result: " + score);
+                            frame = BitmapFactory.decodeResource(getResources(), R.drawable.face_compare_failed);
+
                         }
+                        Bitmap bitmap = ImageUtil.createSingleImageFromMultipleImages(photo, ImageUtil.resize(frame, photo.getWidth(), photo.getHeight()));
+                        binding.photoImageView.setImageBitmap(bitmap);
+
                         // Handle the Intent
                     } else if (result.getResultCode() == Activity.RESULT_CANCELED) {
                         Log.d(TAG, "onActivityResult");
