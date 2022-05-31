@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.arcsoft.arcfacedemo.activity.RegisterAndRecognizeActivity;
+import com.arcsoft.arcfacedemo.faceserver.FaceServer;
 import com.paipeng.checkin.databinding.FragmentIdcardBinding;
 import com.paipeng.checkin.model.IdCard;
 import com.paipeng.checkin.ui.IdCardAdapter;
@@ -146,6 +147,16 @@ public class IdCardFragment extends Fragment {
                 Log.d(TAG, "bitmap size: " + bitmap.getWidth() + "-" + bitmap.getHeight());
 
                 binding.photoImageView.setImageBitmap(bitmap);
+
+                FaceServer.getInstance().init(getActivity());
+                FaceServer.getInstance().clearAllFaces(getActivity());
+                // register face image from
+                Bitmap resizeBitmap = ImageUtil.resize(bitmap, bitmap.getWidth()/4*4, bitmap.getHeight()/4*4);
+                Log.d(TAG, "resizeBitmap: " + resizeBitmap.getWidth() + "-" + resizeBitmap.getHeight());
+
+                //binding.photoImageView.setImageBitmap(resizeBitmap);
+                FaceServer.getInstance().registerBgr24(getActivity(), ImageUtil.bitmapToRGBByteArray(resizeBitmap), resizeBitmap.getWidth(), resizeBitmap.getHeight(), "ABCD1234");
+
             } else {
                 Log.e(TAG, "bitmap invalid");
             }
