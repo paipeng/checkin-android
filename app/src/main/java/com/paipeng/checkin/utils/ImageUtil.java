@@ -1,6 +1,7 @@
 package com.paipeng.checkin.utils;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.media.Image;
@@ -92,5 +93,14 @@ public class ImageUtil {
 
         }
         return pixels;
+    }
+
+    static public Bitmap convertByteToBitmap(byte[] arrData) {
+        Bitmap resultBitmap = null;
+        if (arrData != null) {
+            BitmapFactory.Options objPpt = new BitmapFactory.Options();
+            resultBitmap = BitmapFactory.decodeByteArray(arrData, 0, arrData.length, objPpt);
+        }
+        return resultBitmap;
     }
 }
