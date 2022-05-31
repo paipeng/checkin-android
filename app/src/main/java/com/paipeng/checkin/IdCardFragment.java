@@ -1,7 +1,10 @@
 package com.paipeng.checkin;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.os.Bundle;
@@ -11,6 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.ActivityResultRegistry;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
@@ -32,6 +40,35 @@ public class IdCardFragment extends Fragment {
 
     private FragmentIdcardBinding binding;
     private IdCard idCard;
+
+    ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Log.d(TAG, "onActivityResult");
+                        Intent intent = result.getData();
+                        if (intent.getBooleanExtra("FACE_COMPARE", false)) {
+                            float score = intent.getFloatExtra("FACE_COMPARE_SCORE", -1f);
+                            Log.d(TAG, "face compare success: " + score);
+
+                            Bitmap photo = ((BitmapDrawable)binding.photoImageView.getDrawable()).getBitmap();
+                            Bitmap frame = BitmapFactory.decodeResource(getResources(), R.drawable.face_compare_success);
+                            Bitmap bitmap = ImageUtil.createSingleImageFromMultipleImages(photo, ImageUtil.resize(frame, photo.getWidth(), photo.getHeight()));
+
+
+                            binding.photoImageView.setImageBitmap(bitmap);
+                        } else {
+                            Log.e(TAG, "face compare error");
+                        }
+                        // Handle the Intent
+                    } else if (result.getResultCode() == Activity.RESULT_CANCELED) {
+                        Log.d(TAG, "onActivityResult");
+                        //Intent intent = result.getIntent();
+                        // Handle the Intent
+                    }
+                }
+            });
 
     @Override
     public View onCreateView(
@@ -105,9 +142,14 @@ public class IdCardFragment extends Fragment {
     }
 
     private void faceValidate() {
+        /*
         Intent intent = new Intent();
         intent.setClass(getActivity(), RegisterAndRecognizeActivity.class);
         startActivity(intent);
+
+         */
+
+        mStartForResult.launch(new Intent(this.getActivity(), RegisterAndRecognizeActivity.class));
     }
 
     @Override

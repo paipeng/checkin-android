@@ -2,6 +2,7 @@ package com.paipeng.checkin.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.media.Image;
@@ -102,5 +103,13 @@ public class ImageUtil {
             resultBitmap = BitmapFactory.decodeByteArray(arrData, 0, arrData.length, objPpt);
         }
         return resultBitmap;
+    }
+
+    public static Bitmap createSingleImageFromMultipleImages(Bitmap firstImage, Bitmap secondImage){
+        Bitmap result = Bitmap.createBitmap(firstImage.getWidth(), firstImage.getHeight(), firstImage.getConfig());
+        Canvas canvas = new Canvas(result);
+        canvas.drawBitmap(firstImage, 0f, 0f, null);
+        canvas.drawBitmap(secondImage, 0, 0, null);
+        return result;
     }
 }
