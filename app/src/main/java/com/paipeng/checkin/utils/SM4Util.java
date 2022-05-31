@@ -18,6 +18,9 @@ public class SM4Util {
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
+    public static final byte[] DEFAULT_KEY = {
+            0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab, (byte)0xcd, (byte)0xef, (byte)0xfe, (byte)0xdc, (byte)0xba, (byte)0x98, 0x76, 0x54, 0x32, 0x10
+    } ;
 
     private static final String ENCODING = "UTF-8";
     public static final String ALGORITHM_NAME = "SM4";
