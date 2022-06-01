@@ -84,14 +84,9 @@ public class IdCardFragment extends Fragment {
             });
 
     @Override
-    public View onCreateView(
-            LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState
-    ) {
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentIdcardBinding.inflate(inflater, container, false);
         return binding.getRoot();
-
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -163,8 +158,8 @@ public class IdCardFragment extends Fragment {
 
          */
 
-        //mStartForResult.launch(new Intent(this.getActivity(), RegisterAndRecognizeActivity.class));
-        mStartForResult.launch(new Intent(this.getActivity(), CameraActivity.class));
+        mStartForResult.launch(new Intent(this.getActivity(), RegisterAndRecognizeActivity.class));
+
     }
 
     @Override
@@ -297,7 +292,8 @@ public class IdCardFragment extends Fragment {
 
     private void ocrIdCard() {
         Log.d(TAG, "ocrIdCard");
-        ((MainActivity) getActivity()).tryTakePhoto();
+        //((MainActivity) getActivity()).tryTakePhoto();
+        mStartForResult.launch(new Intent(this.getActivity(), CameraActivity.class));
     }
 
 

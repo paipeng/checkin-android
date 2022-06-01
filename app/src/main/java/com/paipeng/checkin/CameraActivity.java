@@ -34,6 +34,10 @@ import com.arcsoft.arcfacedemo.util.face.RecognizeColor;
 import com.arcsoft.arcfacedemo.util.face.RequestFeatureStatus;
 import com.arcsoft.arcfacedemo.widget.FaceRectView;
 import com.arcsoft.arcfacedemo.widget.FaceSearchResultAdapter;
+import com.google.zxing.ChecksumException;
+import com.google.zxing.FormatException;
+import com.google.zxing.NotFoundException;
+import com.paipeng.checkin.utils.BarcodeUtil;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -73,7 +77,7 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
     /**
      * 优先打开的摄像头，本界面主要用于单目RGB摄像头设备，因此默认打开前置
      */
-    private Integer rgbCameraID = Camera.CameraInfo.CAMERA_FACING_FRONT;
+    private Integer rgbCameraID = Camera.CameraInfo.CAMERA_FACING_BACK;
 
 
     private int ftInitCode = -1;
@@ -273,8 +277,6 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
 
-
-
         CameraListener cameraListener = new CameraListener() {
             @Override
             public void onCameraOpened(Camera camera, int cameraId, int displayOrientation, boolean isMirror) {
@@ -303,6 +305,32 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
                 if (faceRectView != null) {
                     faceRectView.clearFaceInfo();
                 }
+                // 1920 x 1080
+                Log.d(TAG, "preview size: " + previewSize.width + "-" + previewSize.height);
+
+                //Get the data of the specified range of frames
+                int block_size = previewSize.height / 2;
+
+
+                try {
+                    String decodedText = BarcodeUtil.decode(nv21, previewSize.width, previewSize.height,
+                            (previewSize.width - block_size) / 2,
+                            (previewSize.height - block_size) / 2,
+                            block_size,
+                            block_size
+                    );
+                    if (decodedText != null) {
+                        Log.d(TAG, "decodedText: " + decodedText);
+
+                    }
+                } catch (ChecksumException e) {
+                    Log.e(TAG, "ChecksumException");
+                } catch (NotFoundException e) {
+                    Log.e(TAG, "NotFoundException");
+                } catch (FormatException e) {
+                    Log.e(TAG, "FormatException");
+                }
+
 
             }
 
