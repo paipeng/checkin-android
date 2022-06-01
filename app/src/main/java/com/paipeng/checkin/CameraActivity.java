@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
@@ -286,6 +287,20 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
                 drawHelper = new DrawHelper(previewSize.width, previewSize.height, previewView.getWidth(), previewView.getHeight(), displayOrientation
                         , cameraId, isMirror, false, false);
                 Log.i(TAG, "onCameraOpened: " + drawHelper.toString());
+
+
+                Rect barcodeFrameRect = new Rect();
+                int block_size = previewSize.height / 2;
+                barcodeFrameRect.top = (previewSize.width - block_size)/2;
+                barcodeFrameRect.left = (previewSize.height - block_size)/2;
+                barcodeFrameRect.right = barcodeFrameRect.left + block_size;
+                barcodeFrameRect.bottom = barcodeFrameRect.top + block_size;
+
+                List<DrawInfo> drawInfoList = new ArrayList<>();
+                drawInfoList.add(new DrawInfo(barcodeFrameRect,
+                        0, 0, 0, RecognizeColor.COLOR_SUCCESS, "Barcode Scan"));
+                drawHelper.draw(barcodeRectView, drawInfoList);
+
                 // 切换相机的时候可能会导致预览尺寸发生变化
                 if (faceHelper == null ||
                         lastPreviewSize == null ||
@@ -304,7 +319,7 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
             @Override
             public void onPreview(final byte[] nv21, Camera camera) {
                 if (barcodeRectView != null) {
-                    barcodeRectView.clearFaceInfo();
+                    //barcodeRectView.clearFaceInfo();
                 }
                 // 1920 x 1080
                 Log.d(TAG, "preview size: " + previewSize.width + "-" + previewSize.height);
@@ -440,6 +455,14 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
 
              */
         }
+        Rect barcodeFrameRect = new Rect();
+        int block_size = previewSize.height / 2;
+        barcodeFrameRect.top = (previewSize.height - block_size)/2;
+        barcodeFrameRect.left = (previewSize.width - block_size)/2;
+        barcodeFrameRect.right = barcodeFrameRect.left + block_size;
+        barcodeFrameRect.bottom = barcodeFrameRect.top + block_size;
+        drawInfoList.add(new DrawInfo(barcodeFrameRect,
+                0, 0, 0, RecognizeColor.COLOR_SUCCESS, "Barcode Scan"));
         drawHelper.draw(barcodeRectView, drawInfoList);
     }
 
