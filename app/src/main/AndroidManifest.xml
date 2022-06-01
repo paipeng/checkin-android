@@ -42,26 +42,26 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".ui.login.LoginActivity"
+            android:name="com.paipeng.checkin.ui.login.LoginActivity"
             android:exported="false"
             android:label="@string/title_activity_login" />
         <activity
-            android:name=".TaskActivity"
+            android:name="com.paipeng.checkin.TaskActivity"
             android:exported="false"
             android:label="@string/title_activity_task"
             android:theme="@style/Theme.CheckIn.NoActionBar" />
         <activity
-            android:name=".LicenseActivity"
+            android:name="com.paipeng.checkin.LicenseActivity"
             android:exported="false"
             android:label="@string/title_activity_license"
             android:theme="@style/Theme.CheckIn.NoActionBar" />
         <activity
-            android:name=".AboutActivity"
+            android:name="com.paipeng.checkin.AboutActivity"
             android:exported="false"
             android:label="@string/title_activity_about"
             android:theme="@style/Theme.CheckIn.NoActionBar" />
         <activity
-            android:name=".SplashActivity"
+            android:name="com.paipeng.checkin.SplashActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="true"
             android:label="@string/app_name"
@@ -72,12 +72,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".SettingsActivity"
+            android:name="com.paipeng.checkin.CameraActivity"
             android:exported="false"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.paipeng.checkin.SettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_settings" />
+        <activity
+            android:name="com.paipeng.checkin.MainActivity"
             android:exported="false"
             android:label="@string/app_name"
             android:theme="@style/Theme.CheckIn.NoActionBar">
