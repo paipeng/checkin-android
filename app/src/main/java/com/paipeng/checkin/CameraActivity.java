@@ -131,7 +131,7 @@ public abstract class CameraActivity extends BaseActivity implements ViewTreeObs
      */
     private View previewView;
 
-    private Switch switchLivenessDetect;
+    //private Switch switchLivenessDetect;
 
     private static final int ACTION_REQUEST_PERMISSIONS = 0x001;
     /**
@@ -158,22 +158,7 @@ public abstract class CameraActivity extends BaseActivity implements ViewTreeObs
         super.onCreate(savedInstanceState);
 
         hideSystemUI();
-        setContentView(R.layout.activity_camera);
-        //保持亮屏
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            WindowManager.LayoutParams attributes = getWindow().getAttributes();
-            attributes.systemUiVisibility = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-            getWindow().setAttributes(attributes);
-        }
-
-        // Activity启动后就锁定为启动时的方向
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
-        //本地人脸库初始化
-        FaceServer.getInstance().init(this);
-
-        initView();
     }
 
     protected void initView() {
@@ -181,6 +166,7 @@ public abstract class CameraActivity extends BaseActivity implements ViewTreeObs
         //在布局结束后才做初始化操作
         previewView.getViewTreeObserver().addOnGlobalLayoutListener(this);
 
+        /*
         switchLivenessDetect = findViewById(R.id.single_camera_switch_liveness_detect);
         switchLivenessDetect.setChecked(livenessDetect);
         switchLivenessDetect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -189,6 +175,8 @@ public abstract class CameraActivity extends BaseActivity implements ViewTreeObs
                 livenessDetect = isChecked;
             }
         });
+
+         */
         RecyclerView recyclerShowFaceInfo = findViewById(R.id.single_camera_recycler_view_person);
         compareResultList = new ArrayList<>();
         adapter = new FaceSearchResultAdapter(compareResultList, this);
@@ -222,7 +210,7 @@ public abstract class CameraActivity extends BaseActivity implements ViewTreeObs
         }
     }
 
-    private void hideSystemUI() {
+    protected void hideSystemUI() {
         // Enables regular immersive mode.
         // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
         // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
