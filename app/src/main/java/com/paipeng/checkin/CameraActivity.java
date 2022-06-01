@@ -34,11 +34,12 @@ import com.arcsoft.arcfacedemo.util.camera.CameraListener;
 import com.arcsoft.arcfacedemo.util.face.FaceHelper;
 import com.arcsoft.arcfacedemo.util.face.RecognizeColor;
 import com.arcsoft.arcfacedemo.util.face.RequestFeatureStatus;
-import com.arcsoft.arcfacedemo.widget.BarcodeRectView;
+import com.arcsoft.arcfacedemo.widget.BaseRectView;
 import com.arcsoft.arcfacedemo.widget.FaceSearchResultAdapter;
 import com.google.zxing.ChecksumException;
 import com.google.zxing.FormatException;
 import com.google.zxing.NotFoundException;
+import com.paipeng.checkin.ui.BarcodeRectView;
 import com.paipeng.checkin.utils.BarcodeUtil;
 
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener {
+public abstract class CameraActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener {
     private static final String TAG = "RegisterAndRecognize";
     private static final int MAX_DETECT_NUM = 10;
     /**
@@ -75,7 +76,7 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
 
     private CameraHelper cameraHelper;
     private DrawHelper drawHelper;
-    private Camera.Size previewSize;
+    protected Camera.Size previewSize;
     /**
      * 优先打开的摄像头，本界面主要用于单目RGB摄像头设备，因此默认打开前置
      */
@@ -129,10 +130,6 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
      * 相机预览显示的控件，可为SurfaceView或TextureView
      */
     private View previewView;
-    /**
-     * 绘制人脸框的控件
-     */
-    private BarcodeRectView barcodeRectView;
 
     private Switch switchLivenessDetect;
 
@@ -149,6 +146,10 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
             Manifest.permission.READ_PHONE_STATE
 
     };
+    /**
+     * 绘制人脸框的控件
+     */
+    protected BaseRectView rectView;
 
     private static int faceCompareFailedNum = 0;
 
@@ -175,12 +176,11 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
         initView();
     }
 
-    private void initView() {
+    protected void initView() {
         previewView = findViewById(R.id.single_camera_texture_preview);
         //在布局结束后才做初始化操作
         previewView.getViewTreeObserver().addOnGlobalLayoutListener(this);
 
-        barcodeRectView = findViewById(R.id.single_camera_face_rect_view);
         switchLivenessDetect = findViewById(R.id.single_camera_switch_liveness_detect);
         switchLivenessDetect.setChecked(livenessDetect);
         switchLivenessDetect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -289,17 +289,11 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
                 Log.i(TAG, "onCameraOpened: " + drawHelper.toString());
 
 
-                Rect barcodeFrameRect = new Rect();
-                int block_size = previewSize.height / 2;
-                barcodeFrameRect.top = (previewSize.width - block_size)/2;
-                barcodeFrameRect.left = (previewSize.height - block_size)/2;
-                barcodeFrameRect.right = barcodeFrameRect.left + block_size;
-                barcodeFrameRect.bottom = barcodeFrameRect.top + block_size;
+
 
                 List<DrawInfo> drawInfoList = new ArrayList<>();
-                drawInfoList.add(new DrawInfo(barcodeFrameRect,
-                        0, 0, 0, RecognizeColor.COLOR_SUCCESS, "Barcode Scan"));
-                drawHelper.draw(barcodeRectView, drawInfoList);
+                drawInfoList.add(getDrawInfo());
+                drawHelper.draw(rectView, drawInfoList);
 
                 // 切换相机的时候可能会导致预览尺寸发生变化
                 if (faceHelper == null ||
@@ -318,7 +312,7 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
 
             @Override
             public void onPreview(final byte[] nv21, Camera camera) {
-                if (barcodeRectView != null) {
+                if (rectView != null) {
                     //barcodeRectView.clearFaceInfo();
                 }
                 // 1920 x 1080
@@ -384,6 +378,10 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
         cameraHelper.init();
         cameraHelper.start();
     }
+
+    protected abstract Rect getFrameRect();
+
+    protected abstract DrawInfo getDrawInfo();
 
     private void registerFace(final byte[] nv21, final List<FacePreviewInfo> facePreviewInfoList) {
         if (registerStatus == REGISTER_STATUS_READY && facePreviewInfoList != null && facePreviewInfoList.size() > 0) {
@@ -463,7 +461,7 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
         barcodeFrameRect.bottom = barcodeFrameRect.top + block_size;
         drawInfoList.add(new DrawInfo(barcodeFrameRect,
                 0, 0, 0, RecognizeColor.COLOR_SUCCESS, "Barcode Scan"));
-        drawHelper.draw(barcodeRectView, drawInfoList);
+        drawHelper.draw(rectView, drawInfoList);
     }
 
     @Override

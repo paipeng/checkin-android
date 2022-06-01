@@ -11,7 +11,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <com.paipeng.checkin.ui.BarcodeRectView
+        <com.paipeng.checkin.ui.OCRRectView
             android:id="@+id/single_camera_face_rect_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

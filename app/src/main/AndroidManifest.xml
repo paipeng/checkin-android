@@ -74,9 +74,15 @@
         </activity>
 
         <activity
-            android:name="com.paipeng.checkin.CameraActivity"
+            android:name="com.paipeng.checkin.BarcodeCameraActivity"
             android:exported="false"
             android:label="@string/title_activity_settings" />
+
+        <activity
+            android:name="com.paipeng.checkin.OCRCameraActivity"
+            android:exported="false"
+            android:label="@string/title_activity_settings" />
+
         <activity
             android:name="com.paipeng.checkin.SettingsActivity"
             android:exported="false"

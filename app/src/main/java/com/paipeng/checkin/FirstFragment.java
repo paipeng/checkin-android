@@ -3,8 +3,6 @@ package com.paipeng.checkin;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.nfc.NdefMessage;
 import android.os.Bundle;
 import android.util.Log;
@@ -61,7 +59,7 @@ public class FirstFragment extends BaseFragment {
         //binding.buttonFirst.setVisibility(View.GONE);
 
         if (this.tasks == null) {
-            this.tasks = ((MainActivity)getActivity()).getTaskList();
+            this.tasks = ((MainActivity) getActivity()).getTaskList();
         }
         if (this.tasks != null) {
             updateTaskListView(this.tasks);
@@ -145,12 +143,13 @@ public class FirstFragment extends BaseFragment {
                     "Loading. Please wait...", true);
             progressDialog.show();
         } else {
-            if (progressDialog!= null && progressDialog.isShowing()) {
+            if (progressDialog != null && progressDialog.isShowing()) {
                 progressDialog.cancel();
             }
 
         }
     }
+
     private void addRecord(Code code) {
         final Activity activity = this.getActivity();
         String token = CommonUtil.getUserToken(activity);
@@ -196,12 +195,12 @@ public class FirstFragment extends BaseFragment {
         NavHostFragment.findNavController(FirstFragment.this)
                 .navigate(R.id.action_FirstFragment_to_SecondFragment);
          */
-        mStartForResult.launch(new Intent(this.getActivity(), CameraActivity.class));
+        mStartForResult.launch(new Intent(this.getActivity(), BarcodeCameraActivity.class));
     }
 
     public void switchIdCard(byte[] tagId, NdefMessage[] ndefMessages, byte[] textData, byte[] data) {
         Bundle bundle = new Bundle();
-        bundle.putString("key","abc"); // Put anything what you want
+        bundle.putString("key", "abc"); // Put anything what you want
         bundle.putByteArray("ID", tagId);
         bundle.putParcelableArray("NDEF", ndefMessages);
         bundle.putByteArray("DATA", data);
