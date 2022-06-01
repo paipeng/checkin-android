@@ -8,6 +8,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,12 +37,16 @@ import com.paipeng.checkin.utils.NdefUtil;
 import com.paipeng.checkin.utils.StringUtil;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 public class IdCardFragment extends Fragment {
     private static final String TAG = IdCardFragment.class.getSimpleName();
 
     private FragmentIdcardBinding binding;
     private IdCard idCard;
+
+    private TextToSpeech textToSpeech;
+    private boolean isSpeech = false;
 
     ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
@@ -156,13 +163,64 @@ public class IdCardFragment extends Fragment {
 
          */
 
-        mStartForResult.launch(new Intent(this.getActivity(), RegisterAndRecognizeActivity.class));
+        //mStartForResult.launch(new Intent(this.getActivity(), RegisterAndRecognizeActivity.class));
+        mStartForResult.launch(new Intent(this.getActivity(), CameraActivity.class));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (textToSpeech != null) {
+            isSpeech = false;
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+            textToSpeech = null;
+        }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    private void initTTS(String speechText) {
+        textToSpeech = new TextToSpeech(getActivity(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+                    int supported = textToSpeech.setLanguage(Locale.CHINA);
+                    if ((supported != TextToSpeech.LANG_AVAILABLE) && (supported != TextToSpeech.LANG_COUNTRY_AVAILABLE)) {
+                        Log.e(TAG, "不支持当前语言！");
+                    } else {
+                        isSpeech = true;
+                        textToSpeech.speak(speechText, TextToSpeech.QUEUE_FLUSH, null, "1");
+                        textToSpeech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                            @Override
+                            public void onStart(String utteranceId) {
+
+                            }
+
+                            @Override
+                            public void onDone(String utteranceId) {
+                                if (TextUtils.equals("1", utteranceId)) {
+                                    isSpeech = false;
+                                }
+                            }
+
+                            @Override
+                            public void onError(String utteranceId) {
+
+                            }
+                        });
+                    }
+                }
+            }
+        });
+
+        textToSpeech.setLanguage(Locale.CHINA);
+        textToSpeech.setSpeechRate(0.9f);
+        textToSpeech.setPitch(1f);
     }
 
     public void showNdefMessage(byte[] tagId, NdefMessage[] ndefMessages, byte[] textData, byte[] data) {
@@ -212,6 +270,7 @@ public class IdCardFragment extends Fragment {
 
             String text = new String(textData);
             Log.d(TAG, "cpu data: " + text);
+            initTTS(text);
 
             IdCard idCard = CommonUtil.convertToIdCard(text);
             binding.nameTextView.setText(idCard.getName());
