@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.arcsoft.arcfacedemo.R;
 import com.arcsoft.arcfacedemo.activity.BaseActivity;
 import com.arcsoft.arcfacedemo.faceserver.CompareResult;
 import com.arcsoft.arcfacedemo.faceserver.FaceServer;
@@ -34,7 +33,7 @@ import com.arcsoft.arcfacedemo.util.camera.CameraListener;
 import com.arcsoft.arcfacedemo.util.face.FaceHelper;
 import com.arcsoft.arcfacedemo.util.face.RecognizeColor;
 import com.arcsoft.arcfacedemo.util.face.RequestFeatureStatus;
-import com.arcsoft.arcfacedemo.widget.FaceRectView;
+import com.arcsoft.arcfacedemo.widget.BarcodeRectView;
 import com.arcsoft.arcfacedemo.widget.FaceSearchResultAdapter;
 import com.google.zxing.ChecksumException;
 import com.google.zxing.FormatException;
@@ -132,7 +131,7 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
     /**
      * 绘制人脸框的控件
      */
-    private FaceRectView faceRectView;
+    private BarcodeRectView barcodeRectView;
 
     private Switch switchLivenessDetect;
 
@@ -157,7 +156,7 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
         super.onCreate(savedInstanceState);
 
         hideSystemUI();
-        setContentView(R.layout.activity_register_and_recognize);
+        setContentView(R.layout.activity_camera);
         //保持亮屏
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -180,7 +179,7 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
         //在布局结束后才做初始化操作
         previewView.getViewTreeObserver().addOnGlobalLayoutListener(this);
 
-        faceRectView = findViewById(R.id.single_camera_face_rect_view);
+        barcodeRectView = findViewById(R.id.single_camera_face_rect_view);
         switchLivenessDetect = findViewById(R.id.single_camera_switch_liveness_detect);
         switchLivenessDetect.setChecked(livenessDetect);
         switchLivenessDetect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -304,8 +303,8 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
 
             @Override
             public void onPreview(final byte[] nv21, Camera camera) {
-                if (faceRectView != null) {
-                    faceRectView.clearFaceInfo();
+                if (barcodeRectView != null) {
+                    barcodeRectView.clearFaceInfo();
                 }
                 // 1920 x 1080
                 Log.d(TAG, "preview size: " + previewSize.width + "-" + previewSize.height);
@@ -441,7 +440,7 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
 
              */
         }
-        drawHelper.draw(faceRectView, drawInfoList);
+        drawHelper.draw(barcodeRectView, drawInfoList);
     }
 
     @Override
@@ -451,7 +450,7 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
                 initEngine();
                 initCamera();
             } else {
-                showToast(getString(R.string.permission_denied));
+                showToast(getString(com.arcsoft.arcfacedemo.R.string.permission_denied));
             }
         }
     }
@@ -522,9 +521,9 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
         if (cameraHelper != null) {
             boolean success = cameraHelper.switchCamera();
             if (!success) {
-                showToast(getString(R.string.switch_camera_failed));
+                showToast(getString(com.arcsoft.arcfacedemo.R.string.switch_camera_failed));
             } else {
-                showLongToast(getString(R.string.notice_change_detect_degree));
+                showLongToast(getString(com.arcsoft.arcfacedemo.R.string.notice_change_detect_degree));
             }
         }
     }
