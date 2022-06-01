@@ -39,7 +39,7 @@ import com.paipeng.checkin.utils.StringUtil;
 import java.util.Arrays;
 import java.util.Locale;
 
-public class IdCardFragment extends Fragment {
+public class IdCardFragment extends BaseFragment {
     private static final String TAG = IdCardFragment.class.getSimpleName();
 
     private FragmentIdcardBinding binding;
@@ -47,41 +47,6 @@ public class IdCardFragment extends Fragment {
 
     private TextToSpeech textToSpeech;
     private boolean isSpeech = false;
-
-    ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        Log.d(TAG, "onActivityResult");
-                        Intent intent = result.getData();
-
-                        Bitmap photo = ((BitmapDrawable)binding.photoImageView.getDrawable()).getBitmap();
-                        Bitmap frame;
-                        if (intent.getBooleanExtra("FACE_COMPARE", false)) {
-                            float score = intent.getFloatExtra("FACE_COMPARE_SCORE", -1f);
-                            Log.d(TAG, "face compare success: " + score);
-
-                            frame = BitmapFactory.decodeResource(getResources(), R.drawable.face_compare_success);
-                            
-                        } else {
-                            Log.e(TAG, "face compare error");
-                            float score = intent.getFloatExtra("FACE_COMPARE_SCORE", -1f);
-                            Log.d(TAG, "face compare result: " + score);
-                            frame = BitmapFactory.decodeResource(getResources(), R.drawable.face_compare_failed);
-
-                        }
-                        Bitmap bitmap = ImageUtil.createSingleImageFromMultipleImages(photo, ImageUtil.resize(frame, photo.getWidth(), photo.getHeight()));
-                        binding.photoImageView.setImageBitmap(bitmap);
-
-                        // Handle the Intent
-                    } else if (result.getResultCode() == Activity.RESULT_CANCELED) {
-                        Log.d(TAG, "onActivityResult");
-                        //Intent intent = result.getIntent();
-                        // Handle the Intent
-                    }
-                }
-            });
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -293,7 +258,6 @@ public class IdCardFragment extends Fragment {
     private void ocrIdCard() {
         Log.d(TAG, "ocrIdCard");
         //((MainActivity) getActivity()).tryTakePhoto();
-        mStartForResult.launch(new Intent(this.getActivity(), CameraActivity.class));
     }
 
 
@@ -308,6 +272,37 @@ public class IdCardFragment extends Fragment {
         NavHostFragment.findNavController(IdCardFragment.this)
                 .navigate(R.id.action_IdCardFragment_to_OcrFragment, bundle);
 
+    }
+
+
+    @Override
+    protected void returnActiveResult(ActivityResult result) {
+        Log.d(TAG, "returnActiveResult");
+        if (result.getResultCode() == Activity.RESULT_OK) {
+
+            Intent intent = result.getData();
+
+            Bitmap photo = ((BitmapDrawable) binding.photoImageView.getDrawable()).getBitmap();
+            Bitmap frame;
+            if (intent.getBooleanExtra("FACE_COMPARE", false)) {
+                float score = intent.getFloatExtra("FACE_COMPARE_SCORE", -1f);
+                Log.d(TAG, "face compare success: " + score);
+                frame = BitmapFactory.decodeResource(getResources(), R.drawable.face_compare_success);
+            } else {
+                Log.e(TAG, "face compare error");
+                float score = intent.getFloatExtra("FACE_COMPARE_SCORE", -1f);
+                Log.d(TAG, "face compare result: " + score);
+                frame = BitmapFactory.decodeResource(getResources(), R.drawable.face_compare_failed);
+            }
+            Bitmap bitmap = ImageUtil.createSingleImageFromMultipleImages(photo, ImageUtil.resize(frame, photo.getWidth(), photo.getHeight()));
+            binding.photoImageView.setImageBitmap(bitmap);
+
+            // Handle the Intent
+        } else if (result.getResultCode() == Activity.RESULT_CANCELED) {
+            Log.d(TAG, "onActivityResult");
+            //Intent intent = result.getIntent();
+            // Handle the Intent
+        }
     }
 
 }

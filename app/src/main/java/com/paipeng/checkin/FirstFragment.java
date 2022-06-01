@@ -2,6 +2,9 @@ package com.paipeng.checkin;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.nfc.NdefMessage;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,8 +15,8 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.paipeng.checkin.databinding.FragmentFirstBinding;
@@ -30,7 +33,7 @@ import com.paipeng.checkin.utils.StringUtil;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class FirstFragment extends Fragment {
+public class FirstFragment extends BaseFragment {
     private static final String TAG = FirstFragment.class.getSimpleName();
 
     private FragmentFirstBinding binding;
@@ -41,14 +44,9 @@ public class FirstFragment extends Fragment {
     private List<Task> tasks;
 
     @Override
-    public View onCreateView(
-            LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState
-    ) {
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentFirstBinding.inflate(inflater, container, false);
         return binding.getRoot();
-
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -60,7 +58,7 @@ public class FirstFragment extends Fragment {
                 switchTaskDetail(null);
             }
         });
-        binding.buttonFirst.setVisibility(View.GONE);
+        //binding.buttonFirst.setVisibility(View.GONE);
 
         if (this.tasks == null) {
             this.tasks = ((MainActivity)getActivity()).getTaskList();
@@ -193,9 +191,12 @@ public class FirstFragment extends Fragment {
     }
 
     public void switchTaskDetail(Task task) {
+        /*
         ((MainActivity)getActivity()).setSelectedTask(task);
         NavHostFragment.findNavController(FirstFragment.this)
                 .navigate(R.id.action_FirstFragment_to_SecondFragment);
+         */
+        mStartForResult.launch(new Intent(this.getActivity(), CameraActivity.class));
     }
 
     public void switchIdCard(byte[] tagId, NdefMessage[] ndefMessages, byte[] textData, byte[] data) {
@@ -208,5 +209,23 @@ public class FirstFragment extends Fragment {
 
         NavHostFragment.findNavController(FirstFragment.this)
                 .navigate(R.id.action_FirstFragment_to_IdCardFragment, bundle);
+    }
+
+    @Override
+    protected void returnActiveResult(ActivityResult result) {
+        Log.d(TAG, "returnActiveResult");
+
+        if (result.getResultCode() == Activity.RESULT_OK) {
+            Intent intent = result.getData();
+
+            String barcodeText = intent.getStringExtra("BARCODE_TEXT");
+            if (barcodeText != null) {
+                getActivity().runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(getActivity(), "Barcode: " + barcodeText, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        }
     }
 }

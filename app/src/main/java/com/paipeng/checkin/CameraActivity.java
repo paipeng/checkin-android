@@ -1,6 +1,8 @@
 package com.paipeng.checkin;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.hardware.Camera;
@@ -311,7 +313,6 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
                 //Get the data of the specified range of frames
                 int block_size = previewSize.height / 2;
 
-
                 try {
                     String decodedText = BarcodeUtil.decode(nv21, previewSize.width, previewSize.height,
                             (previewSize.width - block_size) / 2,
@@ -322,6 +323,11 @@ public class CameraActivity extends BaseActivity implements ViewTreeObserver.OnG
                     if (decodedText != null) {
                         Log.d(TAG, "decodedText: " + decodedText);
 
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("BARCODE_TEXT", decodedText);
+                        setResult(Activity.RESULT_OK, resultIntent);
+                        finish();
+                        Log.d(TAG, "face compare success -> back");
                     }
                 } catch (ChecksumException e) {
                     Log.e(TAG, "ChecksumException");
