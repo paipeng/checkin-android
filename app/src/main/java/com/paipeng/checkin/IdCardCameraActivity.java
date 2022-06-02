@@ -406,6 +406,8 @@ public class IdCardCameraActivity extends FaceCameraActivity {
 
     private List<OcrResultModel> validateORCIdCard(List<OcrResultModel> ocrResultModels) {
 
+        // order list by y-coordination
+        // pair key -> value (x-coordination)
         return ocrResultModels;
     }
 }
