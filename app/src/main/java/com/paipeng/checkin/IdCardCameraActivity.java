@@ -15,6 +15,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.arcsoft.arcfacedemo.model.DrawInfo;
+import com.arcsoft.arcfacedemo.util.DrawHelper;
 import com.arcsoft.arcfacedemo.util.face.RecognizeColor;
 import com.arcsoft.arcfacedemo.util.face.RequestFeatureStatus;
 import com.arcsoft.face.AgeInfo;
@@ -63,12 +64,12 @@ public class IdCardCameraActivity extends FaceCameraActivity {
 
     private boolean orcDetecting = false;
 
+    private IdCardRectView idCardRectView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityIdcardCameraBinding.inflate(getLayoutInflater());
-// Prepare the worker thread for mode loading and inference
+        // Prepare the worker thread for mode loading and inference
         receiver = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -134,9 +135,14 @@ public class IdCardCameraActivity extends FaceCameraActivity {
     }
 
     @Override
+    protected void setContentView() {
+        setContentView(R.layout.activity_idcard_camera);
+        binding = ActivityIdcardCameraBinding.inflate(getLayoutInflater());
+    }
+    @Override
     protected void initView() {
         super.initView();
-        rectView = findViewById(R.id.single_camera_frame_rect_view);
+        idCardRectView = findViewById(R.id.single_camera_idcard_rect_view);
     }
 
     @Override
@@ -195,13 +201,24 @@ public class IdCardCameraActivity extends FaceCameraActivity {
         super.onDestroy();
     }
 
+
+    @Override
+    protected void handleCameraOpened(int cameraId, int displayOrientation, boolean isMirror) {
+        Log.d(TAG, "handleCameraOpened: " + cameraId);
+        super.handleCameraOpened(cameraId, displayOrientation, isMirror);
+
+
+        //rectView.clearFaceInfo();
+
+        List<DrawInfo> drawInfoList = new ArrayList<>();
+        drawInfoList.add(getDrawInfo());
+        drawHelper.draw(rectView, drawInfoList);
+
+
+    }
     @Override
     protected void handlePreview(byte[] nv21, int width, int height) {
         if (!orcDetecting) {
-
-//            if (idCardRectView != null) {
-                //idCardRectView.clearFaceInfo();
-//            }
             orcDetecting = true;
             Bitmap idCardBitmap = ImageUtil.getFocusFrameBitmap(nv21, width, height, getOrcFrameRect(), true);
             //ImageUtil.saveImage(idCardBitmap);
@@ -312,7 +329,11 @@ public class IdCardCameraActivity extends FaceCameraActivity {
             Log.d(TAG, "ocrResultModels: " + ocrResultModels.toString());
             drawOcrResultModel(ocrResultModels);
         }
-        orcDetecting = false;
+        if (ocrResultModels.size() < 10) {
+            orcDetecting = false;
+        } else {
+            orcDetecting = false;
+        }
     }
 
     public void onRunModelFailed() {
@@ -359,7 +380,7 @@ public class IdCardCameraActivity extends FaceCameraActivity {
 
             if (ocrResultModels.get(i).getPoints().size() == 4) {
                 Rect drawRect = convertPointToRect(ocrResultModels.get(i).getPoints(), new Point(frameRect.left, frameRect.top));
-                drawInfoList.add(new DrawInfo(drawHelper.adjustRect(drawRect),
+                drawInfoList.add(new DrawInfo(drawRect, //drawHelper.adjustRect(drawRect),
                         GenderInfo.UNKNOWN, AgeInfo.UNKNOWN_AGE, LivenessInfo.UNKNOWN, color,
                         name));
             }
@@ -367,7 +388,8 @@ public class IdCardCameraActivity extends FaceCameraActivity {
 
         Log.d(TAG, "drawInfoList size: " + drawInfoList.size());
         if (drawInfoList.size() > 0) {
-            drawHelper.draw(binding.singleCameraIdcardRectView, drawInfoList);
+            //drawHelper.draw(binding.singleCameraIdcardRectView, drawInfoList);
+            drawHelper.draw(idCardRectView, drawInfoList);
         }
     }
 }

@@ -143,8 +143,7 @@ public class FaceCameraActivity extends BaseCameraActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_face_camera);
+        setContentView();
         //保持亮屏
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -162,6 +161,10 @@ public class FaceCameraActivity extends BaseCameraActivity {
         initView();
     }
 
+    protected void setContentView() {
+        setContentView(R.layout.activity_face_camera);
+
+    }
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy");

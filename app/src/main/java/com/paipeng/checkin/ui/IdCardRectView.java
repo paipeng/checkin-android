@@ -25,7 +25,7 @@ public class IdCardRectView extends BaseRectView {
         Log.d(TAG, "onDraw: " + drawInfoList);
         if (drawInfoList != null && drawInfoList.size() > 0) {
             for (int i = 0; i < drawInfoList.size(); i++) {
-                DrawHelper.drawFaceRect(canvas, drawInfoList.get(i), DEFAULT_FACE_RECT_THICKNESS, paint);
+                DrawHelper.drawOCRFrame(canvas, drawInfoList.get(i), DEFAULT_FACE_RECT_THICKNESS, paint);
             }
         }
     }
