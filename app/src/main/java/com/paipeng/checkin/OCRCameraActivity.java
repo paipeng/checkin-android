@@ -73,6 +73,6 @@ public class OCRCameraActivity extends CameraActivity {
         // 1920 x 1080
         Log.d(TAG, "preview size: " + width + "-" + height);
         Bitmap idCardBitmap = ImageUtil.getFocusFrameBitmap(nv21, width, height, getFrameRect(), true);
-        ImageUtil.saveImage(idCardBitmap);
+        //ImageUtil.saveImage(idCardBitmap);
     }
 }
