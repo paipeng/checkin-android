@@ -18,12 +18,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.ActivityResultRegistry;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.arcsoft.arcfacedemo.activity.RegisterAndRecognizeActivity;
@@ -218,7 +213,7 @@ public class IdCardFragment extends BaseFragment {
                 FaceServer.getInstance().init(getActivity());
                 FaceServer.getInstance().clearAllFaces(getActivity());
                 // register face image from
-                Bitmap resizeBitmap = ImageUtil.resize(bitmap, bitmap.getWidth()/4*4, bitmap.getHeight()/4*4);
+                Bitmap resizeBitmap = ImageUtil.resize(bitmap, bitmap.getWidth() / 4 * 4, bitmap.getHeight() / 4 * 4);
                 Log.d(TAG, "resizeBitmap: " + resizeBitmap.getWidth() + "-" + resizeBitmap.getHeight());
 
                 //binding.photoImageView.setImageBitmap(resizeBitmap);

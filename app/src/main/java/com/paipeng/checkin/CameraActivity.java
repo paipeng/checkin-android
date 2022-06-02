@@ -1,21 +1,14 @@
 package com.paipeng.checkin;
 
 import android.Manifest;
-import android.app.Activity;
-import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
-import android.widget.CompoundButton;
-import android.widget.Switch;
 
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -36,11 +29,6 @@ import com.arcsoft.arcfacedemo.util.face.RecognizeColor;
 import com.arcsoft.arcfacedemo.util.face.RequestFeatureStatus;
 import com.arcsoft.arcfacedemo.widget.BaseRectView;
 import com.arcsoft.arcfacedemo.widget.FaceSearchResultAdapter;
-import com.google.zxing.ChecksumException;
-import com.google.zxing.FormatException;
-import com.google.zxing.NotFoundException;
-import com.paipeng.checkin.ui.BarcodeRectView;
-import com.paipeng.checkin.utils.BarcodeUtil;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -59,7 +47,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public abstract class CameraActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener {
-    private static final String TAG = "RegisterAndRecognize";
+    private static final String TAG = CameraActivity.class.getSimpleName();
     private static final int MAX_DETECT_NUM = 10;
     /**
      * 当FR成功，活体未成功时，FR等待活体的时间
@@ -238,8 +226,18 @@ public abstract class CameraActivity extends BaseActivity implements ViewTreeObs
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onPause() {
+        Log.d(TAG, "onPause");
+        if (cameraHelper != null) {
+            cameraHelper.release();
+            cameraHelper = null;
+        }
+        super.onPause();
+    }
 
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy");
         if (cameraHelper != null) {
             cameraHelper.release();
             cameraHelper = null;
@@ -277,8 +275,6 @@ public abstract class CameraActivity extends BaseActivity implements ViewTreeObs
                 Log.i(TAG, "onCameraOpened: " + drawHelper.toString());
 
 
-
-
                 List<DrawInfo> drawInfoList = new ArrayList<>();
                 drawInfoList.add(getDrawInfo());
                 drawHelper.draw(rectView, drawInfoList);
@@ -300,40 +296,7 @@ public abstract class CameraActivity extends BaseActivity implements ViewTreeObs
 
             @Override
             public void onPreview(final byte[] nv21, Camera camera) {
-                if (rectView != null) {
-                    //barcodeRectView.clearFaceInfo();
-                }
-                // 1920 x 1080
-                Log.d(TAG, "preview size: " + previewSize.width + "-" + previewSize.height);
-
-                //Get the data of the specified range of frames
-                int block_size = previewSize.height / 2;
-
-                try {
-                    String decodedText = BarcodeUtil.decode(nv21, previewSize.width, previewSize.height,
-                            (previewSize.width - block_size) / 2,
-                            (previewSize.height - block_size) / 2,
-                            block_size,
-                            block_size
-                    );
-                    if (decodedText != null) {
-                        Log.d(TAG, "decodedText: " + decodedText);
-
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra("BARCODE_TEXT", decodedText);
-                        setResult(Activity.RESULT_OK, resultIntent);
-                        finish();
-                        Log.d(TAG, "face compare success -> back");
-                    }
-                } catch (ChecksumException e) {
-                    Log.e(TAG, "ChecksumException");
-                } catch (NotFoundException e) {
-                    Log.e(TAG, "NotFoundException");
-                } catch (FormatException e) {
-                    Log.e(TAG, "FormatException");
-                }
-
-
+                handlePreview(nv21, previewSize.width, previewSize.height);
             }
 
             @Override
@@ -365,6 +328,10 @@ public abstract class CameraActivity extends BaseActivity implements ViewTreeObs
                 .build();
         cameraHelper.init();
         cameraHelper.start();
+    }
+
+    protected void handlePreview(byte[] nv21, int width, int height) {
+
     }
 
     protected abstract Rect getFrameRect();
@@ -443,8 +410,8 @@ public abstract class CameraActivity extends BaseActivity implements ViewTreeObs
         }
         Rect barcodeFrameRect = new Rect();
         int block_size = previewSize.height / 2;
-        barcodeFrameRect.top = (previewSize.height - block_size)/2;
-        barcodeFrameRect.left = (previewSize.width - block_size)/2;
+        barcodeFrameRect.top = (previewSize.height - block_size) / 2;
+        barcodeFrameRect.left = (previewSize.width - block_size) / 2;
         barcodeFrameRect.right = barcodeFrameRect.left + block_size;
         barcodeFrameRect.bottom = barcodeFrameRect.top + block_size;
         drawInfoList.add(new DrawInfo(barcodeFrameRect,

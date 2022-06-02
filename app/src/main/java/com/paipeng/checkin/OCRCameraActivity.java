@@ -1,17 +1,22 @@
 package com.paipeng.checkin;
 
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 
 import com.arcsoft.arcfacedemo.faceserver.FaceServer;
 import com.arcsoft.arcfacedemo.model.DrawInfo;
 import com.arcsoft.arcfacedemo.util.face.RecognizeColor;
+import com.paipeng.checkin.utils.ImageUtil;
 
-public class OCRCameraActivity extends CameraActivity{
+public class OCRCameraActivity extends CameraActivity {
+
+    private static final String TAG = OCRCameraActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +39,7 @@ public class OCRCameraActivity extends CameraActivity{
 
         initView();
     }
+
     @Override
     protected void initView() {
         super.initView();
@@ -44,9 +50,9 @@ public class OCRCameraActivity extends CameraActivity{
     protected Rect getFrameRect() {
         Rect frameRect = new Rect();
         int block_width = previewSize.height / 6 * 5;
-        int block_height = (int)(block_width * 5.0 / 3.2);
-        frameRect.top = (previewSize.width - block_height)/2;
-        frameRect.left = (previewSize.height - block_width)/2;
+        int block_height = (int) (block_width * 5.0 / 3.2);
+        frameRect.top = (previewSize.width - block_height) / 2;
+        frameRect.left = (previewSize.height - block_width) / 2;
         frameRect.right = frameRect.left + block_width;
         frameRect.bottom = frameRect.top + block_height;
         return frameRect;
@@ -56,5 +62,17 @@ public class OCRCameraActivity extends CameraActivity{
     protected DrawInfo getDrawInfo() {
         return new DrawInfo(getFrameRect(),
                 0, 0, 0, RecognizeColor.COLOR_SUCCESS, "IdCard OCR");
+    }
+
+
+    @Override
+    protected void handlePreview(byte[] nv21, int width, int height) {
+        if (rectView != null) {
+            //barcodeRectView.clearFaceInfo();
+        }
+        // 1920 x 1080
+        Log.d(TAG, "preview size: " + width + "-" + height);
+        Bitmap idCardBitmap = ImageUtil.getFocusFrameBitmap(nv21, width, height, getFrameRect(), true);
+        ImageUtil.saveImage(idCardBitmap);
     }
 }
