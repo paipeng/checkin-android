@@ -3,6 +3,7 @@ package com.paipeng.checkin;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,6 +14,12 @@ import android.util.Log;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.arcsoft.arcfacedemo.model.DrawInfo;
+import com.arcsoft.arcfacedemo.util.face.RecognizeColor;
+import com.arcsoft.arcfacedemo.util.face.RequestFeatureStatus;
+import com.arcsoft.face.AgeInfo;
+import com.arcsoft.face.GenderInfo;
+import com.arcsoft.face.LivenessInfo;
 import com.baidu.paddle.lite.demo.ocr.OcrResultModel;
 import com.baidu.paddle.lite.demo.ocr.Predictor;
 import com.paipeng.checkin.databinding.ActivityIdcardCameraBinding;
@@ -20,6 +27,7 @@ import com.paipeng.checkin.ui.IdCardRectView;
 import com.paipeng.checkin.utils.ImageUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class IdCardCameraActivity extends FaceCameraActivity {
     private static final String TAG = IdCardCameraActivity.class.getSimpleName();
@@ -52,7 +60,6 @@ public class IdCardCameraActivity extends FaceCameraActivity {
     protected ProgressDialog pbRunModel = null;
 
     protected Spinner spRunMode;
-    private IdCardRectView idCardRectView;
 
     private boolean orcDetecting = false;
 
@@ -130,7 +137,6 @@ public class IdCardCameraActivity extends FaceCameraActivity {
     protected void initView() {
         super.initView();
         rectView = findViewById(R.id.single_camera_frame_rect_view);
-        idCardRectView = findViewById(R.id.single_camera_idcard_rect_view);
     }
 
     @Override
@@ -192,6 +198,10 @@ public class IdCardCameraActivity extends FaceCameraActivity {
     @Override
     protected void handlePreview(byte[] nv21, int width, int height) {
         if (!orcDetecting) {
+
+//            if (idCardRectView != null) {
+                //idCardRectView.clearFaceInfo();
+//            }
             orcDetecting = true;
             Bitmap idCardBitmap = ImageUtil.getFocusFrameBitmap(nv21, width, height, getOrcFrameRect(), true);
             //ImageUtil.saveImage(idCardBitmap);
@@ -291,15 +301,16 @@ public class IdCardCameraActivity extends FaceCameraActivity {
 
         Log.d(TAG, "onRunModelSuccessed");
         if (predictor.outputImage() != null) {
-            binding.singleCameraOcrImageView.setImageBitmap(predictor.outputImage());
-            ImageUtil.saveImage(predictor.inputImage(), "input");
-            ImageUtil.saveImage(predictor.outputImage(), "predicted");
+            //binding.singleCameraOcrImageView.setImageBitmap(predictor.outputImage());
+            //ImageUtil.saveImage(predictor.inputImage(), "input");
+            //ImageUtil.saveImage(predictor.outputImage(), "predicted");
         }
 
 
         ArrayList<OcrResultModel> ocrResultModels = predictor.getResults();
         if (ocrResultModels != null) {
             Log.d(TAG, "ocrResultModels: " + ocrResultModels.toString());
+            drawOcrResultModel(ocrResultModels);
         }
         orcDetecting = false;
     }
@@ -310,4 +321,53 @@ public class IdCardCameraActivity extends FaceCameraActivity {
         orcDetecting = false;
     }
 
+    private Rect convertPointToRect(List<Point> points, Point offset) {
+        Rect rect = new Rect();
+        // (140,419) (388,419) (388,492) (140,492)
+        // top-left -> top-right -> bottom-right -> bottom-left
+        rect.top = points.get(0).y + offset.y;
+        rect.left = points.get(0).x + offset.x;
+
+        rect.bottom = rect.top + (points.get(3).y - points.get(0).y);
+        rect.right = rect.left + (points.get(1).x - points.get(0).x);
+
+        return rect;
+    }
+
+    private void drawOcrResultModel(List<OcrResultModel> ocrResultModels) {
+        Rect frameRect = getOrcFrameRect();
+        List<DrawInfo> drawInfoList = new ArrayList<>();
+        for (int i = 0; i < ocrResultModels.size(); i++) {
+            String name = ocrResultModels.get(i).getLabel();
+            Integer liveness = null;//livenessMap.get(facePreviewInfoList.get(i).getTrackId());
+            Integer recognizeStatus = null;//requestFeatureStatusMap.get(facePreviewInfoList.get(i).getTrackId());
+
+            // 根据识别结果和活体结果设置颜色
+            int color = RecognizeColor.COLOR_UNKNOWN;
+            if (recognizeStatus != null) {
+                if (recognizeStatus == RequestFeatureStatus.FAILED) {
+                    color = RecognizeColor.COLOR_FAILED;
+                }
+                if (recognizeStatus == RequestFeatureStatus.SUCCEED) {
+                    color = RecognizeColor.COLOR_SUCCESS;
+                }
+            }
+
+            if (liveness != null && liveness == LivenessInfo.NOT_ALIVE) {
+                color = RecognizeColor.COLOR_FAILED;
+            }
+
+            if (ocrResultModels.get(i).getPoints().size() == 4) {
+                Rect drawRect = convertPointToRect(ocrResultModels.get(i).getPoints(), new Point(frameRect.left, frameRect.top));
+                drawInfoList.add(new DrawInfo(drawHelper.adjustRect(drawRect),
+                        GenderInfo.UNKNOWN, AgeInfo.UNKNOWN_AGE, LivenessInfo.UNKNOWN, color,
+                        name));
+            }
+        }
+
+        Log.d(TAG, "drawInfoList size: " + drawInfoList.size());
+        if (drawInfoList.size() > 0) {
+            drawHelper.draw(binding.singleCameraIdcardRectView, drawInfoList);
+        }
+    }
 }
