@@ -19,7 +19,7 @@
         android:id="@+id/Second3Fragment"
         android:name="com.paipeng.checkin.OcrFragment"
         android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_orc">
+        tools:layout="@layout/fragment_ocr">
 
         <action
             android:id="@+id/action_Second3Fragment_to_First3Fragment"

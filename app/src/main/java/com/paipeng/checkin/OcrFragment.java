@@ -21,12 +21,12 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.baidu.paddle.lite.demo.ocr.Predictor;
-import com.paipeng.checkin.databinding.FragmentOrcBinding;
+import com.paipeng.checkin.databinding.FragmentOcrBinding;
 
 public class OcrFragment extends Fragment {
     private static final String TAG = TaskFragment.class.getSimpleName();
 
-    private FragmentOrcBinding binding;
+    private FragmentOcrBinding binding;
 
     protected Predictor predictor = new Predictor();
 
@@ -61,7 +61,7 @@ public class OcrFragment extends Fragment {
             Bundle savedInstanceState
     ) {
 
-        binding = FragmentOrcBinding.inflate(inflater, container, false);
+        binding = FragmentOcrBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
     }
@@ -201,8 +201,6 @@ public class OcrFragment extends Fragment {
             binding.ocrImageView.setImageBitmap(bitmap);
 
         }
-
-
     }
 
     @Override

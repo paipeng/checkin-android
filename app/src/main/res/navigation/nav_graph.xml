@@ -61,7 +61,7 @@
         android:id="@+id/OcrFragment"
         android:name="com.paipeng.checkin.OcrFragment"
         android:label="@string/orc_fragment_label"
-        tools:layout="@layout/fragment_orc">
+        tools:layout="@layout/fragment_ocr">
 
         <action
             android:id="@+id/action_OcrFragment_to_OcrFragment"
