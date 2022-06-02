@@ -156,9 +156,6 @@ public abstract class CameraActivity extends BaseActivity implements ViewTreeObs
                 Log.i(TAG, "onCameraOpened: " + drawHelper.toString());
 
 
-                List<DrawInfo> drawInfoList = new ArrayList<>();
-                drawInfoList.add(getDrawInfo());
-                drawHelper.draw(rectView, drawInfoList);
 
                 handleCameraOpened(cameraId);
 

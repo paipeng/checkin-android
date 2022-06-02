@@ -18,6 +18,9 @@ import com.google.zxing.FormatException;
 import com.google.zxing.NotFoundException;
 import com.paipeng.checkin.utils.BarcodeUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BarcodeCameraActivity extends CameraActivity{
     private static final String TAG = BarcodeCameraActivity.class.getSimpleName();
 
@@ -106,6 +109,8 @@ public class BarcodeCameraActivity extends CameraActivity{
 
     @Override
     protected void handleCameraOpened(int cameraId) {
-
+        List<DrawInfo> drawInfoList = new ArrayList<>();
+        drawInfoList.add(getDrawInfo());
+        drawHelper.draw(rectView, drawInfoList);
     }
 }

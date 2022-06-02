@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.arcsoft.arcfacedemo.activity.RegisterAndRecognizeActivity;
 import com.arcsoft.arcfacedemo.faceserver.CompareResult;
 import com.arcsoft.arcfacedemo.faceserver.FaceServer;
 import com.arcsoft.arcfacedemo.model.DrawInfo;
@@ -93,7 +94,7 @@ public class OCRCameraActivity extends CameraActivity {
     /**
      * 活体检测的开关
      */
-    private boolean livenessDetect = true;
+    private boolean livenessDetect = false;
     /**
      * 注册人脸状态码，准备注册
      */
@@ -138,7 +139,6 @@ public class OCRCameraActivity extends CameraActivity {
 
     private static int faceCompareFailedNum = 0;
 
-    private FaceListener faceListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -244,6 +244,7 @@ public class OCRCameraActivity extends CameraActivity {
         }
         List<FacePreviewInfo> facePreviewInfoList = faceHelper.onPreviewFrame(nv21);
         if (facePreviewInfoList != null && faceRectView != null && drawHelper != null) {
+            Log.d(TAG, "facePreviewInfoList size: " + facePreviewInfoList.size());
             drawPreviewInfo(facePreviewInfoList);
         }
         registerFace(nv21, facePreviewInfoList);
@@ -280,35 +281,12 @@ public class OCRCameraActivity extends CameraActivity {
     @Override
     protected void handleCameraOpened(int cameraId) {
         Log.d(TAG, "handleCameraOpened: " + cameraId);
-        // 切换相机的时候可能会导致预览尺寸发生变化
-        Camera.Size lastPreviewSize = previewSize;
-        if (faceHelper == null ||
-                lastPreviewSize == null ||
-                lastPreviewSize.width != previewSize.width || lastPreviewSize.height != previewSize.height) {
-            Integer trackedFaceCount = null;
-            // 记录切换时的人脸序号
-            if (faceHelper != null) {
-                trackedFaceCount = faceHelper.getTrackedFaceCount();
-                faceHelper.release();
-            }
-            faceHelper = new FaceHelper.Builder()
-                    .ftEngine(ftEngine)
-                    .frEngine(frEngine)
-                    .flEngine(flEngine)
-                    .frQueueSize(MAX_DETECT_NUM)
-                    .flQueueSize(MAX_DETECT_NUM)
-                    .previewSize(previewSize)
-                    .faceListener(faceListener)
-                    .trackedFaceCount(trackedFaceCount == null ? ConfigUtil.getTrackedFaceCount(OCRCameraActivity.this.getApplicationContext()) : trackedFaceCount)
-                    .build();
-        }
-    }
 
+        List<DrawInfo> drawInfoList = new ArrayList<>();
+        drawInfoList.add(getDrawInfo());
+        drawHelper.draw(rectView, drawInfoList);
 
-    @Override
-    protected void initCamera() {
-        super.initCamera();
-        faceListener = new FaceListener() {
+        final FaceListener faceListener = new FaceListener() {
             @Override
             public void onFail(Exception e) {
                 Log.e(TAG, "onFail: " + e.getMessage());
@@ -317,9 +295,10 @@ public class OCRCameraActivity extends CameraActivity {
             //请求FR的回调
             @Override
             public void onFaceFeatureInfoGet(@Nullable final FaceFeature faceFeature, final Integer requestId, final Integer errorCode) {
+                Log.d(TAG, "onFaceFeatureInfoGet: " + errorCode);
                 //FR成功
                 if (faceFeature != null) {
-//                    Log.i(TAG, "onPreview: fr end = " + System.currentTimeMillis() + " trackId = " + requestId);
+                    Log.i(TAG, "onPreview: fr end = " + System.currentTimeMillis() + " trackId = " + requestId);
                     Integer liveness = livenessMap.get(requestId);
                     //不做活体检测的情况，直接搜索
                     if (!livenessDetect) {
@@ -385,6 +364,7 @@ public class OCRCameraActivity extends CameraActivity {
 
             @Override
             public void onFaceLivenessInfoGet(@Nullable LivenessInfo livenessInfo, final Integer requestId, Integer errorCode) {
+                Log.d(TAG, "onFaceLivenessInfoGet: " + errorCode);
                 if (livenessInfo != null) {
                     int liveness = livenessInfo.getLiveness();
                     livenessMap.put(requestId, liveness);
@@ -411,9 +391,35 @@ public class OCRCameraActivity extends CameraActivity {
                     }
                 }
             }
-
-
         };
+        // 切换相机的时候可能会导致预览尺寸发生变化
+        Camera.Size lastPreviewSize = previewSize;
+        if (faceHelper == null ||
+                lastPreviewSize == null ||
+                lastPreviewSize.width != previewSize.width || lastPreviewSize.height != previewSize.height) {
+            Integer trackedFaceCount = null;
+            // 记录切换时的人脸序号
+            if (faceHelper != null) {
+                trackedFaceCount = faceHelper.getTrackedFaceCount();
+                faceHelper.release();
+            }
+            faceHelper = new FaceHelper.Builder()
+                    .ftEngine(ftEngine)
+                    .frEngine(frEngine)
+                    .flEngine(flEngine)
+                    .frQueueSize(MAX_DETECT_NUM)
+                    .flQueueSize(MAX_DETECT_NUM)
+                    .previewSize(previewSize)
+                    .faceListener(faceListener)
+                    .trackedFaceCount(trackedFaceCount == null ? ConfigUtil.getTrackedFaceCount(OCRCameraActivity.this.getApplicationContext()) : trackedFaceCount)
+                    .build();
+        }
+    }
+
+
+    @Override
+    protected void initCamera() {
+        super.initCamera();
     }
 
     /**
@@ -508,14 +514,14 @@ public class OCRCameraActivity extends CameraActivity {
 
         }
         Rect barcodeFrameRect = new Rect();
-        int block_size = previewSize.height / 2;
-        barcodeFrameRect.top = (previewSize.height - block_size) / 2;
-        barcodeFrameRect.left = (previewSize.width - block_size) / 2;
+        int block_size = previewSize.height / 4;
+        barcodeFrameRect.top = (previewSize.width - block_size) / 2;
+        barcodeFrameRect.left = (previewSize.height - block_size) / 2;
         barcodeFrameRect.right = barcodeFrameRect.left + block_size;
         barcodeFrameRect.bottom = barcodeFrameRect.top + block_size;
         drawInfoList.add(new DrawInfo(barcodeFrameRect,
                 0, 0, 0, RecognizeColor.COLOR_SUCCESS, "Barcode Scan"));
-        drawHelper.draw(rectView, drawInfoList);
+        drawHelper.draw(faceRectView, drawInfoList);
     }
 
 
@@ -526,9 +532,9 @@ public class OCRCameraActivity extends CameraActivity {
                         @Override
                         public void subscribe(ObservableEmitter<Boolean> emitter) {
 
-                            //boolean success = FaceServer.getInstance().registerNv21(com.arcsoft.arcfacedemo.activity.RegisterAndRecognizeActivity.this, nv21.clone(), previewSize.width, previewSize.height,
-                            //        facePreviewInfoList.get(0).getFaceInfo(), "registered " + faceHelper.getTrackedFaceCount());
-                            //emitter.onNext(success);
+                            boolean success = FaceServer.getInstance().registerNv21(OCRCameraActivity.this, nv21.clone(), previewSize.width, previewSize.height,
+                                    facePreviewInfoList.get(0).getFaceInfo(), "registered " + faceHelper.getTrackedFaceCount());
+                            emitter.onNext(success);
                         }
                     })
                     .subscribeOn(Schedulers.computation())
@@ -720,9 +726,9 @@ public class OCRCameraActivity extends CameraActivity {
                 .create(new ObservableOnSubscribe<CompareResult>() {
                     @Override
                     public void subscribe(ObservableEmitter<CompareResult> emitter) {
-//                        Log.i(TAG, "subscribe: fr search start = " + System.currentTimeMillis() + " trackId = " + requestId);
+                        Log.i(TAG, "subscribe: fr search start = " + System.currentTimeMillis() + " trackId = " + requestId);
                         CompareResult compareResult = FaceServer.getInstance().getTopOfFaceLib(frFace);
-//                        Log.i(TAG, "subscribe: fr search end = " + System.currentTimeMillis() + " trackId = " + requestId);
+                        Log.i(TAG, "subscribe: fr search end = " + System.currentTimeMillis() + " trackId = " + requestId);
                         emitter.onNext(compareResult);
 
                     }
@@ -743,7 +749,7 @@ public class OCRCameraActivity extends CameraActivity {
                             return;
                         }
 
-//                        Log.i(TAG, "onNext: fr search get result  = " + System.currentTimeMillis() + " trackId = " + requestId + "  similar = " + compareResult.getSimilar());
+                        Log.i(TAG, "onNext: fr search get result  = " + System.currentTimeMillis() + " trackId = " + requestId + "  similar = " + compareResult.getSimilar());
                         if (compareResult.getSimilar() > SIMILAR_THRESHOLD) {
                             boolean isAdded = false;
                             if (compareResultList == null) {
