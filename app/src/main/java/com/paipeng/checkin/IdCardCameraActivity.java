@@ -16,7 +16,6 @@ import android.widget.Toast;
 import com.baidu.paddle.lite.demo.ocr.OcrResultModel;
 import com.baidu.paddle.lite.demo.ocr.Predictor;
 import com.paipeng.checkin.databinding.ActivityIdcardCameraBinding;
-import com.paipeng.checkin.databinding.FragmentOcrBinding;
 import com.paipeng.checkin.ui.IdCardRectView;
 import com.paipeng.checkin.utils.ImageUtil;
 
@@ -55,7 +54,7 @@ public class IdCardCameraActivity extends FaceCameraActivity {
     protected Spinner spRunMode;
     private IdCardRectView idCardRectView;
 
-    private boolean orcDetecting =false;
+    private boolean orcDetecting = false;
 
 
     @Override
@@ -213,7 +212,7 @@ public class IdCardCameraActivity extends FaceCameraActivity {
         frameRect.right = frameRect.left + block_width;
         frameRect.bottom = frameRect.top + block_height;
 
-        frameRect.top += block_height/2;
+        frameRect.top += block_height / 2;
         return frameRect;
     }
 
