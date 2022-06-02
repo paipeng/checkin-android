@@ -22,7 +22,7 @@ import com.paipeng.checkin.utils.BarcodeUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BarcodeCameraActivity extends CameraActivity{
+public class BarcodeCameraActivity extends BaseCameraActivity {
     private static final String TAG = BarcodeCameraActivity.class.getSimpleName();
 
     @Override

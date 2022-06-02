@@ -19,8 +19,8 @@ import com.arcsoft.arcfacedemo.util.camera.CameraHelper;
 import com.arcsoft.arcfacedemo.util.camera.CameraListener;
 import com.arcsoft.arcfacedemo.widget.BaseRectView;
 
-public abstract class CameraActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener {
-    private static final String TAG = CameraActivity.class.getSimpleName();
+public abstract class BaseCameraActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener {
+    private static final String TAG = BaseCameraActivity.class.getSimpleName();
 
     private CameraHelper cameraHelper;
     protected DrawHelper drawHelper;

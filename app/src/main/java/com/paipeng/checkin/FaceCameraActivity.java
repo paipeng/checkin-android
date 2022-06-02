@@ -57,7 +57,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class FaceCameraActivity extends CameraActivity {
+public class FaceCameraActivity extends BaseCameraActivity {
     private static final String TAG = FaceCameraActivity.class.getSimpleName();
     private static final int MAX_DETECT_NUM = 10;
     /**
