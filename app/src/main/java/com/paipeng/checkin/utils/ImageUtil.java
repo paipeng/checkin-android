@@ -280,7 +280,7 @@ public class ImageUtil {
 
     }
 
-    public static String saveImage(Bitmap bmp) {
+    public static String saveImage(Bitmap bmp, String suffix) {
         if (bmp == null) {
             return null;
         }
@@ -288,7 +288,12 @@ public class ImageUtil {
         if (!appDir.exists()) {
             appDir.mkdir();
         }
-        String fileName = System.currentTimeMillis() + ".jpg";
+        String fileName = System.currentTimeMillis() + "";
+        if (suffix != null) {
+            fileName += suffix;
+        }
+        fileName += ".jpg";
+
         File file = new File(appDir, fileName);
         try {
             FileOutputStream fos = new FileOutputStream(file);

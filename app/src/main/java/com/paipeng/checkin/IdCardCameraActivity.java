@@ -3,6 +3,7 @@ package com.paipeng.checkin;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -12,11 +13,14 @@ import android.util.Log;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.baidu.paddle.lite.demo.ocr.OcrResultModel;
 import com.baidu.paddle.lite.demo.ocr.Predictor;
 import com.paipeng.checkin.databinding.ActivityIdcardCameraBinding;
 import com.paipeng.checkin.databinding.FragmentOcrBinding;
 import com.paipeng.checkin.ui.IdCardRectView;
 import com.paipeng.checkin.utils.ImageUtil;
+
+import java.util.ArrayList;
 
 public class IdCardCameraActivity extends FaceCameraActivity {
     private static final String TAG = IdCardCameraActivity.class.getSimpleName();
@@ -178,13 +182,39 @@ public class IdCardCameraActivity extends FaceCameraActivity {
     }
 
     @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        if (predictor.isLoaded()) {
+            predictor.releaseModel();
+        }
+        super.onDestroy();
+    }
+
+    @Override
     protected void handlePreview(byte[] nv21, int width, int height) {
+        if (!orcDetecting) {
+            orcDetecting = true;
+            Bitmap idCardBitmap = ImageUtil.getFocusFrameBitmap(nv21, width, height, getOrcFrameRect(), true);
+            //ImageUtil.saveImage(idCardBitmap);
+            predictor.setInputImage(idCardBitmap);
+            runModel();
+        } else {
+            Log.d(TAG, "orcDetecting is running");
+        }
 
-        Bitmap idCardBitmap = ImageUtil.getFocusFrameBitmap(nv21, width, height, getFrameRect(), true);
-        //ImageUtil.saveImage(idCardBitmap);
+    }
 
-        predictor.setInputImage(idCardBitmap);
-        runModel();
+    protected Rect getOrcFrameRect() {
+        Rect frameRect = new Rect();
+        int block_width = previewSize.height / 6 * 5;
+        int block_height = (int) (block_width * 5.0 / 3.2);
+        frameRect.top = (previewSize.width - block_height) / 2;
+        frameRect.left = (previewSize.height - block_width) / 2;
+        frameRect.right = frameRect.left + block_width;
+        frameRect.bottom = frameRect.top + block_height;
+
+        frameRect.top += block_height/2;
+        return frameRect;
     }
 
     public void loadModel() {
@@ -194,13 +224,9 @@ public class IdCardCameraActivity extends FaceCameraActivity {
 
     public void runModel() {
         Log.d(TAG, "runModel");
-        if (!orcDetecting) {
-            orcDetecting = true;
-            //pbRunModel = ProgressDialog.show(this, "", "running model...", false, false);
-            sender.sendEmptyMessage(REQUEST_RUN_MODEL);
-        } else {
-            Log.d(TAG, "orcDetecting is running");
-        }
+
+        //pbRunModel = ProgressDialog.show(this, "", "running model...", false, false);
+        sender.sendEmptyMessage(REQUEST_RUN_MODEL);
     }
 
     public boolean onLoadModel() {
@@ -267,6 +293,14 @@ public class IdCardCameraActivity extends FaceCameraActivity {
         Log.d(TAG, "onRunModelSuccessed");
         if (predictor.outputImage() != null) {
             binding.singleCameraOcrImageView.setImageBitmap(predictor.outputImage());
+            ImageUtil.saveImage(predictor.inputImage(), "input");
+            ImageUtil.saveImage(predictor.outputImage(), "predicted");
+        }
+
+
+        ArrayList<OcrResultModel> ocrResultModels = predictor.getResults();
+        if (ocrResultModels != null) {
+            Log.d(TAG, "ocrResultModels: " + ocrResultModels.toString());
         }
         orcDetecting = false;
     }
