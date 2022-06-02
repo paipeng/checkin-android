@@ -12,10 +12,14 @@
             android:layout_height="match_parent" />
 
         <com.paipeng.checkin.ui.OCRRectView
-            android:id="@+id/single_camera_face_rect_view"
+            android:id="@+id/single_camera_ocr_rect_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <com.arcsoft.arcfacedemo.widget.FaceRectView
+            android:id="@+id/single_camera_face_rect_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

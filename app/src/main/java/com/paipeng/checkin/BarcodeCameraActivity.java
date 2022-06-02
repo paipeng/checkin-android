@@ -103,4 +103,9 @@ public class BarcodeCameraActivity extends CameraActivity{
             Log.e(TAG, "FormatException");
         }
     }
+
+    @Override
+    protected void handleCameraOpened(int cameraId) {
+
+    }
 }

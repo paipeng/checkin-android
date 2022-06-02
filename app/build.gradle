@@ -32,6 +32,8 @@ android {
 }
 
 dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
     implementation project(':restclient')
     implementation project(':paddle_ocr')
     implementation project(':arcface')
