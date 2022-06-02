@@ -19,9 +19,6 @@ import com.arcsoft.arcfacedemo.util.camera.CameraHelper;
 import com.arcsoft.arcfacedemo.util.camera.CameraListener;
 import com.arcsoft.arcfacedemo.widget.BaseRectView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public abstract class CameraActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener {
     private static final String TAG = CameraActivity.class.getSimpleName();
 
