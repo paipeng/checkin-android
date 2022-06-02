@@ -195,7 +195,12 @@ public class FirstFragment extends BaseFragment {
         NavHostFragment.findNavController(FirstFragment.this)
                 .navigate(R.id.action_FirstFragment_to_SecondFragment);
          */
-        mStartForResult.launch(new Intent(this.getActivity(), BarcodeCameraActivity.class));
+        //mStartForResult.launch(new Intent(this.getActivity(), BarcodeCameraActivity.class));
+        //mStartForResult.launch(new Intent(this.getActivity(), FaceCameraActivity.class));
+
+        Intent intent = new Intent(this.getActivity(), IdCardCameraActivity.class);
+        intent.putExtra("key", "firstFragment"); // Put anything what you want
+        mStartForResult.launch(intent);
     }
 
     public void switchIdCard(byte[] tagId, NdefMessage[] ndefMessages, byte[] textData, byte[] data) {

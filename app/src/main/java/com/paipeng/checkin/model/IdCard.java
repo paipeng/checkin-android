@@ -1,6 +1,8 @@
 package com.paipeng.checkin.model;
 
-public class IdCard {
+import java.io.Serializable;
+
+public class IdCard implements Serializable {
     private String name;
     private String department;
     private String company;
@@ -72,5 +74,19 @@ public class IdCard {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return "IdCard{" +
+                "name='" + name + '\'' +
+                ", department='" + department + '\'' +
+                ", company='" + company + '\'' +
+                ", issuedDate='" + issuedDate + '\'' +
+                ", expireDate='" + expireDate + '\'' +
+                ", serialNumber='" + serialNumber + '\'' +
+                ", chipUID='" + chipUID + '\'' +
+                ", type=" + type +
+                '}';
     }
 }

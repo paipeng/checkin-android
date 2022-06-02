@@ -24,6 +24,7 @@ import com.arcsoft.face.LivenessInfo;
 import com.baidu.paddle.lite.demo.ocr.OcrResultModel;
 import com.baidu.paddle.lite.demo.ocr.Predictor;
 import com.paipeng.checkin.databinding.ActivityIdcardCameraBinding;
+import com.paipeng.checkin.model.IdCard;
 import com.paipeng.checkin.ui.IdCardRectView;
 import com.paipeng.checkin.utils.ImageUtil;
 
@@ -65,6 +66,7 @@ public class IdCardCameraActivity extends FaceCameraActivity {
     private boolean orcDetecting = false;
 
     private IdCardRectView idCardRectView;
+    private IdCard idCard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +134,12 @@ public class IdCardCameraActivity extends FaceCameraActivity {
                 }
             }
         };
+
+        String key = getIntent().getStringExtra("key"); // Put anything what you want
+        Log.d(TAG, "bundle key: " + key);
+
+        this.idCard = (IdCard) getIntent().getSerializableExtra("IDCARD");
+        Log.d(TAG, "idCard: " + idCard);
     }
 
     @Override
@@ -327,7 +335,7 @@ public class IdCardCameraActivity extends FaceCameraActivity {
         ArrayList<OcrResultModel> ocrResultModels = predictor.getResults();
         if (ocrResultModels != null) {
             Log.d(TAG, "ocrResultModels: " + ocrResultModels.toString());
-            drawOcrResultModel(ocrResultModels);
+            drawOcrResultModel(validateORCIdCard(ocrResultModels));
         }
         if (ocrResultModels.size() < 10) {
             orcDetecting = false;
@@ -374,9 +382,12 @@ public class IdCardCameraActivity extends FaceCameraActivity {
                 }
             }
 
+            /*
             if (liveness != null && liveness == LivenessInfo.NOT_ALIVE) {
                 color = RecognizeColor.COLOR_FAILED;
             }
+
+             */
 
             if (ocrResultModels.get(i).getPoints().size() == 4) {
                 Rect drawRect = convertPointToRect(ocrResultModels.get(i).getPoints(), new Point(frameRect.left, frameRect.top));
@@ -391,5 +402,10 @@ public class IdCardCameraActivity extends FaceCameraActivity {
             //drawHelper.draw(binding.singleCameraIdcardRectView, drawInfoList);
             drawHelper.draw(idCardRectView, drawInfoList);
         }
+    }
+
+    private List<OcrResultModel> validateORCIdCard(List<OcrResultModel> ocrResultModels) {
+
+        return ocrResultModels;
     }
 }
