@@ -36,7 +36,7 @@ public abstract class CameraActivity extends BaseActivity implements ViewTreeObs
     /**
      * 相机预览显示的控件，可为SurfaceView或TextureView
      */
-    private View previewView;
+    protected View previewView;
 
     //private Switch switchLivenessDetect;
 
@@ -151,13 +151,9 @@ public abstract class CameraActivity extends BaseActivity implements ViewTreeObs
             public void onCameraOpened(Camera camera, int cameraId, int displayOrientation, boolean isMirror) {
                 //Camera.Size lastPreviewSize = previewSize;
                 previewSize = camera.getParameters().getPreviewSize();
-                drawHelper = new DrawHelper(previewSize.width, previewSize.height, previewView.getWidth(), previewView.getHeight(), displayOrientation
-                        , cameraId, isMirror, false, false);
-                Log.i(TAG, "onCameraOpened: " + drawHelper.toString());
 
 
-
-                handleCameraOpened(cameraId);
+                handleCameraOpened(cameraId, displayOrientation, isMirror);
 
             }
 
@@ -200,7 +196,7 @@ public abstract class CameraActivity extends BaseActivity implements ViewTreeObs
 
     protected abstract void handlePreview(byte[] nv21, int width, int height);
 
-    protected abstract void handleCameraOpened(int cameraId);
+    protected abstract void handleCameraOpened(int cameraId, int displayOrientation, boolean isMirror);
 
 
     protected abstract Rect getFrameRect();

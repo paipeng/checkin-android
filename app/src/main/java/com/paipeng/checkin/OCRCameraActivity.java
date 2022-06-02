@@ -23,6 +23,7 @@ import com.arcsoft.arcfacedemo.faceserver.FaceServer;
 import com.arcsoft.arcfacedemo.model.DrawInfo;
 import com.arcsoft.arcfacedemo.model.FacePreviewInfo;
 import com.arcsoft.arcfacedemo.util.ConfigUtil;
+import com.arcsoft.arcfacedemo.util.DrawHelper;
 import com.arcsoft.arcfacedemo.util.face.FaceHelper;
 import com.arcsoft.arcfacedemo.util.face.FaceListener;
 import com.arcsoft.arcfacedemo.util.face.LivenessType;
@@ -39,6 +40,7 @@ import com.arcsoft.face.GenderInfo;
 import com.arcsoft.face.LivenessInfo;
 import com.arcsoft.face.enums.DetectFaceOrientPriority;
 import com.arcsoft.face.enums.DetectMode;
+import com.paipeng.checkin.utils.ImageUtil;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -131,7 +133,7 @@ public class OCRCameraActivity extends CameraActivity {
     /**
      * 识别阈值
      */
-    private static final float SIMILAR_THRESHOLD = 0.8F;
+    private static final float SIMILAR_THRESHOLD = 0.5F;
     /**
      * 绘制人脸框的控件
      */
@@ -242,7 +244,7 @@ public class OCRCameraActivity extends CameraActivity {
         if (faceRectView != null) {
             faceRectView.clearFaceInfo();
         }
-        List<FacePreviewInfo> facePreviewInfoList = faceHelper.onPreviewFrame(nv21);
+        List<FacePreviewInfo> facePreviewInfoList = faceHelper.onPreviewFrame(ImageUtil.rotateYUV420Degree180(nv21, width, height));
         if (facePreviewInfoList != null && faceRectView != null && drawHelper != null) {
             Log.d(TAG, "facePreviewInfoList size: " + facePreviewInfoList.size());
             drawPreviewInfo(facePreviewInfoList);
@@ -279,8 +281,13 @@ public class OCRCameraActivity extends CameraActivity {
     }
 
     @Override
-    protected void handleCameraOpened(int cameraId) {
+    protected void handleCameraOpened(int cameraId, int displayOrientation, boolean isMirror) {
         Log.d(TAG, "handleCameraOpened: " + cameraId);
+
+        drawHelper = new DrawHelper(previewSize.width, previewSize.height, previewView.getWidth(), previewView.getHeight(), displayOrientation
+                , cameraId, isMirror, true, true);
+        Log.i(TAG, "onCameraOpened: " + drawHelper.toString());
+
 
         List<DrawInfo> drawInfoList = new ArrayList<>();
         drawInfoList.add(getDrawInfo());
@@ -342,6 +349,7 @@ public class OCRCameraActivity extends CameraActivity {
                 }
                 //特征提取失败
                 else {
+                    Log.e(TAG, "faceFeature invalid");
                     if (increaseAndGetValue(extractErrorRetryMap, requestId) > MAX_RETRY_TIME) {
                         extractErrorRetryMap.put(requestId, 0);
 
@@ -722,6 +730,7 @@ public class OCRCameraActivity extends CameraActivity {
 
 
     private void searchFace(final FaceFeature frFace, final Integer requestId) {
+        Log.d(TAG, "searchFace: " + requestId);
         Observable
                 .create(new ObservableOnSubscribe<CompareResult>() {
                     @Override
@@ -804,12 +813,14 @@ public class OCRCameraActivity extends CameraActivity {
 
                     @Override
                     public void onError(Throwable e) {
+                        Log.e(TAG, "onError: " + e.getMessage());
                         faceHelper.setName(requestId, getString(com.arcsoft.arcfacedemo.R.string.recognize_failed_notice, "NOT_REGISTERED"));
                         retryRecognizeDelayed(requestId);
                     }
 
                     @Override
                     public void onComplete() {
+                        Log.d(TAG, "onComplete");
 
                     }
                 });

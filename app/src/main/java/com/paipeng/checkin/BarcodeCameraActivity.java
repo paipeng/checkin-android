@@ -12,6 +12,7 @@ import android.view.WindowManager;
 
 import com.arcsoft.arcfacedemo.faceserver.FaceServer;
 import com.arcsoft.arcfacedemo.model.DrawInfo;
+import com.arcsoft.arcfacedemo.util.DrawHelper;
 import com.arcsoft.arcfacedemo.util.face.RecognizeColor;
 import com.google.zxing.ChecksumException;
 import com.google.zxing.FormatException;
@@ -108,7 +109,11 @@ public class BarcodeCameraActivity extends CameraActivity{
     }
 
     @Override
-    protected void handleCameraOpened(int cameraId) {
+    protected void handleCameraOpened(int cameraId, int displayOrientation, boolean isMirror) {
+        drawHelper = new DrawHelper(previewSize.width, previewSize.height, previewView.getWidth(), previewView.getHeight(), displayOrientation
+                , cameraId, isMirror, false, false);
+        Log.i(TAG, "onCameraOpened: " + drawHelper.toString());
+
         List<DrawInfo> drawInfoList = new ArrayList<>();
         drawInfoList.add(getDrawInfo());
         drawHelper.draw(rectView, drawInfoList);
