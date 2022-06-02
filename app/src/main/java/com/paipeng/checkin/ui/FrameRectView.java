@@ -9,12 +9,12 @@ import androidx.annotation.Nullable;
 import com.arcsoft.arcfacedemo.util.DrawHelper;
 import com.arcsoft.arcfacedemo.widget.BaseRectView;
 
-public class OCRRectView extends BaseRectView {
-    public OCRRectView(Context context) {
+public class FrameRectView extends BaseRectView {
+    public FrameRectView(Context context) {
         super(context);
     }
 
-    public OCRRectView(Context context, @Nullable AttributeSet attrs) {
+    public FrameRectView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
     @Override

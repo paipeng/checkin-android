@@ -11,8 +11,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <com.paipeng.checkin.ui.OCRRectView
-            android:id="@+id/single_camera_ocr_rect_view"
+        <com.paipeng.checkin.ui.FrameRectView
+            android:id="@+id/single_camera_frame_rect_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

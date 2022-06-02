@@ -217,6 +217,7 @@ public class IdCardFragment extends BaseFragment {
                 Log.d(TAG, "resizeBitmap: " + resizeBitmap.getWidth() + "-" + resizeBitmap.getHeight());
 
                 //binding.photoImageView.setImageBitmap(resizeBitmap);
+                Log.d(TAG, "registerBgr24");
                 FaceServer.getInstance().registerBgr24(getActivity(), ImageUtil.bitmapToRGBByteArray(resizeBitmap), resizeBitmap.getWidth(), resizeBitmap.getHeight(), "ABCD1234");
 
             } else {
@@ -254,7 +255,7 @@ public class IdCardFragment extends BaseFragment {
         Log.d(TAG, "ocrIdCard");
         //((MainActivity) getActivity()).tryTakePhoto();
 
-        mStartForResult.launch(new Intent(this.getActivity(), OCRCameraActivity.class));
+        mStartForResult.launch(new Intent(this.getActivity(), FaceCameraActivity.class));
     }
 
 

@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.arcsoft.arcfacedemo.activity.RegisterAndRecognizeActivity;
 import com.arcsoft.arcfacedemo.faceserver.CompareResult;
 import com.arcsoft.arcfacedemo.faceserver.FaceServer;
 import com.arcsoft.arcfacedemo.model.DrawInfo;
@@ -58,8 +57,8 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class OCRCameraActivity extends CameraActivity {
-    private static final String TAG = OCRCameraActivity.class.getSimpleName();
+public class FaceCameraActivity extends CameraActivity {
+    private static final String TAG = FaceCameraActivity.class.getSimpleName();
     private static final int MAX_DETECT_NUM = 10;
     /**
      * 当FR成功，活体未成功时，FR等待活体的时间
@@ -145,7 +144,7 @@ public class OCRCameraActivity extends CameraActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_ocr_camera);
+        setContentView(R.layout.activity_face_camera);
         //保持亮屏
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -186,7 +185,7 @@ public class OCRCameraActivity extends CameraActivity {
     @Override
     protected void initView() {
         super.initView();
-        rectView = findViewById(R.id.single_camera_ocr_rect_view);
+        rectView = findViewById(R.id.single_camera_frame_rect_view);
         faceRectView = findViewById(R.id.single_camera_face_rect_view);
 
         /*
@@ -419,7 +418,7 @@ public class OCRCameraActivity extends CameraActivity {
                     .flQueueSize(MAX_DETECT_NUM)
                     .previewSize(previewSize)
                     .faceListener(faceListener)
-                    .trackedFaceCount(trackedFaceCount == null ? ConfigUtil.getTrackedFaceCount(OCRCameraActivity.this.getApplicationContext()) : trackedFaceCount)
+                    .trackedFaceCount(trackedFaceCount == null ? ConfigUtil.getTrackedFaceCount(FaceCameraActivity.this.getApplicationContext()) : trackedFaceCount)
                     .build();
         }
     }
@@ -540,7 +539,7 @@ public class OCRCameraActivity extends CameraActivity {
                         @Override
                         public void subscribe(ObservableEmitter<Boolean> emitter) {
 
-                            boolean success = FaceServer.getInstance().registerNv21(OCRCameraActivity.this, nv21.clone(), previewSize.width, previewSize.height,
+                            boolean success = FaceServer.getInstance().registerNv21(FaceCameraActivity.this, nv21.clone(), previewSize.width, previewSize.height,
                                     facePreviewInfoList.get(0).getFaceInfo(), "registered " + faceHelper.getTrackedFaceCount());
                             emitter.onNext(success);
                         }
