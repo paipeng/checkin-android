@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.baidu.paddle.lite.demo.ocr.Predictor;
 import com.paipeng.checkin.databinding.ActivityIdcardCameraBinding;
+import com.paipeng.checkin.databinding.FragmentOcrBinding;
 import com.paipeng.checkin.ui.IdCardRectView;
 import com.paipeng.checkin.utils.ImageUtil;
 
@@ -55,7 +56,9 @@ public class IdCardCameraActivity extends FaceCameraActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);        // Prepare the worker thread for mode loading and inference
+        super.onCreate(savedInstanceState);
+        binding = ActivityIdcardCameraBinding.inflate(getLayoutInflater());
+// Prepare the worker thread for mode loading and inference
         receiver = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -262,6 +265,9 @@ public class IdCardCameraActivity extends FaceCameraActivity {
          */
 
         Log.d(TAG, "onRunModelSuccessed");
+        if (predictor.outputImage() != null) {
+            binding.singleCameraOcrImageView.setImageBitmap(predictor.outputImage());
+        }
         orcDetecting = false;
     }
 
