@@ -255,7 +255,7 @@ public class IdCardFragment extends BaseFragment {
         Log.d(TAG, "ocrIdCard");
         //((MainActivity) getActivity()).tryTakePhoto();
 
-        mStartForResult.launch(new Intent(this.getActivity(), FaceCameraActivity.class));
+        mStartForResult.launch(new Intent(this.getActivity(), IdCardCameraActivity.class));
     }
 
 

@@ -84,6 +84,11 @@
             android:label="@string/title_activity_settings" />
 
         <activity
+            android:name="com.paipeng.checkin.IdCardCameraActivity"
+            android:exported="false"
+            android:label="@string/title_activity_settings" />
+
+        <activity
             android:name="com.paipeng.checkin.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings" />
