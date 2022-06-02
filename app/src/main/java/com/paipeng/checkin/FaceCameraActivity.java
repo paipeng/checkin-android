@@ -527,7 +527,7 @@ public class FaceCameraActivity extends BaseCameraActivity {
         barcodeFrameRect.right = barcodeFrameRect.left + block_size;
         barcodeFrameRect.bottom = barcodeFrameRect.top + block_size;
         drawInfoList.add(new DrawInfo(barcodeFrameRect,
-                0, 0, 0, RecognizeColor.COLOR_SUCCESS, "Barcode Scan"));
+                0, 0, 0, RecognizeColor.COLOR_SUCCESS, "Face Scan"));
         drawHelper.draw(faceRectView, drawInfoList);
     }
 
