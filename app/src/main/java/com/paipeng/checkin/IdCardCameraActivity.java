@@ -379,7 +379,7 @@ public class IdCardCameraActivity extends FaceCameraActivity {
         Rect frameRect = getOrcFrameRect();
         List<DrawInfo> drawInfoList = new ArrayList<>();
         for (int i = 0; i < ocrResultModels.size(); i++) {
-            String name = ocrResultModels.get(i).getLabel();
+            String name = ocrResultModels.get(i).getLabel() + " " + ocrResultModels.get(i).getClsLabel();
             Integer liveness = null;//livenessMap.get(facePreviewInfoList.get(i).getTrackId());
             Integer recognizeStatus = null;//requestFeatureStatusMap.get(facePreviewInfoList.get(i).getTrackId());
 
