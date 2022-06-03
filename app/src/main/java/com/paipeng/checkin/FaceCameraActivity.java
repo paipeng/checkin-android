@@ -144,7 +144,7 @@ public class FaceCameraActivity extends BaseCameraActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView();
-        rgbCameraID = Camera.CameraInfo.CAMERA_FACING_FRONT;
+        rgbCameraID = Camera.CameraInfo.CAMERA_FACING_BACK;
         //保持亮屏
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
