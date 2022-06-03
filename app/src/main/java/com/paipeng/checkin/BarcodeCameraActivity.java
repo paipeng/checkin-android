@@ -120,6 +120,11 @@ public class BarcodeCameraActivity extends BaseCameraActivity {
     }
 
     @Override
+    protected void handleSwitchCamera(boolean success, Integer cameraId) {
+
+    }
+
+    @Override
     protected void initEngine() {
 
     }

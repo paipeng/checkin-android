@@ -1,5 +1,7 @@
 package com.paipeng.checkin;
 
+import static com.arcsoft.face.enums.DetectFaceOrientPriority.ASF_OP_0_ONLY;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -144,6 +146,7 @@ public class FaceCameraActivity extends BaseCameraActivity {
         super.onCreate(savedInstanceState);
         setContentView();
         rgbCameraID = Camera.CameraInfo.CAMERA_FACING_BACK;
+        ConfigUtil.setFtOrient(this, DetectFaceOrientPriority.ASF_OP_90_ONLY);
         //保持亮屏
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -431,6 +434,30 @@ public class FaceCameraActivity extends BaseCameraActivity {
         }
     }
 
+    @Override
+    protected void handleSwitchCamera(boolean success, Integer cameraId) {
+        Log.d(TAG, "handleSwitchCamera: " + success + " cameraId: " + cameraId);
+        if (success) {
+            if (cameraId == 1) {// front
+                Log.d(TAG, "front camera");
+                if (!ConfigUtil.setFtOrient(this, DetectFaceOrientPriority.ASF_OP_270_ONLY)) {
+                    Log.e(TAG, "setFtOrient error");
+                }
+            } else {
+                Log.d(TAG, "back camera");
+                if (!ConfigUtil.setFtOrient(this, DetectFaceOrientPriority.ASF_OP_90_ONLY)) {
+                    Log.e(TAG, "setFtOrient error");
+                }
+            }
+
+            ftInitCode = ftEngine.unInit();
+            Log.d(TAG, "ftEngine unInit: " + ftInitCode);
+            ftInitCode = ftEngine.init(this, DetectMode.ASF_DETECT_MODE_VIDEO, ConfigUtil.getFtOrient(this),
+                    16, MAX_DETECT_NUM, FaceEngine.ASF_FACE_DETECT);
+            Log.d(TAG, "ftEngine init: " + ftInitCode);
+        }
+    }
+
 
     @Override
     protected void initCamera() {
@@ -442,10 +469,11 @@ public class FaceCameraActivity extends BaseCameraActivity {
      */
     @Override
     protected void initEngine() {
+        Log.d(TAG, "initEngine: " + ConfigUtil.getFtOrient(this));
         ftEngine = new FaceEngine();
         // 90: back camera
         // 270: front camera
-        ftInitCode = ftEngine.init(this, DetectMode.ASF_DETECT_MODE_VIDEO, DetectFaceOrientPriority.ASF_OP_90_ONLY,
+        ftInitCode = ftEngine.init(this, DetectMode.ASF_DETECT_MODE_VIDEO, ConfigUtil.getFtOrient(this),
                 16, MAX_DETECT_NUM, FaceEngine.ASF_FACE_DETECT);
 
         frEngine = new FaceEngine();
@@ -456,7 +484,7 @@ public class FaceCameraActivity extends BaseCameraActivity {
         flInitCode = flEngine.init(this, DetectMode.ASF_DETECT_MODE_IMAGE, DetectFaceOrientPriority.ASF_OP_0_ONLY,
                 16, MAX_DETECT_NUM, FaceEngine.ASF_LIVENESS);
 
-        Log.i(TAG, "initEngine:  init: " + ftInitCode);
+        Log.i(TAG, "initEngine init ret: " + ftInitCode);
 
         if (ftInitCode != ErrorInfo.MOK) {
             String error = getString(com.arcsoft.arcfacedemo.R.string.specific_engine_init_failed, "ftEngine", ftInitCode);

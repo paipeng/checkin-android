@@ -217,8 +217,11 @@ public abstract class BaseCameraActivity extends BaseActivity implements ViewTre
             } else {
                 showLongToast(getString(com.arcsoft.arcfacedemo.R.string.notice_change_detect_degree));
             }
+            handleSwitchCamera(success, cameraHelper.getSpecificCameraId());
         }
     }
+
+    protected abstract void handleSwitchCamera(boolean success, Integer cameraId);
 
     /**
      * 在{@link #previewView}第一次布局完成后，去除该监听，并且进行引擎和相机的初始化
