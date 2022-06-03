@@ -240,18 +240,36 @@ public class FaceCameraActivity extends BaseCameraActivity {
         }
         // 1920 x 1080
         Log.d(TAG, "preview size: " + width + "-" + height);
-        //Bitmap idCardBitmap = ImageUtil.getFocusFrameBitmap(nv21, width, height, getFrameRect(), true);
-        //ImageUtil.saveImage(idCardBitmap);
+        //Bitmap idCardBitmap = ImageUtil.cropYUVToBitmap(nv21, width, height, getFrameRect(), true);
+        //ImageUtil.saveImage(idCardBitmap, "_crop");
 
 
         if (faceRectView != null) {
             faceRectView.clearFaceInfo();
         }
         List<FacePreviewInfo> facePreviewInfoList = null;
+        Rect faceFrameRect = getCropFaceFrameRect();
+        Log.d(TAG, "faceFrameRect: " + faceFrameRect);
         if (cameraHelper.getSpecificCameraId() == Camera.CameraInfo.CAMERA_FACING_BACK) {
-            facePreviewInfoList = faceHelper.onPreviewFrame(ImageUtil.rotateYUV420Degree180(nv21, width, height));
+            //facePreviewInfoList = faceHelper.onPreviewFrame(ImageUtil.rotateYUV420Degree180(nv21, width, height));
+            //facePreviewInfoList = faceHelper.onPreviewFrame(ImageUtil.cropYUV(nv21, width, height, faceFrameRect, true), faceFrameRect.width(), faceFrameRect.height());
+            //Bitmap idCardBitmap = ImageUtil.cropYUVToBitmap(nv21, width, height, getFrameRect(), true);
+            //ImageUtil.saveImage(idCardBitmap, "_crop_back");
+
+            facePreviewInfoList = faceHelper.onPreviewFrame(nv21, width, height);
         } else {
-            facePreviewInfoList = faceHelper.onPreviewFrame(nv21);
+            try {
+                YuvCroper yuvCroper = new YuvCroper(YUV_420SP, width, height, faceFrameRect);
+                byte[] cropNV21 = yuvCroper.crop(nv21);
+                Bitmap cropBitmap = ImageUtil.cropYUVToBitmap(cropNV21, faceFrameRect.width(), faceFrameRect.height());
+                ImageUtil.saveImage(cropBitmap, "_cropface");
+                facePreviewInfoList = faceHelper.onPreviewFrame(cropNV21, faceFrameRect.width(), faceFrameRect.height());
+            } catch (Exception e) {
+                e.printStackTrace();
+                facePreviewInfoList = faceHelper.onPreviewFrame(nv21, width, height);
+            }
+            //facePreviewInfoList = faceHelper.onPreviewFrame(ImageUtil.cropYUV(nv21, width, height, faceFrameRect, false), faceFrameRect.width(), faceFrameRect.height());
+            //facePreviewInfoList = faceHelper.onPreviewFrame(nv21);
         }
 
         if (facePreviewInfoList != null && faceRectView != null && drawHelper != null) {
@@ -530,6 +548,7 @@ public class FaceCameraActivity extends BaseCameraActivity {
 
 
         }
+        /*
         Rect barcodeFrameRect = new Rect();
         int block_size = previewSize.height / 4;
         barcodeFrameRect.top = (previewSize.width - block_size) / 2;
@@ -538,7 +557,21 @@ public class FaceCameraActivity extends BaseCameraActivity {
         barcodeFrameRect.bottom = barcodeFrameRect.top + block_size;
         drawInfoList.add(new DrawInfo(barcodeFrameRect,
                 0, 0, 0, RecognizeColor.COLOR_SUCCESS, "Face Scan"));
+
+         */
+        drawInfoList.add(new DrawInfo(getCropFaceFrameRect(),
+                0, 0, 0, RecognizeColor.COLOR_SUCCESS, "Face Scan"));
         drawHelper.draw(faceRectView, drawInfoList);
+    }
+
+    protected Rect getCropFaceFrameRect() {
+        Rect faceFrameRect = new Rect();
+        int block_size = (previewSize.height / 2) / 16 * 16;
+        faceFrameRect.top = (previewSize.width - block_size) / 2;
+        faceFrameRect.left = (previewSize.height - block_size) / 2;
+        faceFrameRect.right = faceFrameRect.left + block_size;
+        faceFrameRect.bottom = faceFrameRect.top + block_size;
+        return faceFrameRect;
     }
 
 
