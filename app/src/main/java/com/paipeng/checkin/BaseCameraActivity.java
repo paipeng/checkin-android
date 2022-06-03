@@ -22,7 +22,7 @@ import com.arcsoft.arcfacedemo.widget.BaseRectView;
 public abstract class BaseCameraActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener {
     private static final String TAG = BaseCameraActivity.class.getSimpleName();
 
-    private CameraHelper cameraHelper;
+    protected CameraHelper cameraHelper;
     protected DrawHelper drawHelper;
     protected Camera.Size previewSize;
     /**
