@@ -204,9 +204,9 @@ public class ImageUtil {
                 else if (B > 255) B = 255;
 
                 if (rotate) {
-                    gray[(x - offsetX) * frameRect.width() + (frameRect.width() - 1 - (y - offsetY))] = (byte) ((R + G + B) / 3.0);
+                    gray[(x - offsetX) * frameRect.width() + (frameRect.width() - 1 - (y - offsetY))] = (byte) R;//((R + G + B) / 3.0);
                 } else {
-                    gray[index++] = (byte) ((R + G + B) / 3.0);
+                    gray[index++] = (byte) R;//((R + G + B) / 3.0);
                 }
             }
         }
