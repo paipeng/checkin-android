@@ -291,7 +291,7 @@ public class FaceCameraActivity extends BaseCameraActivity {
 
     @Override
     protected void handleCameraOpened(int cameraId, int displayOrientation, boolean isMirror) {
-        Log.d(TAG, "handleCameraOpened: " + cameraId);
+        Log.d(TAG, "handleCameraOpened: " + cameraId + " displayOrientation: " + displayOrientation + " isMirror: " + isMirror);
 
         drawHelper = new DrawHelper(previewSize.width, previewSize.height, previewView.getWidth(), previewView.getHeight(), displayOrientation
                 , cameraId, isMirror, true, true);
