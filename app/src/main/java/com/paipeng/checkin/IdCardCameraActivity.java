@@ -372,6 +372,10 @@ public class IdCardCameraActivity extends FaceCameraActivity {
     }
 
     private void drawOcrResultModel(List<OcrResultModel> ocrResultModels) {
+        if (ocrResultModels == null) {
+            return;
+        }
+
         Rect frameRect = getOrcFrameRect();
         List<DrawInfo> drawInfoList = new ArrayList<>();
         for (int i = 0; i < ocrResultModels.size(); i++) {
