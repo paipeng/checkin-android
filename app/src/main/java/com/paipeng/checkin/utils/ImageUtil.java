@@ -383,4 +383,10 @@ public class ImageUtil {
         }
         return rotateYUV420Degree180(yuv, imageWidth, imageHeight);
     }
+
+
+    public static Bitmap cropBitmap(Bitmap bitmap, Rect cropRect) {
+        return Bitmap.createBitmap(bitmap, cropRect.left, cropRect.top, cropRect.width(), cropRect.height());
+    }
+
 }
