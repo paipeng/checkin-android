@@ -1,6 +1,8 @@
 package com.paipeng.checkin;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -24,11 +26,14 @@ import com.arcsoft.face.LivenessInfo;
 import com.baidu.paddle.lite.demo.ocr.OcrResultModel;
 import com.baidu.paddle.lite.demo.ocr.Predictor;
 import com.paipeng.checkin.databinding.ActivityIdcardCameraBinding;
+import com.paipeng.checkin.model.FaceOCRIdCard;
 import com.paipeng.checkin.model.IdCard;
 import com.paipeng.checkin.ui.IdCardRectView;
+import com.paipeng.checkin.utils.CommonUtil;
 import com.paipeng.checkin.utils.ImageUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class IdCardCameraActivity extends FaceCameraActivity {
@@ -67,6 +72,10 @@ public class IdCardCameraActivity extends FaceCameraActivity {
 
     private IdCardRectView idCardRectView;
     private IdCard idCard;
+
+    private FaceOCRIdCard faceOCRIdCard;
+    private int orcSuccessNum = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -396,8 +405,10 @@ public class IdCardCameraActivity extends FaceCameraActivity {
 
             if (ocrResultModels.get(i).isValid()) {
                 color = RecognizeColor.COLOR_SUCCESS;
+                orcSuccessNum ++;
             } else {
                 color = RecognizeColor.COLOR_FAILED;
+                orcSuccessNum = 0;
             }
 
             /*
@@ -420,12 +431,113 @@ public class IdCardCameraActivity extends FaceCameraActivity {
             //drawHelper.draw(binding.singleCameraIdcardRectView, drawInfoList);
             drawHelper.draw(idCardRectView, drawInfoList);
         }
+
+        if (orcSuccessNum > 5) {
+            orcDetectSuccess();
+        }
     }
 
-    private List<OcrResultModel> validateORCIdCard(List<OcrResultModel> ocrResultModels) {
+    private List<OcrResultModel> validateORCIdCard(ArrayList<OcrResultModel> ocrResultModels) {
+        for (OcrResultModel ocrResultModel : ocrResultModels) {
+            Log.d(TAG, "ocrResultModel: " + ocrResultModel.toString());
+            ocrResultModel.setClsLabel(String.valueOf(ocrResultModels.indexOf(ocrResultModel)));
+        }
+
+        if (ocrResultModels.size() < 10) {
+            return null;
+        }
+
+        // remove rifhgt column
+        ocrResultModels.removeIf(b -> b.getCenterPoint().x < predictor.inputImage().getHeight()/2);
+        // sort by center-y
+        //ocrResultModels.sort(Comparator.comparing(ClassName::getFieldName));
+        Collections.sort(ocrResultModels, (a, b) -> b.compareCoordinateY(a));
+
+        for (OcrResultModel ocrResultModel : ocrResultModels) {
+            Log.d(TAG, "ocrResultModel: " + ocrResultModel.toString());
+            ocrResultModel.setClsLabel(String.valueOf(ocrResultModels.indexOf(ocrResultModel)));
+        }
+
+        faceOCRIdCard = new FaceOCRIdCard();
+        if (idCard.getChipUID().equals(ocrResultModels.get(0).getLabel())) {
+            faceOCRIdCard.setChipUIDBitmap(ImageUtil.cropBitmap(predictor.inputImage(), ocrResultModels.get(0).getRect()));
+            //ImageUtil.saveImage(faceOCRIdCard.getChipUIDBitmap(), "_chipuid");
+            faceOCRIdCard.setChipUID(idCard.getChipUID());
+            ocrResultModels.get(0).setValid(true);
+        } else {
+            faceOCRIdCard.setChipUIDBitmap(null);
+            faceOCRIdCard.setChipUID(null);
+        }
+
+        if (idCard.getExpireDate().equals(ocrResultModels.get(1).getLabel())) {
+            faceOCRIdCard.setExpireDateBitmap(ImageUtil.cropBitmap(predictor.inputImage(), ocrResultModels.get(0).getRect()));
+            //ImageUtil.saveImage(faceOCRIdCard.getChipUIDBitmap(), "_chipuid");
+            faceOCRIdCard.setExpireDate(idCard.getExpireDate());
+            ocrResultModels.get(1).setValid(true);
+
+        } else {
+            faceOCRIdCard.setExpireDateBitmap(null);
+            faceOCRIdCard.setExpireDate(null);
+        }
+
+        if (idCard.getSerialNumber().equals(ocrResultModels.get(2).getLabel())) {
+            faceOCRIdCard.setSerialNumberBitmap(ImageUtil.cropBitmap(predictor.inputImage(), ocrResultModels.get(0).getRect()));
+            //ImageUtil.saveImage(faceOCRIdCard.getChipUIDBitmap(), "_chipuid");
+            faceOCRIdCard.setSerialNumber(idCard.getExpireDate());
+            ocrResultModels.get(2).setValid(true);
+        } else {
+            faceOCRIdCard.setSerialNumberBitmap(null);
+            faceOCRIdCard.setSerialNumber(null);
+        }
+
+        if (idCard.getCompany().equals(ocrResultModels.get(3).getLabel())) {
+            faceOCRIdCard.setCompanyBitmap(ImageUtil.cropBitmap(predictor.inputImage(), ocrResultModels.get(0).getRect()));
+            //ImageUtil.saveImage(faceOCRIdCard.getChipUIDBitmap(), "_chipuid");
+            faceOCRIdCard.setCompany(idCard.getExpireDate());
+            ocrResultModels.get(3).setValid(true);
+
+        } else {
+            faceOCRIdCard.setCompanyBitmap(null);
+            faceOCRIdCard.setCompany(null);
+        }
+
+        if (idCard.getName().equals(ocrResultModels.get(4).getLabel())) {
+            faceOCRIdCard.setNameBitmap(ImageUtil.cropBitmap(predictor.inputImage(), ocrResultModels.get(0).getRect()));
+            //ImageUtil.saveImage(faceOCRIdCard.getChipUIDBitmap(), "_chipuid");
+            faceOCRIdCard.setName(idCard.getExpireDate());
+            ocrResultModels.get(4).setValid(true);
+
+        } else {
+            faceOCRIdCard.setNameBitmap(null);
+            faceOCRIdCard.setName(null);
+        }
+
+        if (faceOCRIdCard.isValidate()) {
+            faceOCRIdCard.setCapturedBitmap(predictor.inputImage());
+        } else {
+            faceOCRIdCard.setCapturedBitmap(null);
+        }
+
+
+        //ocrResultModels.removeIf(b -> !b.isValue());
+
 
         // order list by y-coordination
         // pair key -> value (x-coordination)
         return ocrResultModels;
     }
+
+    private void orcDetectSuccess() {
+        Log.d(TAG, "orcDetectSuccess");
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("OCR_DETECT", true);
+
+        CommonUtil.getInstance().setFaceOCRIdCard(this.faceOCRIdCard);
+
+        //resultIntent.putExtra("OCR_IDCARD", this.faceOCRIdCard); // Put anything what you want
+        setResult(Activity.RESULT_OK, resultIntent);
+        finish();
+        Log.d(TAG, "face compare success -> back");
+    }
+
 }
