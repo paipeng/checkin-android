@@ -198,7 +198,9 @@ public class FirstFragment extends BaseFragment {
         //mStartForResult.launch(new Intent(this.getActivity(), BarcodeCameraActivity.class));
         //mStartForResult.launch(new Intent(this.getActivity(), FaceCameraActivity.class));
 
-        Intent intent = new Intent(this.getActivity(), IdCardCameraActivity.class);
+        //Intent intent = new Intent(this.getActivity(), IdCardCameraActivity.class);
+        Intent intent = new Intent(this.getActivity(), FaceCameraActivity.class);
+
         intent.putExtra("key", "firstFragment"); // Put anything what you want
         mStartForResult.launch(intent);
     }
