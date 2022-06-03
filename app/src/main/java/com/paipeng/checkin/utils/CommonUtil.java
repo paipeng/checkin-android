@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.paipeng.checkin.data.model.LoggedInUser;
+import com.paipeng.checkin.model.FaceOCRIdCard;
 import com.paipeng.checkin.model.IdCard;
 import com.paipeng.checkin.restclient.module.User;
 
@@ -30,6 +31,15 @@ public class CommonUtil {
 
     public static final String SERVER_URL = "http://114.115.137.22";
     private static User user;
+    private static CommonUtil INSTANCE = null;
+    private FaceOCRIdCard faceOCRIdCard;
+
+    public static CommonUtil getInstance() {
+        if (INSTANCE == null)
+            INSTANCE = new CommonUtil();
+        return INSTANCE;
+    }
+
 
     public static boolean isUserExists(Activity activity) {
         SharedPreferences sharedPreferences = activity.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
@@ -213,6 +223,14 @@ public class CommonUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public FaceOCRIdCard getFaceOCRIdCard() {
+        return faceOCRIdCard;
+    }
+
+    public void setFaceOCRIdCard(FaceOCRIdCard faceOCRIdCard) {
+        this.faceOCRIdCard = faceOCRIdCard;
     }
 
 }
