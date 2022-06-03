@@ -256,7 +256,7 @@ public class ImageUtil {
         return gray;
     }
 
-    public static Bitmap getFocusFrameBitmap(byte[] yuv, int width, int height, Rect frameRect, boolean rotate) {
+    public static Bitmap cropYUVToBitmap(byte[] yuv, int width, int height, Rect frameRect, boolean rotate) {
         byte[] gray = getFocusFrameData(yuv, width, height, frameRect, rotate);
         return convertGrayDataToBitmap(gray, frameRect.width(), frameRect.height());
     }

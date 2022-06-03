@@ -17,7 +17,6 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.arcsoft.arcfacedemo.model.DrawInfo;
-import com.arcsoft.arcfacedemo.util.DrawHelper;
 import com.arcsoft.arcfacedemo.util.face.RecognizeColor;
 import com.arcsoft.arcfacedemo.util.face.RequestFeatureStatus;
 import com.arcsoft.face.AgeInfo;
@@ -247,7 +246,7 @@ public class IdCardCameraActivity extends FaceCameraActivity {
         super.handlePreview(nv21, width, height);
         if (!orcDetecting) {
             orcDetecting = true;
-            Bitmap idCardBitmap = ImageUtil.getFocusFrameBitmap(nv21, width, height, getOrcFrameRect(), true);
+            Bitmap idCardBitmap = ImageUtil.cropYUVToBitmap(nv21, width, height, getOrcFrameRect(), true);
             //ImageUtil.saveImage(idCardBitmap);
             predictor.setInputImage(idCardBitmap);
             runModel();
