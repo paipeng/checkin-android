@@ -26,6 +26,7 @@ import com.arcsoft.arcfacedemo.faceserver.FaceServer;
 import com.paipeng.checkin.databinding.FragmentIdcardBinding;
 import com.paipeng.checkin.model.FaceOCRIdCard;
 import com.paipeng.checkin.model.IdCard;
+import com.paipeng.checkin.ui.FaceOCRIdCardAdapter;
 import com.paipeng.checkin.ui.IdCardAdapter;
 import com.paipeng.checkin.utils.CommonUtil;
 import com.paipeng.checkin.utils.ImageUtil;
@@ -40,6 +41,7 @@ public class IdCardFragment extends BaseFragment {
 
     private FragmentIdcardBinding binding;
     private IdCard idCard;
+    private FaceOCRIdCard faceOCRIdCard;
 
     private TextToSpeech textToSpeech;
     private boolean isSpeech = false;
@@ -252,6 +254,26 @@ public class IdCardFragment extends BaseFragment {
         });
     }
 
+
+    private void updateFaceOCRIdCardListView(FaceOCRIdCard faceOCRIdCard) {
+        Log.d(TAG, "updateFaceOCRIdCardListView");
+        this.faceOCRIdCard = faceOCRIdCard;
+
+        //binding.idCardListView.removeAllViews();
+        // IdCardAdapter
+        FaceOCRIdCardAdapter faceOCRIdCardAdapter = new FaceOCRIdCardAdapter(this.getActivity(), R.layout.idcard_adapter);
+
+        faceOCRIdCardAdapter.setFaceOCRIdCard(faceOCRIdCard);
+        binding.idCardListView.setAdapter(faceOCRIdCardAdapter);
+        binding.idCardListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final String data = (String) parent.getItemAtPosition(position);
+                Log.d(TAG, "onItemClick: " + data);
+            }
+        });
+    }
+
     private void ocrIdCard() {
         Log.d(TAG, "ocrIdCard");
         //((MainActivity) getActivity()).tryTakePhoto();
@@ -289,6 +311,7 @@ public class IdCardFragment extends BaseFragment {
             if (intent.getBooleanExtra("OCR_DETECT", false)) {
                 FaceOCRIdCard faceOCRIdCard = CommonUtil.getInstance().getFaceOCRIdCard();
                 Log.d(TAG, "faceOCRIdCard: " + faceOCRIdCard);
+                updateFaceOCRIdCardListView(faceOCRIdCard);
             } else {
 
                 Bitmap photo = ((BitmapDrawable) binding.photoImageView.getDrawable()).getBitmap();

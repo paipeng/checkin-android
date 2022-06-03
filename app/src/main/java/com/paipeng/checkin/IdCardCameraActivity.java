@@ -478,6 +478,7 @@ public class IdCardCameraActivity extends FaceCameraActivity {
 
         if (faceOCRIdCard == null) {
             faceOCRIdCard = new FaceOCRIdCard();
+            faceOCRIdCard.setType(1);
         }
         if (idCard.getChipUID().equals(ocrResultModels.get(0).getLabel())) {
             faceOCRIdCard.setChipUIDBitmap(ImageUtil.cropBitmap(predictor.inputImage(), ocrResultModels.get(0).getRect()));
@@ -490,7 +491,7 @@ public class IdCardCameraActivity extends FaceCameraActivity {
         }
 
         if (idCard.getExpireDate().equals(ocrResultModels.get(1).getLabel())) {
-            faceOCRIdCard.setExpireDateBitmap(ImageUtil.cropBitmap(predictor.inputImage(), ocrResultModels.get(0).getRect()));
+            faceOCRIdCard.setExpireDateBitmap(ImageUtil.cropBitmap(predictor.inputImage(), ocrResultModels.get(1).getRect()));
             //ImageUtil.saveImage(faceOCRIdCard.getChipUIDBitmap(), "_chipuid");
             faceOCRIdCard.setExpireDate(idCard.getExpireDate());
             ocrResultModels.get(1).setValid(true);
@@ -501,9 +502,9 @@ public class IdCardCameraActivity extends FaceCameraActivity {
         }
 
         if (idCard.getSerialNumber().equals(ocrResultModels.get(2).getLabel())) {
-            faceOCRIdCard.setSerialNumberBitmap(ImageUtil.cropBitmap(predictor.inputImage(), ocrResultModels.get(0).getRect()));
+            faceOCRIdCard.setSerialNumberBitmap(ImageUtil.cropBitmap(predictor.inputImage(), ocrResultModels.get(2).getRect()));
             //ImageUtil.saveImage(faceOCRIdCard.getChipUIDBitmap(), "_chipuid");
-            faceOCRIdCard.setSerialNumber(idCard.getExpireDate());
+            faceOCRIdCard.setSerialNumber(idCard.getSerialNumber());
             ocrResultModels.get(2).setValid(true);
         } else {
             faceOCRIdCard.setSerialNumberBitmap(null);
@@ -511,9 +512,9 @@ public class IdCardCameraActivity extends FaceCameraActivity {
         }
 
         if (idCard.getCompany().equals(ocrResultModels.get(3).getLabel())) {
-            faceOCRIdCard.setCompanyBitmap(ImageUtil.cropBitmap(predictor.inputImage(), ocrResultModels.get(0).getRect()));
+            faceOCRIdCard.setCompanyBitmap(ImageUtil.cropBitmap(predictor.inputImage(), ocrResultModels.get(3).getRect()));
             //ImageUtil.saveImage(faceOCRIdCard.getChipUIDBitmap(), "_chipuid");
-            faceOCRIdCard.setCompany(idCard.getExpireDate());
+            faceOCRIdCard.setCompany(idCard.getCompany());
             ocrResultModels.get(3).setValid(true);
 
         } else {
@@ -522,9 +523,9 @@ public class IdCardCameraActivity extends FaceCameraActivity {
         }
 
         if (idCard.getName().equals(ocrResultModels.get(4).getLabel())) {
-            faceOCRIdCard.setNameBitmap(ImageUtil.cropBitmap(predictor.inputImage(), ocrResultModels.get(0).getRect()));
+            faceOCRIdCard.setNameBitmap(ImageUtil.cropBitmap(predictor.inputImage(), ocrResultModels.get(4).getRect()));
             //ImageUtil.saveImage(faceOCRIdCard.getChipUIDBitmap(), "_chipuid");
-            faceOCRIdCard.setName(idCard.getExpireDate());
+            faceOCRIdCard.setName(idCard.getName());
             ocrResultModels.get(4).setValid(true);
 
         } else {
@@ -553,6 +554,7 @@ public class IdCardCameraActivity extends FaceCameraActivity {
         faceCompareSucccess = success;
         if (faceOCRIdCard == null) {
             faceOCRIdCard = new FaceOCRIdCard();
+            faceOCRIdCard.setType(1);
         }
         faceOCRIdCard.setFaceScore(score);
     }
