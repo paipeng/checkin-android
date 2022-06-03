@@ -24,6 +24,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.arcsoft.arcfacedemo.activity.RegisterAndRecognizeActivity;
 import com.arcsoft.arcfacedemo.faceserver.FaceServer;
 import com.paipeng.checkin.databinding.FragmentIdcardBinding;
+import com.paipeng.checkin.model.FaceOCRIdCard;
 import com.paipeng.checkin.model.IdCard;
 import com.paipeng.checkin.ui.IdCardAdapter;
 import com.paipeng.checkin.utils.CommonUtil;
@@ -285,22 +286,26 @@ public class IdCardFragment extends BaseFragment {
         if (result.getResultCode() == Activity.RESULT_OK) {
 
             Intent intent = result.getData();
-
-            Bitmap photo = ((BitmapDrawable) binding.photoImageView.getDrawable()).getBitmap();
-            Bitmap frame;
-            if (intent.getBooleanExtra("FACE_COMPARE", false)) {
-                float score = intent.getFloatExtra("FACE_COMPARE_SCORE", -1f);
-                Log.d(TAG, "face compare success: " + score);
-                frame = BitmapFactory.decodeResource(getResources(), R.drawable.face_compare_success);
+            if (intent.getBooleanExtra("OCR_DETECT", false)) {
+                FaceOCRIdCard faceOCRIdCard = CommonUtil.getInstance().getFaceOCRIdCard();
+                Log.d(TAG, "faceOCRIdCard: " + faceOCRIdCard);
             } else {
-                Log.e(TAG, "face compare error");
-                float score = intent.getFloatExtra("FACE_COMPARE_SCORE", -1f);
-                Log.d(TAG, "face compare result: " + score);
-                frame = BitmapFactory.decodeResource(getResources(), R.drawable.face_compare_failed);
-            }
-            Bitmap bitmap = ImageUtil.createSingleImageFromMultipleImages(photo, ImageUtil.resize(frame, photo.getWidth(), photo.getHeight()));
-            binding.photoImageView.setImageBitmap(bitmap);
 
+                Bitmap photo = ((BitmapDrawable) binding.photoImageView.getDrawable()).getBitmap();
+                Bitmap frame;
+                if (intent.getBooleanExtra("FACE_COMPARE", false)) {
+                    float score = intent.getFloatExtra("FACE_COMPARE_SCORE", -1f);
+                    Log.d(TAG, "face compare success: " + score);
+                    frame = BitmapFactory.decodeResource(getResources(), R.drawable.face_compare_success);
+                } else {
+                    Log.e(TAG, "face compare error");
+                    float score = intent.getFloatExtra("FACE_COMPARE_SCORE", -1f);
+                    Log.d(TAG, "face compare result: " + score);
+                    frame = BitmapFactory.decodeResource(getResources(), R.drawable.face_compare_failed);
+                }
+                Bitmap bitmap = ImageUtil.createSingleImageFromMultipleImages(photo, ImageUtil.resize(frame, photo.getWidth(), photo.getHeight()));
+                binding.photoImageView.setImageBitmap(bitmap);
+            }
             // Handle the Intent
         } else if (result.getResultCode() == Activity.RESULT_CANCELED) {
             Log.d(TAG, "onActivityResult");
