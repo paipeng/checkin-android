@@ -525,22 +525,11 @@ public class FaceCameraActivity extends BaseCameraActivity {
             drawInfoList.add(new DrawInfo(drawHelper.adjustRect(facePreviewInfoList.get(i).getFaceInfo().getRect()),
                     GenderInfo.UNKNOWN, AgeInfo.UNKNOWN_AGE, liveness == null ? LivenessInfo.UNKNOWN : liveness, color,
                     name == null ? String.valueOf(facePreviewInfoList.get(i).getTrackId()) : name));
-
-
         }
         /*
-        Rect barcodeFrameRect = new Rect();
-        int block_size = previewSize.height / 4;
-        barcodeFrameRect.top = (previewSize.width - block_size) / 2;
-        barcodeFrameRect.left = (previewSize.height - block_size) / 2;
-        barcodeFrameRect.right = barcodeFrameRect.left + block_size;
-        barcodeFrameRect.bottom = barcodeFrameRect.top + block_size;
-        drawInfoList.add(new DrawInfo(barcodeFrameRect,
-                0, 0, 0, RecognizeColor.COLOR_SUCCESS, "Face Scan"));
-
-         */
         drawInfoList.add(new DrawInfo(getCropFaceFrameRect(),
                 0, 0, 0, RecognizeColor.COLOR_SUCCESS, "Face Scan"));
+         */
         drawHelper.draw(faceRectView, drawInfoList);
     }
 
