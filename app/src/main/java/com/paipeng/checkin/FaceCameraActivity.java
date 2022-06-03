@@ -1,7 +1,5 @@
 package com.paipeng.checkin;
 
-import static com.arcsoft.face.enums.DetectFaceOrientPriority.ASF_OP_0_ONLY;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -140,6 +138,7 @@ public class FaceCameraActivity extends BaseCameraActivity {
     private FaceRectView faceRectView;
 
     private static int faceCompareFailedNum = 0;
+    protected boolean faceCompareSucccess;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -826,7 +825,7 @@ public class FaceCameraActivity extends BaseCameraActivity {
                             faceHelper.setName(requestId, getString(com.arcsoft.arcfacedemo.R.string.recognize_success_notice, compareResult.getUserName()));
 
                             // compare success -> goback
-                            faceCompareResult(true, compareResult.getSimilar());
+                            checkFaceResult(true, compareResult.getSimilar());
                             //RegisterAndRecognizeActivity.this.finishActivity(0);
 
                         } else {
@@ -835,7 +834,7 @@ public class FaceCameraActivity extends BaseCameraActivity {
 
                             if (faceCompareFailedNum++ > MAX_RETRY_TIME * 3) {
                                 faceCompareFailedNum = 0;
-                                faceCompareResult(false, compareResult.getSimilar());
+                                checkFaceResult(false, compareResult.getSimilar());
                             }
                         }
                     }
@@ -855,7 +854,8 @@ public class FaceCameraActivity extends BaseCameraActivity {
                 });
     }
 
-    protected void faceCompareResult(boolean success, float score) {
+    protected void checkFaceResult(boolean success, float score) {
+        faceCompareSucccess = success;
         Intent resultIntent = new Intent();
         resultIntent.putExtra("FACE_COMPARE_SCORE", score);  // put data that you want returned to activity A
         if (success) {
