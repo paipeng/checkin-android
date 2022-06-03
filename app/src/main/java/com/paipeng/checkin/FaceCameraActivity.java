@@ -788,12 +788,7 @@ public class FaceCameraActivity extends BaseCameraActivity {
                             faceHelper.setName(requestId, getString(com.arcsoft.arcfacedemo.R.string.recognize_success_notice, compareResult.getUserName()));
 
                             // compare success -> goback
-                            Intent resultIntent = new Intent();
-                            resultIntent.putExtra("FACE_COMPARE", true);
-                            resultIntent.putExtra("FACE_COMPARE_SCORE", compareResult.getSimilar());  // put data that you want returned to activity A
-                            setResult(Activity.RESULT_OK, resultIntent);
-                            finish();
-                            Log.d(TAG, "face compare success -> back");
+                           faceCompareResult(true, compareResult.getSimilar());
                             //RegisterAndRecognizeActivity.this.finishActivity(0);
 
                         } else {
@@ -802,12 +797,7 @@ public class FaceCameraActivity extends BaseCameraActivity {
 
                             if (faceCompareFailedNum++ > MAX_RETRY_TIME * 3) {
                                 faceCompareFailedNum = 0;
-                                Intent resultIntent = new Intent();
-                                resultIntent.putExtra("FACE_COMPARE", false);
-                                resultIntent.putExtra("FACE_COMPARE_SCORE", compareResult.getSimilar());  // put data that you want returned to activity A
-                                setResult(Activity.RESULT_OK, resultIntent);
-                                finish();
-                                Log.d(TAG, "face compare failed -> back");
+                                faceCompareResult(false, compareResult.getSimilar());
                             }
                         }
                     }
@@ -827,5 +817,17 @@ public class FaceCameraActivity extends BaseCameraActivity {
                 });
     }
 
-
+    protected void faceCompareResult(boolean success, float score) {
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("FACE_COMPARE_SCORE", score);  // put data that you want returned to activity A
+        if (success) {
+            resultIntent.putExtra("FACE_COMPARE", true);
+            Log.d(TAG, "face compare success -> back");
+        } else {
+            resultIntent.putExtra("FACE_COMPARE", false);
+            Log.d(TAG, "face compare failed -> back");
+        }
+        setResult(Activity.RESULT_OK, resultIntent);
+        finish();
+    }
 }
