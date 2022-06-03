@@ -14,6 +14,7 @@ public class FaceOCRIdCard extends IdCard{
     private Bitmap serialNumberBitmap;
     private Bitmap companyBitmap;
     private Bitmap nameBitmap;
+    private float faceScore;
 
     public Bitmap getCapturedBitmap() {
         return capturedBitmap;
@@ -76,4 +77,11 @@ public class FaceOCRIdCard extends IdCard{
         return this.nameBitmap != null && this.companyBitmap != null && this.serialNumberBitmap != null && this.expireDateBitmap != null && this.chipUIDBitmap != null;
     }
 
+    public void setFaceScore(float faceScore) {
+        this.faceScore = faceScore;
+    }
+
+    public float getFaceScore() {
+        return faceScore;
+    }
 }
