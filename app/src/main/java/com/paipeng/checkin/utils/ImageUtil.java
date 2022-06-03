@@ -165,7 +165,7 @@ public class ImageUtil {
         return gray;
     }
 
-    private static byte[] cropYUV(byte[] yuv, int width, int height, Rect frameRect, boolean rotate) {
+    public static byte[] cropYUV(byte[] yuv, int width, int height, Rect frameRect, boolean rotate) {
         Log.d(TAG, "cropYUV: " + width + "-" + height + " frameRect " + frameRect.left + " " + frameRect.top + " / " + frameRect.width() + "-" + frameRect.height());
         int total = width * height;
         byte[] gray = new byte[frameRect.width() * frameRect.height()];
