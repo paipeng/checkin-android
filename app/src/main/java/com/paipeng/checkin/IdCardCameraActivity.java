@@ -394,6 +394,12 @@ public class IdCardCameraActivity extends FaceCameraActivity {
                 }
             }
 
+            if (ocrResultModels.get(i).isValid()) {
+                color = RecognizeColor.COLOR_SUCCESS;
+            } else {
+                color = RecognizeColor.COLOR_FAILED;
+            }
+
             /*
             if (liveness != null && liveness == LivenessInfo.NOT_ALIVE) {
                 color = RecognizeColor.COLOR_FAILED;
