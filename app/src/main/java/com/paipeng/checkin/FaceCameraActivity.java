@@ -247,7 +247,13 @@ public class FaceCameraActivity extends BaseCameraActivity {
         if (faceRectView != null) {
             faceRectView.clearFaceInfo();
         }
-        List<FacePreviewInfo> facePreviewInfoList = faceHelper.onPreviewFrame(ImageUtil.rotateYUV420Degree180(nv21, width, height));
+        List<FacePreviewInfo> facePreviewInfoList = null;
+        if (cameraHelper.getSpecificCameraId() == Camera.CameraInfo.CAMERA_FACING_BACK) {
+            facePreviewInfoList = faceHelper.onPreviewFrame(ImageUtil.rotateYUV420Degree180(nv21, width, height));
+        } else {
+            facePreviewInfoList = faceHelper.onPreviewFrame(nv21);
+        }
+
         if (facePreviewInfoList != null && faceRectView != null && drawHelper != null) {
             Log.d(TAG, "facePreviewInfoList size: " + facePreviewInfoList.size());
             drawPreviewInfo(facePreviewInfoList);
