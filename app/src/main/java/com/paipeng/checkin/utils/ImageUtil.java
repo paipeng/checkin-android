@@ -165,8 +165,8 @@ public class ImageUtil {
         return gray;
     }
 
-    private static byte[] getFocusFrameData(byte[] yuv, int width, int height, Rect frameRect, boolean rotate) {
-        Log.d(TAG, "getFocusFrameData: " + width + "-" + height + " frameRect " + frameRect.left + " " + frameRect.top + " / " + frameRect.width() + "-" + frameRect.height());
+    private static byte[] cropYUV(byte[] yuv, int width, int height, Rect frameRect, boolean rotate) {
+        Log.d(TAG, "cropYUV: " + width + "-" + height + " frameRect " + frameRect.left + " " + frameRect.top + " / " + frameRect.width() + "-" + frameRect.height());
         int total = width * height;
         byte[] gray = new byte[frameRect.width() * frameRect.height()];
         int Y, Cb = 0, Cr = 0, index = 0;
@@ -257,7 +257,7 @@ public class ImageUtil {
     }
 
     public static Bitmap cropYUVToBitmap(byte[] yuv, int width, int height, Rect frameRect, boolean rotate) {
-        byte[] gray = getFocusFrameData(yuv, width, height, frameRect, rotate);
+        byte[] gray = cropYUV(yuv, width, height, frameRect, rotate);
         return convertGrayDataToBitmap(gray, frameRect.width(), frameRect.height());
     }
 
