@@ -144,6 +144,7 @@ public class FaceCameraActivity extends BaseCameraActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView();
+        rgbCameraID = Camera.CameraInfo.CAMERA_FACING_FRONT;
         //保持亮屏
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -437,7 +438,7 @@ public class FaceCameraActivity extends BaseCameraActivity {
      */
     @Override
     protected void initEngine() {
-        super.initEngine();
+
         ftEngine = new FaceEngine();
         ftInitCode = ftEngine.init(this, DetectMode.ASF_DETECT_MODE_VIDEO, ConfigUtil.getFtOrient(this),
                 16, MAX_DETECT_NUM, FaceEngine.ASF_FACE_DETECT);
@@ -474,7 +475,7 @@ public class FaceCameraActivity extends BaseCameraActivity {
      */
     @Override
     protected void unInitEngine() {
-        super.unInitEngine();
+
         if (ftInitCode == ErrorInfo.MOK && ftEngine != null) {
             synchronized (ftEngine) {
                 int ftUnInitCode = ftEngine.unInit();

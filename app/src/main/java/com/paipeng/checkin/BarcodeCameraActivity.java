@@ -118,4 +118,14 @@ public class BarcodeCameraActivity extends BaseCameraActivity {
         drawInfoList.add(getDrawInfo());
         drawHelper.draw(rectView, drawInfoList);
     }
+
+    @Override
+    protected void initEngine() {
+
+    }
+
+    @Override
+    protected void unInitEngine() {
+
+    }
 }

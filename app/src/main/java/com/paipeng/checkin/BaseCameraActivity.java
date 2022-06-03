@@ -28,7 +28,7 @@ public abstract class BaseCameraActivity extends BaseActivity implements ViewTre
     /**
      * 优先打开的摄像头，本界面主要用于单目RGB摄像头设备，因此默认打开前置
      */
-    private Integer rgbCameraID = Camera.CameraInfo.CAMERA_FACING_BACK;
+    protected Integer rgbCameraID = Camera.CameraInfo.CAMERA_FACING_BACK;
 
     /**
      * 相机预览显示的控件，可为SurfaceView或TextureView
@@ -69,16 +69,12 @@ public abstract class BaseCameraActivity extends BaseActivity implements ViewTre
     /**
      * 初始化引擎
      */
-    protected void initEngine() {
-
-    }
+    protected abstract void initEngine();
 
     /**
      * 销毁引擎，faceHelper中可能会有特征提取耗时操作仍在执行，加锁防止crash
      */
-    protected void unInitEngine() {
-
-    }
+    protected abstract void unInitEngine();
 
 
     @Override
@@ -142,16 +138,12 @@ public abstract class BaseCameraActivity extends BaseActivity implements ViewTre
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-
         CameraListener cameraListener = new CameraListener() {
             @Override
             public void onCameraOpened(Camera camera, int cameraId, int displayOrientation, boolean isMirror) {
                 //Camera.Size lastPreviewSize = previewSize;
                 previewSize = camera.getParameters().getPreviewSize();
-
-
                 handleCameraOpened(cameraId, displayOrientation, isMirror);
-
             }
 
 

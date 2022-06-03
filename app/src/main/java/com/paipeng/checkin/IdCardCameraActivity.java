@@ -218,6 +218,15 @@ public class IdCardCameraActivity extends FaceCameraActivity {
         super.onDestroy();
     }
 
+    @Override
+    protected void initEngine() {
+
+    }
+
+    @Override
+    protected void unInitEngine() {
+
+    }
 
     @Override
     protected void handleCameraOpened(int cameraId, int displayOrientation, boolean isMirror) {
