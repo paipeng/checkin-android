@@ -474,7 +474,6 @@ public class FaceCameraActivity extends BaseCameraActivity {
      */
     @Override
     protected void unInitEngine() {
-
         if (ftInitCode == ErrorInfo.MOK && ftEngine != null) {
             synchronized (ftEngine) {
                 int ftUnInitCode = ftEngine.unInit();
