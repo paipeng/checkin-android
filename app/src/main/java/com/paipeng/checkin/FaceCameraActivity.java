@@ -438,7 +438,6 @@ public class FaceCameraActivity extends BaseCameraActivity {
      */
     @Override
     protected void initEngine() {
-
         ftEngine = new FaceEngine();
         ftInitCode = ftEngine.init(this, DetectMode.ASF_DETECT_MODE_VIDEO, ConfigUtil.getFtOrient(this),
                 16, MAX_DETECT_NUM, FaceEngine.ASF_FACE_DETECT);
