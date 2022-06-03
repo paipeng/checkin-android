@@ -244,6 +244,7 @@ public class IdCardCameraActivity extends FaceCameraActivity {
     }
     @Override
     protected void handlePreview(byte[] nv21, int width, int height) {
+        super.handlePreview(nv21, width, height);
         if (!orcDetecting) {
             orcDetecting = true;
             Bitmap idCardBitmap = ImageUtil.getFocusFrameBitmap(nv21, width, height, getOrcFrameRect(), true);
