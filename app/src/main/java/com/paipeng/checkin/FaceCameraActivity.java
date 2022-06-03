@@ -132,7 +132,7 @@ public class FaceCameraActivity extends BaseCameraActivity {
     /**
      * 识别阈值
      */
-    private static final float SIMILAR_THRESHOLD = 0.5F;
+    private static final float SIMILAR_THRESHOLD = 0.9F;
     /**
      * 绘制人脸框的控件
      */
