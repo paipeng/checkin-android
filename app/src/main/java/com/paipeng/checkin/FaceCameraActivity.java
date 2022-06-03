@@ -39,7 +39,6 @@ import com.arcsoft.face.GenderInfo;
 import com.arcsoft.face.LivenessInfo;
 import com.arcsoft.face.enums.DetectFaceOrientPriority;
 import com.arcsoft.face.enums.DetectMode;
-import com.paipeng.checkin.utils.ImageUtil;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -166,6 +165,7 @@ public class FaceCameraActivity extends BaseCameraActivity {
         setContentView(R.layout.activity_face_camera);
 
     }
+
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy");
@@ -239,38 +239,18 @@ public class FaceCameraActivity extends BaseCameraActivity {
             //barcodeRectView.clearFaceInfo();
         }
         // 1920 x 1080
-        Log.d(TAG, "preview size: " + width + "-" + height);
+        //Log.d(TAG, "preview size: " + width + "-" + height);
         //Bitmap idCardBitmap = ImageUtil.cropYUVToBitmap(nv21, width, height, getFrameRect(), true);
         //ImageUtil.saveImage(idCardBitmap, "_crop");
-
 
         if (faceRectView != null) {
             faceRectView.clearFaceInfo();
         }
-        List<FacePreviewInfo> facePreviewInfoList = null;
+
         Rect faceFrameRect = getCropFaceFrameRect();
         Log.d(TAG, "faceFrameRect: " + faceFrameRect);
-        if (cameraHelper.getSpecificCameraId() == Camera.CameraInfo.CAMERA_FACING_BACK) {
-            //facePreviewInfoList = faceHelper.onPreviewFrame(ImageUtil.rotateYUV420Degree180(nv21, width, height));
-            //facePreviewInfoList = faceHelper.onPreviewFrame(ImageUtil.cropYUV(nv21, width, height, faceFrameRect, true), faceFrameRect.width(), faceFrameRect.height());
-            //Bitmap idCardBitmap = ImageUtil.cropYUVToBitmap(nv21, width, height, getFrameRect(), true);
-            //ImageUtil.saveImage(idCardBitmap, "_crop_back");
 
-            facePreviewInfoList = faceHelper.onPreviewFrame(nv21, width, height);
-        } else {
-            try {
-                YuvCroper yuvCroper = new YuvCroper(YUV_420SP, width, height, faceFrameRect);
-                byte[] cropNV21 = yuvCroper.crop(nv21);
-                Bitmap cropBitmap = ImageUtil.cropYUVToBitmap(cropNV21, faceFrameRect.width(), faceFrameRect.height());
-                ImageUtil.saveImage(cropBitmap, "_cropface");
-                facePreviewInfoList = faceHelper.onPreviewFrame(cropNV21, faceFrameRect.width(), faceFrameRect.height());
-            } catch (Exception e) {
-                e.printStackTrace();
-                facePreviewInfoList = faceHelper.onPreviewFrame(nv21, width, height);
-            }
-            //facePreviewInfoList = faceHelper.onPreviewFrame(ImageUtil.cropYUV(nv21, width, height, faceFrameRect, false), faceFrameRect.width(), faceFrameRect.height());
-            //facePreviewInfoList = faceHelper.onPreviewFrame(nv21);
-        }
+        List<FacePreviewInfo> facePreviewInfoList = faceHelper.onPreviewFrame(nv21);
 
         if (facePreviewInfoList != null && faceRectView != null && drawHelper != null) {
             Log.d(TAG, "facePreviewInfoList size: " + facePreviewInfoList.size());
@@ -829,7 +809,7 @@ public class FaceCameraActivity extends BaseCameraActivity {
                             faceHelper.setName(requestId, getString(com.arcsoft.arcfacedemo.R.string.recognize_success_notice, compareResult.getUserName()));
 
                             // compare success -> goback
-                           faceCompareResult(true, compareResult.getSimilar());
+                            faceCompareResult(true, compareResult.getSimilar());
                             //RegisterAndRecognizeActivity.this.finishActivity(0);
 
                         } else {
