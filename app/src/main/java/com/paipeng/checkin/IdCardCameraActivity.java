@@ -13,6 +13,7 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -154,6 +155,8 @@ public class IdCardCameraActivity extends FaceCameraActivity {
     protected void setContentView() {
         setContentView(R.layout.activity_idcard_camera);
         binding = ActivityIdcardCameraBinding.inflate(getLayoutInflater());
+
+        binding.switchCameraButton.setVisibility(View.GONE);
     }
     @Override
     protected void initView() {
