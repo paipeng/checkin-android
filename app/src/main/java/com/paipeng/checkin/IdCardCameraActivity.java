@@ -363,6 +363,14 @@ public class IdCardCameraActivity extends FaceCameraActivity {
         return rect;
     }
 
+    private Rect shiftRectWithOffset(Rect rect, Point offset) {
+        rect.top += offset.y;
+        rect.left += offset.x;
+        rect.right -= offset.y;
+        rect.bottom -= offset.x;
+        return rect;
+    }
+
     private void drawOcrResultModel(List<OcrResultModel> ocrResultModels) {
         Rect frameRect = getOrcFrameRect();
         List<DrawInfo> drawInfoList = new ArrayList<>();
