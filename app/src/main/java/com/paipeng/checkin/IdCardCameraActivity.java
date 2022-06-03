@@ -158,6 +158,7 @@ public class IdCardCameraActivity extends FaceCameraActivity {
 
         binding.switchCameraButton.setVisibility(View.GONE);
     }
+
     @Override
     protected void initView() {
         super.initView();
@@ -217,17 +218,22 @@ public class IdCardCameraActivity extends FaceCameraActivity {
         if (predictor.isLoaded()) {
             predictor.releaseModel();
         }
+
+        while (orcDetecting) {
+            Log.d(TAG, "wait for orcDetecting");
+        }
+
         super.onDestroy();
     }
 
     @Override
     protected void initEngine() {
-
+        super.initEngine();
     }
 
     @Override
     protected void unInitEngine() {
-
+        super.unInitEngine();
     }
 
     @Override
@@ -244,6 +250,7 @@ public class IdCardCameraActivity extends FaceCameraActivity {
 
 
     }
+
     @Override
     protected void handlePreview(byte[] nv21, int width, int height) {
         super.handlePreview(nv21, width, height);
@@ -256,7 +263,6 @@ public class IdCardCameraActivity extends FaceCameraActivity {
         } else {
             Log.d(TAG, "orcDetecting is running");
         }
-
     }
 
     protected Rect getOrcFrameRect() {
@@ -417,7 +423,7 @@ public class IdCardCameraActivity extends FaceCameraActivity {
 
             if (ocrResultModels.get(i).isValid()) {
                 color = RecognizeColor.COLOR_SUCCESS;
-                orcSuccessNum ++;
+                orcSuccessNum++;
             } else {
                 color = RecognizeColor.COLOR_FAILED;
                 orcSuccessNum = 0;
@@ -460,7 +466,7 @@ public class IdCardCameraActivity extends FaceCameraActivity {
         }
 
         // remove rifhgt column
-        ocrResultModels.removeIf(b -> b.getCenterPoint().x < predictor.inputImage().getHeight()/2);
+        ocrResultModels.removeIf(b -> b.getCenterPoint().x < predictor.inputImage().getHeight() / 2);
         // sort by center-y
         //ocrResultModels.sort(Comparator.comparing(ClassName::getFieldName));
         Collections.sort(ocrResultModels, (a, b) -> b.compareCoordinateY(a));
@@ -470,7 +476,9 @@ public class IdCardCameraActivity extends FaceCameraActivity {
             ocrResultModel.setClsLabel(String.valueOf(ocrResultModels.indexOf(ocrResultModel)));
         }
 
-        faceOCRIdCard = new FaceOCRIdCard();
+        if (faceOCRIdCard == null) {
+            faceOCRIdCard = new FaceOCRIdCard();
+        }
         if (idCard.getChipUID().equals(ocrResultModels.get(0).getLabel())) {
             faceOCRIdCard.setChipUIDBitmap(ImageUtil.cropBitmap(predictor.inputImage(), ocrResultModels.get(0).getRect()));
             //ImageUtil.saveImage(faceOCRIdCard.getChipUIDBitmap(), "_chipuid");
@@ -539,17 +547,32 @@ public class IdCardCameraActivity extends FaceCameraActivity {
         return ocrResultModels;
     }
 
+    @Override
+    protected void checkFaceResult(boolean success, float score) {
+        Log.d(TAG, "checkFaceResult: " + success + " score: " + score);
+        faceCompareSucccess = success;
+        if (faceOCRIdCard == null) {
+            faceOCRIdCard = new FaceOCRIdCard();
+        }
+        faceOCRIdCard.setFaceScore(score);
+    }
+
     private void orcDetectSuccess() {
         Log.d(TAG, "orcDetectSuccess");
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra("OCR_DETECT", true);
+        if (faceCompareSucccess) {
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("OCR_DETECT", true);
 
-        CommonUtil.getInstance().setFaceOCRIdCard(this.faceOCRIdCard);
+            CommonUtil.getInstance().setFaceOCRIdCard(this.faceOCRIdCard);
 
-        //resultIntent.putExtra("OCR_IDCARD", this.faceOCRIdCard); // Put anything what you want
-        setResult(Activity.RESULT_OK, resultIntent);
-        finish();
-        Log.d(TAG, "face compare success -> back");
+            //resultIntent.putExtra("OCR_IDCARD", this.faceOCRIdCard); // Put anything what you want
+            setResult(Activity.RESULT_OK, resultIntent);
+            finish();
+            Log.d(TAG, "ocr compare success -> back");
+        } else {
+            Log.d(TAG, "face compare failed");
+
+        }
     }
 
 }
