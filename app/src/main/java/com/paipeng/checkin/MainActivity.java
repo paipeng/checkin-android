@@ -243,16 +243,33 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "onCreateOptionsMenu");
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         User user = CommonUtil.getUser();
         if (user != null) {
             if (user.getRoles() != null) {
+                boolean roleAdmin = false;
                 for (Role role : user.getRoles()) {
                     if ("ADMIN".equals(role.getRole())) {
-                        menu.findItem(R.id.action_create_task).setVisible(true);
+                        roleAdmin = true;
                         break;
                     }
+                }
+
+                // check fragment
+                if (roleAdmin) {
+                    menu.findItem(R.id.action_create_task).setVisible(true);
+                    NavHostFragment navHostFragment = (NavHostFragment) (getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main));
+                    if (navHostFragment.getChildFragmentManager().getFragments().size() > 0) {
+                        Fragment fragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
+                        if (fragment != null && fragment instanceof TaskFragment) {
+                            menu.findItem(R.id.action_create_code).setVisible(true);
+                        }
+                    }
+                } else {
+                    menu.findItem(R.id.action_create_task).setVisible(false);
+                    menu.findItem(R.id.action_create_code).setVisible(false);
                 }
             }
         } else {

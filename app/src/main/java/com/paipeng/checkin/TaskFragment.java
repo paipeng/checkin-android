@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavDirections;
@@ -35,7 +36,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 
-public class TaskFragment extends Fragment {
+public class TaskFragment extends BaseFragment {
     private static final String TAG = TaskFragment.class.getSimpleName();
 
     private FragmentTaskBinding binding;
@@ -195,10 +196,15 @@ public class TaskFragment extends Fragment {
         binding.codeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final String data = (String) parent.getItemAtPosition(position);
-                Log.d(TAG, "onItemClick: " + data);
+                final Code code = (Code) parent.getItemAtPosition(position);
+                Log.d(TAG, "onItemClick: " + code);
             }
         });
     }
 
+
+    @Override
+    protected void returnActiveResult(ActivityResult result) {
+
+    }
 }
