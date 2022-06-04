@@ -209,8 +209,12 @@ public class TaskFragment extends BaseFragment {
     }
 
     public void switchCodeFragment(Object o) {
+        Bundle bundle = new Bundle();
+        bundle.putString("key", "abc"); // Put anything what you want
+        bundle.putSerializable("TASK", task);
+
         ((MainActivity)getActivity()).setSelectedTask(task);
         NavHostFragment.findNavController(TaskFragment.this)
-                .navigate(R.id.action_TaskFragment_to_CodeFragment);
+                .navigate(R.id.action_TaskFragment_to_CodeFragment, bundle);
     }
 }
