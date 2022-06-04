@@ -292,6 +292,15 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.action_create_task) {
             firstFragment.switchTaskDetail(null);
             return true;
+        } else if (id == R.id.action_create_code) {
+            NavHostFragment navHostFragment = (NavHostFragment) (getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main));
+            if (navHostFragment.getChildFragmentManager().getFragments().size() > 0) {
+                if (navHostFragment.getChildFragmentManager().getFragments().get(0) != null && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof TaskFragment) {
+                    TaskFragment taskFragment = (TaskFragment) navHostFragment.getChildFragmentManager().getFragments().get(0);
+                    taskFragment.switchCodeFragment(null);
+                }
+            }
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

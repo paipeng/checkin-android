@@ -31,6 +31,22 @@
         <action
             android:id="@+id/action_TaskFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
+        <action
+            android:id="@+id/action_TaskFragment_to_CodeFragment"
+            app:destination="@id/CodeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/CodeFragment"
+        android:name="com.paipeng.checkin.CodeFragment"
+        android:label="@string/code_fragment_label"
+        tools:layout="@layout/fragment_task">
+
+        <action
+            android:id="@+id/action_CodeFragment_to_RecordFragment"
+            app:destination="@id/RecordFragment" />
+        <action
+            android:id="@+id/action_CodeFragment_to_TaskFragment"
+            app:destination="@id/TaskFragment" />
     </fragment>
     <fragment
         android:id="@+id/RecordFragment"

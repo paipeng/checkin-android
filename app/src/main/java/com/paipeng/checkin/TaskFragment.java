@@ -207,4 +207,10 @@ public class TaskFragment extends BaseFragment {
     protected void returnActiveResult(ActivityResult result) {
 
     }
+
+    public void switchCodeFragment(Object o) {
+        ((MainActivity)getActivity()).setSelectedTask(task);
+        NavHostFragment.findNavController(TaskFragment.this)
+                .navigate(R.id.action_TaskFragment_to_CodeFragment);
+    }
 }

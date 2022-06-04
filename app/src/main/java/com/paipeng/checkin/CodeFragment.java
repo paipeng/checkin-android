@@ -9,11 +9,11 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.paipeng.checkin.databinding.FragmentFirst3Binding;
+import com.paipeng.checkin.databinding.FragmentCodeBinding;
 
-public class First3Fragment extends Fragment {
+public class CodeFragment extends Fragment {
 
-    private FragmentFirst3Binding binding;
+    private FragmentCodeBinding binding;
 
     @Override
     public View onCreateView(
@@ -21,7 +21,7 @@ public class First3Fragment extends Fragment {
             Bundle savedInstanceState
     ) {
 
-        binding = FragmentFirst3Binding.inflate(inflater, container, false);
+        binding = FragmentCodeBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
     }
@@ -32,7 +32,7 @@ public class First3Fragment extends Fragment {
         binding.buttonFirst.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NavHostFragment.findNavController(First3Fragment.this)
+                NavHostFragment.findNavController(CodeFragment.this)
                         .navigate(R.id.action_First3Fragment_to_Second3Fragment);
             }
         });
