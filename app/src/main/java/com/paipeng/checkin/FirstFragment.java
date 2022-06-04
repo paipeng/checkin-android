@@ -181,6 +181,14 @@ public class FirstFragment extends BaseFragment {
             Log.d(TAG, "record latlng: " + location.getLatitude() + "-" + location.getLongitude());
             record.setLatitude(BigDecimal.valueOf(location.getLatitude()));
             record.setLongitude(BigDecimal.valueOf(location.getLongitude()));
+
+            record.setCountry(location.getCountry());
+            record.setProvince(location.getProvince());
+            record.setCity(location.getCity());
+            record.setDistrict(location.getDistrict());
+            record.setAddress(location.getAddress());
+
+
             Log.d(TAG, "record latlng: " + record.getLatitude() + "-" + record.getLongitude());
 
             record.setUser(CommonUtil.getUser());

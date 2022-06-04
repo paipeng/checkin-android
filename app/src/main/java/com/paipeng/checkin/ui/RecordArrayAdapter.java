@@ -31,9 +31,11 @@ public class RecordArrayAdapter  extends ArrayAdapter<Record> {
         // Lookup view for data population
         TextView tvName = (TextView) convertView.findViewById(R.id.firstLine);
         TextView tvHome = (TextView) convertView.findViewById(R.id.secondLine);
+        TextView tvPlace = (TextView) convertView.findViewById(R.id.thirdLine);
         // Populate the data into the template view using the data object
         tvName.setText(record.getUser().getUsername());
         tvHome.setText(record.getCreateTime().toString() + " - " + record.getId());
+        tvPlace.setText(record.getCity() + " " +  record.getAddress() + " " + record.getLatitude() + "-" + record.getLongitude());
         // Return the completed view to render on screen
         return convertView;
     }
