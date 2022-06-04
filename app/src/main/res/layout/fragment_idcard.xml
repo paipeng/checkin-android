@@ -29,7 +29,7 @@
         android:layout_width="192dp"
         android:layout_height="56dp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="34dp"
         android:fontFamily="sans-serif-black"
         android:text="TextView"
         android:textSize="38sp"
@@ -41,12 +41,12 @@
         android:id="@+id/serialNumberTextView"
         android:layout_width="141dp"
         android:layout_height="33dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
         android:text="TextView"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/photoImageView"
-        app:layout_constraintTop_toBottomOf="@+id/nameTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/nameImageView" />
 
     <ListView
         android:id="@+id/idCardListView"
@@ -64,12 +64,12 @@
         android:id="@+id/ocrButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="18dp"
         android:text="@string/ocr_check"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.446"
+        app:layout_constraintHorizontal_bias="0.493"
         app:layout_constraintStart_toEndOf="@+id/faceButton"
-        app:layout_constraintTop_toBottomOf="@+id/serialNumberTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/serialNumberImageView" />
 
     <Button
         android:id="@+id/faceButton"
@@ -80,5 +80,27 @@
         android:text="@string/face_check"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/photoImageView" />
+
+    <ImageView
+        android:id="@+id/nameImageView"
+        android:layout_width="173dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="12dp"
+        android:src="@drawable/ic_launcher_foreground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.208"
+        app:layout_constraintStart_toEndOf="@+id/photoImageView"
+        app:layout_constraintTop_toBottomOf="@+id/nameTextView" />
+
+    <ImageView
+        android:id="@+id/serialNumberImageView"
+        android:layout_width="135dp"
+        android:layout_height="33dp"
+        android:layout_marginTop="12dp"
+        android:src="@drawable/scan_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.108"
+        app:layout_constraintStart_toEndOf="@+id/photoImageView"
+        app:layout_constraintTop_toBottomOf="@+id/serialNumberTextView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

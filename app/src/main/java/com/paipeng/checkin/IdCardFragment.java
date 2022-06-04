@@ -21,7 +21,6 @@ import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.arcsoft.arcfacedemo.activity.RegisterAndRecognizeActivity;
 import com.arcsoft.arcfacedemo.faceserver.FaceServer;
 import com.paipeng.checkin.databinding.FragmentIdcardBinding;
 import com.paipeng.checkin.model.FaceOCRIdCard;
@@ -78,6 +77,8 @@ public class IdCardFragment extends BaseFragment {
                 faceValidate();
             }
         });
+
+        binding.nameImageView.setVisibility(View.INVISIBLE);
 
         Bundle bundle = this.getArguments();
 
@@ -182,6 +183,8 @@ public class IdCardFragment extends BaseFragment {
     }
 
     public void showNdefMessage(byte[] tagId, NdefMessage[] ndefMessages, byte[] textData, byte[] data) {
+
+
         if (ndefMessages != null) {
             for (int i = 0; i < ndefMessages.length; i++) {
                 NdefRecord ndefRecord = Arrays.stream(((NdefMessage) ndefMessages[i]).getRecords()).findFirst().orElse(null);
@@ -193,9 +196,16 @@ public class IdCardFragment extends BaseFragment {
                 IdCard idCard = CommonUtil.convertToIdCard(NdefUtil.parseTextRecord(ndefRecord));
                 binding.nameTextView.setText(idCard.getName());
                 binding.serialNumberTextView.setText(StringUtil.bytesToHexString(tagId));
+
+
+
                 updateIdCardListView(idCard);
                 break;
             }
+
+
+            binding.nameImageView.setVisibility(View.INVISIBLE);
+            binding.serialNumberImageView.setVisibility(View.INVISIBLE);
         } else if (data != null && textData != null) {
             int dataLen = 0;
             for (int i = 0; i < data.length; i++) {
@@ -205,6 +215,7 @@ public class IdCardFragment extends BaseFragment {
                     break;
                 }
             }
+
 
             // convert byte[] to bitmap
             Bitmap bitmap = ImageUtil.convertByteToBitmap(data);
@@ -235,6 +246,11 @@ public class IdCardFragment extends BaseFragment {
             binding.nameTextView.setText(idCard.getName());
             binding.serialNumberTextView.setText(StringUtil.bytesToHexString(tagId));
             updateIdCardListView(idCard);
+
+
+
+            binding.nameImageView.setVisibility(View.INVISIBLE);
+            binding.serialNumberImageView.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -311,6 +327,13 @@ public class IdCardFragment extends BaseFragment {
             if (intent.getBooleanExtra("OCR_DETECT", false)) {
                 FaceOCRIdCard faceOCRIdCard = CommonUtil.getInstance().getFaceOCRIdCard();
                 Log.d(TAG, "faceOCRIdCard: " + faceOCRIdCard);
+
+
+                binding.nameImageView.setVisibility(View.VISIBLE);
+                binding.nameImageView.setImageBitmap(faceOCRIdCard.getNameBitmap());
+                binding.serialNumberImageView.setVisibility(View.VISIBLE);
+                binding.serialNumberImageView.setImageBitmap(faceOCRIdCard.getSerialNumberBitmap());
+                binding.ocrButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
                 updateFaceOCRIdCardListView(faceOCRIdCard);
             } else {
 
