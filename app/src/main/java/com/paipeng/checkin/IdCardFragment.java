@@ -121,7 +121,7 @@ public class IdCardFragment extends BaseFragment {
 
          */
 
-        mStartForResult.launch(new Intent(this.getActivity(), RegisterAndRecognizeActivity.class));
+        mStartForResult.launch(new Intent(this.getActivity(), FaceCameraActivity.class));
 
     }
 
