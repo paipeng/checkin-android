@@ -110,8 +110,8 @@ public class CodeFragment extends Fragment {
                         public void run() {
                             Toast.makeText(activity, "new code saved: " + code.getId(), Toast.LENGTH_LONG).show();
 
-                            NavHostFragment.findNavController(CodeFragment.this)
-                                    .navigate(R.id.action_CodeFragment_to_TaskFragment);
+                            NavHostFragment.findNavController(CodeFragment.this).navigateUp();
+//                                    .navigate(R.id.action_CodeFragment_to_TaskFragment);
                         }
                     });
                 }
