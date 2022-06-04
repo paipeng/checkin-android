@@ -53,7 +53,7 @@ public class FirstFragment extends BaseFragment {
         binding.buttonFirst.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                switchTaskDetail(null);
+                barcodeScan(null);
             }
         });
         //binding.buttonFirst.setVisibility(View.GONE);
@@ -190,17 +190,23 @@ public class FirstFragment extends BaseFragment {
     }
 
     public void switchTaskDetail(Task task) {
-        /*
         ((MainActivity)getActivity()).setSelectedTask(task);
         NavHostFragment.findNavController(FirstFragment.this)
                 .navigate(R.id.action_FirstFragment_to_SecondFragment);
-         */
         //mStartForResult.launch(new Intent(this.getActivity(), BarcodeCameraActivity.class));
         //mStartForResult.launch(new Intent(this.getActivity(), FaceCameraActivity.class));
 
         //Intent intent = new Intent(this.getActivity(), IdCardCameraActivity.class);
-        Intent intent = new Intent(this.getActivity(), FaceCameraActivity.class);
+        /*
+        Intent intent = new Intent(this.getActivity(), BarcodeCameraActivity.class);
+        intent.putExtra("key", "firstFragment"); // Put anything what you want
+        mStartForResult.launch(intent);
 
+         */
+    }
+
+    public void barcodeScan(Task task) {
+        Intent intent = new Intent(this.getActivity(), BarcodeCameraActivity.class);
         intent.putExtra("key", "firstFragment"); // Put anything what you want
         mStartForResult.launch(intent);
     }
@@ -228,6 +234,8 @@ public class FirstFragment extends BaseFragment {
             if (barcodeText != null) {
                 getActivity().runOnUiThread(new Runnable() {
                     public void run() {
+
+                        getCode(barcodeText);
                         Toast.makeText(getActivity(), "Barcode: " + barcodeText, Toast.LENGTH_LONG).show();
                     }
                 });
