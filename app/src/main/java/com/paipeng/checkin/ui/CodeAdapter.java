@@ -42,17 +42,20 @@ public class CodeAdapter  extends ArrayAdapter<Code> {
         }
         // Lookup view for data population
         TextView tvName = (TextView) convertView.findViewById(R.id.firstLine);
-        //TextView tvHome = (TextView) convertView.findViewById(R.id.secondLine);
+        TextView tvHome = (TextView) convertView.findViewById(R.id.secondLine);
         Switch switchButton = (Switch) convertView.findViewById(R.id.stateSwitch);
         ImageView iconImageview = (ImageView) convertView.findViewById(R.id.icon);
 
         // Populate the data into the template view using the data object
         //tvName.setText(code.getName());
 
-        tvName.setText(code.getSerialNumber());
+        tvName.setText(code.getName());
+        tvHome.setText(code.getSerialNumber());
+        /*
         switchButton.setChecked(code.getState()==1);
         switchButton.setText(code.getName());
 
+         */
         Bitmap iconBitmap;
         if (code.getType() == 0) {
             // barcode
