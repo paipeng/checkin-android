@@ -11,26 +11,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.paipeng.checkin.databinding.FragmentTaskBinding;
-import com.paipeng.checkin.location.CLocation;
 import com.paipeng.checkin.restclient.CheckInRestClient;
 import com.paipeng.checkin.restclient.base.HttpClientCallback;
 import com.paipeng.checkin.restclient.module.Code;
-import com.paipeng.checkin.restclient.module.Record;
 import com.paipeng.checkin.restclient.module.Task;
 import com.paipeng.checkin.ui.CodeAdapter;
-import com.paipeng.checkin.ui.IdCardAdapter;
 import com.paipeng.checkin.utils.CommonUtil;
 
-import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -88,7 +81,7 @@ public class TaskFragment extends BaseFragment {
                 String[] date = dateText.split("-");
                 if (date != null && date.length == 3) {
                     year = Integer.valueOf(date[0]);
-                    month = Integer.valueOf(date[1]) -1;
+                    month = Integer.valueOf(date[1]) - 1;
                     day = Integer.valueOf(date[2]);
                 }
                 // date picker dialog
@@ -96,7 +89,7 @@ public class TaskFragment extends BaseFragment {
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                                binding.taskStartTextDate.setText(year + "-" +(monthOfYear + 1) + "-" + dayOfMonth);
+                                binding.taskStartTextDate.setText(year + "-" + (monthOfYear + 1) + "-" + dayOfMonth);
                             }
                         }, year, month, day);
                 picker.show();
@@ -116,7 +109,7 @@ public class TaskFragment extends BaseFragment {
                 String[] date = dateText.split("-");
                 if (date != null && date.length == 3) {
                     year = Integer.valueOf(date[0]);
-                    month = Integer.valueOf(date[1]) -1;
+                    month = Integer.valueOf(date[1]) - 1;
                     day = Integer.valueOf(date[2]);
                 }
                 // date picker dialog
@@ -124,19 +117,19 @@ public class TaskFragment extends BaseFragment {
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                                binding.taskEndTextDate.setText(year + "-" +(monthOfYear + 1) + "-" + dayOfMonth);
+                                binding.taskEndTextDate.setText(year + "-" + (monthOfYear + 1) + "-" + dayOfMonth);
                             }
                         }, year, month, day);
                 picker.show();
             }
         });
 
-        task = ((MainActivity)getActivity()).getSelectedTask();
+        task = ((MainActivity) getActivity()).getSelectedTask();
         if (task != null) {
             binding.taskNameEditText.setText(task.getName());
             binding.taskDescriptionEditText.setText(task.getDescription());
             binding.taskCompanyNameEditText.setText(task.getCompany().getName());
-            binding.taskStateSwitch.setChecked(task.getState()==1);
+            binding.taskStateSwitch.setChecked(task.getState() == 1);
 
             //Calendar cal = Calendar.getInstance(Locale.ENGLISH);
             Calendar cal = new GregorianCalendar(TimeZone.getDefault());
@@ -198,6 +191,7 @@ public class TaskFragment extends BaseFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final Code code = (Code) parent.getItemAtPosition(position);
                 Log.d(TAG, "onItemClick: " + code);
+                switchCodeFragment(code);
             }
         });
     }
@@ -208,12 +202,13 @@ public class TaskFragment extends BaseFragment {
 
     }
 
-    public void switchCodeFragment(Object o) {
+    public void switchCodeFragment(Code code) {
         Bundle bundle = new Bundle();
         bundle.putString("key", "abc"); // Put anything what you want
         bundle.putSerializable("TASK", task);
+        bundle.putSerializable("CODE", code);
 
-        ((MainActivity)getActivity()).setSelectedTask(task);
+        ((MainActivity) getActivity()).setSelectedTask(task);
         NavHostFragment.findNavController(TaskFragment.this)
                 .navigate(R.id.action_TaskFragment_to_CodeFragment, bundle);
     }

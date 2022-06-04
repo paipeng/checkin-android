@@ -14,11 +14,9 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.paipeng.checkin.databinding.FragmentCodeBinding;
-import com.paipeng.checkin.location.CLocation;
 import com.paipeng.checkin.restclient.CheckInRestClient;
 import com.paipeng.checkin.restclient.base.HttpClientCallback;
 import com.paipeng.checkin.restclient.module.Code;
-import com.paipeng.checkin.restclient.module.Record;
 import com.paipeng.checkin.restclient.module.Task;
 import com.paipeng.checkin.utils.CommonUtil;
 
@@ -29,6 +27,7 @@ public class CodeFragment extends Fragment {
 
     private FragmentCodeBinding binding;
     private Task task;
+    private Code code;
 
     @Override
     public View onCreateView(
@@ -60,26 +59,55 @@ public class CodeFragment extends Fragment {
             Log.d(TAG, "value: " + value);
 
             this.task = (Task) bundle.getSerializable("TASK");
+
+            this.code = (Code) bundle.getSerializable("CODE");
+            if (this.code != null) {
+                initCode();
+            }
+        }
+    }
+
+    private void initCode() {
+        Log.d(TAG, "initCode");
+
+        binding.nameEditText.setText(code.getName());
+        binding.serialNumberEditText.setText(code.getSerialNumber());
+
+        if (code.getLatitude() != null) {
+            binding.latitudeEditText.setText(code.getLatitude().toString());
+        }
+        if (code.getLongitude() != null) {
+            binding.longitudeEditText.setText(code.getLongitude().toString());
+        }
+        binding.stateSwitch.setChecked(code.getState()==1);
+        //
+
+        if (code.getType() == 1) {
+            binding.typeRadioGroup.check(R.id.nfcRadioButton);
+        } else {
+            binding.typeRadioGroup.check(R.id.barcodeRadioButton);
         }
     }
 
     private Code validateCode() {
-        Code code = new Code();
+        if (code == null) {
+            code = new Code();
+        }
 
         Log.d(TAG, "saveCode name: " + binding.nameEditText.getText().toString());
-        if(TextUtils.isEmpty(binding.nameEditText.getText().toString())) {
-            binding.nameEditText.setError(getActivity().getResources().getString (R.string.name_should_not_empty));
+        if (TextUtils.isEmpty(binding.nameEditText.getText().toString())) {
+            binding.nameEditText.setError(getActivity().getResources().getString(R.string.name_should_not_empty));
             return null;
         }
         code.setName(binding.nameEditText.getText().toString());
         code.setSerialNumber(binding.serialNumberEditText.getText().toString());
-        if(!TextUtils.isEmpty(binding.latitudeEditText.getText().toString())) {
+        if (!TextUtils.isEmpty(binding.latitudeEditText.getText().toString())) {
             code.setLatitude(BigDecimal.valueOf(Double.valueOf(binding.latitudeEditText.getText().toString())));
         }
-        if(!TextUtils.isEmpty(binding.longitudeEditText.getText().toString())) {
+        if (!TextUtils.isEmpty(binding.longitudeEditText.getText().toString())) {
             code.setLongitude(BigDecimal.valueOf(Double.valueOf(binding.longitudeEditText.getText().toString())));
         }
-        code.setState(binding.stateSwitch.isChecked()?1:0);
+        code.setState(binding.stateSwitch.isChecked() ? 1 : 0);
 
         if (binding.typeRadioGroup.getCheckedRadioButtonId() == R.id.nfcRadioButton) {
             code.setType(1);
@@ -122,11 +150,14 @@ public class CodeFragment extends Fragment {
 
                 }
             });
-            checkInRestClient.saveCode(code);
+            if (code.getId() > 0) {
+                checkInRestClient.updateCode(code);
+            } else {
+                checkInRestClient.saveCode(code);
+            }
         } else {
             Log.e(TAG, "token invalid");
         }
-
 
 
     }
