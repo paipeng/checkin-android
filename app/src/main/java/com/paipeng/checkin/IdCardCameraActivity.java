@@ -215,12 +215,13 @@ public class IdCardCameraActivity extends FaceCameraActivity {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
-        if (predictor.isLoaded()) {
-            predictor.releaseModel();
-        }
 
         while (orcDetecting) {
             Log.d(TAG, "wait for orcDetecting");
+        }
+
+        if (predictor.isLoaded()) {
+            predictor.releaseModel();
         }
 
         super.onDestroy();
