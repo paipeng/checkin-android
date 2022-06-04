@@ -32,10 +32,12 @@ public class RecordArrayAdapter  extends ArrayAdapter<Record> {
         TextView tvName = (TextView) convertView.findViewById(R.id.firstLine);
         TextView tvHome = (TextView) convertView.findViewById(R.id.secondLine);
         TextView tvPlace = (TextView) convertView.findViewById(R.id.thirdLine);
+        TextView tvCode = (TextView) convertView.findViewById(R.id.fourthLine);
         // Populate the data into the template view using the data object
         tvName.setText(record.getUser().getUsername());
         tvHome.setText(record.getCreateTime().toString() + " - " + record.getId());
         tvPlace.setText(record.getCity() + " " +  record.getAddress() + " " + record.getLatitude() + "-" + record.getLongitude());
+        tvCode.setText(record.getCode().getName() + "(" + record.getCode().getSerialNumber() + ")");
         // Return the completed view to render on screen
         return convertView;
     }
