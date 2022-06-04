@@ -163,6 +163,7 @@ public class FirstFragment extends BaseFragment {
                     activity.runOnUiThread(new Runnable() {
                         public void run() {
                             Toast.makeText(activity, "record logged: " + record.getId(), Toast.LENGTH_LONG).show();
+                            switchTaskDetail(code.getTask());
                         }
                     });
                 }
