@@ -10,9 +10,12 @@
     <string name="latitude">GPS经度</string>
     <string name="longitude">GPS纬度</string>
     <string name="save">保存</string>
+    <string name="delete">删除</string>
     <string name="state">状态</string>
     <string name="codeType">类型</string>
     <string name="name_should_not_empty">名称不能为空</string>
+    <string name="dialog_title_confirm_delete">删除打卡码</string>
+    <string name="dialog_confirm_delete">确认删除此打开码吗？</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 

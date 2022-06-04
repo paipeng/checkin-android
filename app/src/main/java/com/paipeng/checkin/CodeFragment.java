@@ -1,6 +1,7 @@
 package com.paipeng.checkin;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -50,6 +52,13 @@ public class CodeFragment extends Fragment {
             }
         });
 
+        binding.deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteCode();
+            }
+        });
+
 
         Bundle bundle = this.getArguments();
 
@@ -63,6 +72,9 @@ public class CodeFragment extends Fragment {
             this.code = (Code) bundle.getSerializable("CODE");
             if (this.code != null) {
                 initCode();
+                binding.deleteButton.setEnabled(true);
+            } else {
+                binding.deleteButton.setEnabled(false);
             }
         }
     }
@@ -158,9 +170,54 @@ public class CodeFragment extends Fragment {
         } else {
             Log.e(TAG, "token invalid");
         }
-
-
     }
+
+
+    private void deleteCode() {
+        if (this.code != null) {
+            new AlertDialog.Builder(getActivity())
+                    .setTitle(getActivity().getResources().getString(R.string.dialog_title_confirm_delete))
+                    .setMessage(getActivity().getResources().getString(R.string.dialog_confirm_delete))
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            Toast.makeText(getActivity(), "Yes", Toast.LENGTH_SHORT).show();
+
+                            final Activity activity = getActivity();
+                            String token = CommonUtil.getUserToken(activity);
+                            Log.d(TAG, "deleteCode: " + token);
+                            if (token != null) {
+                                CheckInRestClient checkInRestClient = new CheckInRestClient(CommonUtil.SERVER_URL, token, new HttpClientCallback<String>() {
+                                    @Override
+                                    public void onSuccess(String response) {
+                                        Log.d(TAG, "onSuccess: " + response);
+
+                                        activity.runOnUiThread(new Runnable() {
+                                            public void run() {
+                                                Toast.makeText(activity, "code deleted: " + code.getId(), Toast.LENGTH_LONG).show();
+                                                NavHostFragment.findNavController(CodeFragment.this).navigateUp();
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onFailure(int code, String message) {
+                                        Log.e(TAG, "getTicketData error: " + code + " msg: " + message);
+
+                                    }
+                                });
+                                if (code.getId() > 0) {
+                                    checkInRestClient.deleteCode(code);
+                                }
+                            } else {
+                                Log.e(TAG, "token invalid");
+                            }
+                        }})
+                    .setNegativeButton(android.R.string.no, null).show();
+        }
+    }
+
 
 
     @Override

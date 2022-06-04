@@ -265,6 +265,7 @@ public class MainActivity extends AppCompatActivity {
                         Fragment fragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
                         if (fragment != null && fragment instanceof TaskFragment) {
                             menu.findItem(R.id.action_create_code).setVisible(true);
+                            menu.findItem(R.id.action_create_task).setVisible(false);
                         }
                     }
                 } else {
