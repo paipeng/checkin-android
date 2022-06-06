@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.paipeng.checkin.databinding.FragmentCodeBinding;
+import com.paipeng.checkin.location.CLocation;
 import com.paipeng.checkin.restclient.CheckInRestClient;
 import com.paipeng.checkin.restclient.base.HttpClientCallback;
 import com.paipeng.checkin.restclient.module.Code;
@@ -59,6 +60,23 @@ public class CodeFragment extends Fragment {
             }
         });
 
+        binding.randomButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.serialNumberEditText.setText(CommonUtil.getInstance().generateRandomSerialNumber());
+            }
+        });
+        binding.currentLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                CLocation location = ((MainActivity) getActivity()).getLocation();
+                Log.d(TAG, "currentLocation latlng: " + location.getLatitude() + "-" + location.getLongitude());
+
+                binding.latitudeEditText.setText(String.valueOf(location.getLatitude()));
+                binding.longitudeEditText.setText(String.valueOf(location.getLongitude()));
+            }
+        });
 
         Bundle bundle = this.getArguments();
 
@@ -99,6 +117,8 @@ public class CodeFragment extends Fragment {
         } else {
             binding.typeRadioGroup.check(R.id.barcodeRadioButton);
         }
+
+        binding.distanceEditText.setText(String.valueOf(code.getDistance()));
     }
 
     private Code validateCode() {
@@ -121,6 +141,7 @@ public class CodeFragment extends Fragment {
         }
         code.setState(binding.stateSwitch.isChecked() ? 1 : 0);
 
+        code.setDistance(Integer.valueOf(binding.distanceEditText.getText().toString()).intValue());
         if (binding.typeRadioGroup.getCheckedRadioButtonId() == R.id.nfcRadioButton) {
             code.setType(1);
         } else {

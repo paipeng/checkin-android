@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.UUID;
 
 public class CommonUtil {
     private static final String TAG = CommonUtil.class.getSimpleName();
@@ -244,6 +245,10 @@ public class CommonUtil {
 
     public void setFaceOCRIdCard(FaceOCRIdCard faceOCRIdCard) {
         this.faceOCRIdCard = faceOCRIdCard;
+    }
+
+    public String generateRandomSerialNumber() {
+        return UUID.randomUUID().toString().replaceAll("-", "").toUpperCase();
     }
 
 }
