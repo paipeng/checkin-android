@@ -47,7 +47,13 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> {
             // save
             add(task);
         } else if (state == 1) {
-
+            for (int i = 0; i < getCount(); i++) {
+                if (getItem(i).getId() == task.getId()) {
+                    remove(getItem(i));
+                    insert(task, i);
+                    break;
+                }
+            }
         } else if (state == 2) {
             remove(task);
         }
