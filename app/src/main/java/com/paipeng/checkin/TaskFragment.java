@@ -58,6 +58,11 @@ public class TaskFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        binding.companyNameEditText.setEnabled(false);
+        User user = CommonUtil.getUser();
+        if (user != null && user.getCompany() != null) {
+            binding.companyNameEditText.setText(user.getCompany().getName());
+        }
         binding.saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
