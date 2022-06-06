@@ -7,13 +7,13 @@
     tools:context=".TaskFragment">
 
     <EditText
-        android:id="@+id/taskNameEditText"
+        android:id="@+id/nameEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Name"
+        android:hint="@string/name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,71 +21,73 @@
         tools:ignore="MissingConstraints" />
 
     <EditText
-        android:id="@+id/taskStartTextDate"
+        android:id="@+id/startTimeEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:ems="10"
         android:inputType="date"
+        android:hint="@string/start_time"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskNameEditText"
+        app:layout_constraintTop_toBottomOf="@+id/nameEditText"
         tools:ignore="MissingConstraints" />
 
 
     <EditText
-        android:id="@+id/taskEndTextDate"
+        android:id="@+id/endTimeEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:ems="10"
         android:inputType="date"
+        android:hint="@string/end_time"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskStartTextDate"
+        app:layout_constraintTop_toBottomOf="@+id/startTimeEditText"
         tools:ignore="MissingConstraints" />
 
 
     <EditText
-        android:id="@+id/taskDescriptionEditText"
+        android:id="@+id/descriptionEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Description"
+        android:hint="@string/description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskEndTextDate"
+        app:layout_constraintTop_toBottomOf="@+id/endTimeEditText"
         tools:ignore="MissingConstraints" />
 
     <Switch
-        android:id="@+id/taskStateSwitch"
+        android:id="@+id/stateSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="Active"
+        android:text="@string/state"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.309"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskDescriptionEditText"
+        app:layout_constraintTop_toBottomOf="@+id/descriptionEditText"
         tools:ignore="MissingConstraints" />
 
     <EditText
-        android:id="@+id/taskCompanyNameEditText"
+        android:id="@+id/companyNameEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Company"
+        android:hint="@string/company"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskStateSwitch"
+        app:layout_constraintTop_toBottomOf="@+id/stateSwitch"
         tools:ignore="MissingConstraints" />
 
     <ListView
@@ -97,20 +99,32 @@
         android:layout_marginEnd="40dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskCompanyNameEditText">
+        app:layout_constraintTop_toBottomOf="@+id/companyNameEditText">
 
     </ListView>
 
     <Button
-        android:id="@+id/button_second"
+        android:id="@+id/saveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
-        android:text="@string/previous"
+        android:layout_marginTop="16dp"
+        android:text="@string/save"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.257"
+        app:layout_constraintHorizontal_bias="0.114"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/codeListView"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/deleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/delete"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/saveButton"
         app:layout_constraintTop_toBottomOf="@+id/codeListView"
         app:layout_constraintVertical_bias="0.0" />
 
@@ -118,11 +132,13 @@
         android:id="@+id/recordButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Record"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="44dp"
+        android:text="@string/record"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.458"
-        app:layout_constraintStart_toEndOf="@+id/button_second"
-        tools:layout_editor_absoluteY="538dp"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/saveButton2"
+        app:layout_constraintTop_toBottomOf="@+id/codeListView"
         tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

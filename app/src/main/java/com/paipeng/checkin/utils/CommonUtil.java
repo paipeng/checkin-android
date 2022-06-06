@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.paipeng.checkin.data.model.LoggedInUser;
 import com.paipeng.checkin.model.FaceOCRIdCard;
 import com.paipeng.checkin.model.IdCard;
+import com.paipeng.checkin.restclient.module.Role;
 import com.paipeng.checkin.restclient.module.User;
 
 import java.io.BufferedInputStream;
@@ -104,6 +105,18 @@ public class CommonUtil {
 
     public static User getUser() {
         return user;
+    }
+
+    public static boolean isAdmin() {
+        if (user != null && user.getRoles() != null) {
+            boolean roleAdmin = false;
+            for (Role role : user.getRoles()) {
+                if ("ADMIN".equals(role.getRole())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static void setUser(User user) {

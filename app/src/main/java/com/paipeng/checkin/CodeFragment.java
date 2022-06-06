@@ -177,7 +177,7 @@ public class CodeFragment extends Fragment {
         if (this.code != null) {
             new AlertDialog.Builder(getActivity())
                     .setTitle(getActivity().getResources().getString(R.string.dialog_title_confirm_delete))
-                    .setMessage(getActivity().getResources().getString(R.string.dialog_confirm_delete))
+                    .setMessage(getActivity().getResources().getString(R.string.dialog_confirm_delete_code))
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
