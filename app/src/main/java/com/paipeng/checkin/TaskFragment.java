@@ -61,7 +61,11 @@ public class TaskFragment extends BaseFragment {
         binding.saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveTask();
+                if (task == null || task.getId() == 0) {
+                    saveTask();
+                } else {
+                    updateTask();
+                }
             }
         });
 
@@ -149,14 +153,16 @@ public class TaskFragment extends BaseFragment {
             //Calendar cal = Calendar.getInstance(Locale.ENGLISH);
             Calendar cal = new GregorianCalendar(TimeZone.getDefault());
 
-            cal.setTimeInMillis(task.getStartTime().getTime());
-            String date = DateFormat.format("yyyy-MM-dd", cal).toString();
-            binding.startTimeEditText.setText(date);
-
-            cal.setTimeInMillis(task.getEndTime().getTime());
-            date = DateFormat.format("yyyy-MM-dd", cal).toString();
-            binding.endTimeEditText.setText(date);
-
+            if (task.getStartTime() != null) {
+                cal.setTimeInMillis(task.getStartTime().getTime());
+                String date = DateFormat.format("yyyy-MM-dd", cal).toString();
+                binding.startTimeEditText.setText(date);
+            }
+            if (task.getEndTime() != null) {
+                cal.setTimeInMillis(task.getEndTime().getTime());
+                String date = DateFormat.format("yyyy-MM-dd", cal).toString();
+                binding.endTimeEditText.setText(date);
+            }
             getCodesByTask(task);
 
             binding.deleteButton.setEnabled(true);
@@ -179,30 +185,31 @@ public class TaskFragment extends BaseFragment {
                         final Activity activity = getActivity();
                         String token = CommonUtil.getUserToken(activity);
                         Log.d(TAG, "deleteCode: " + token);
-                        if (token != null) {
-                            CheckInRestClient checkInRestClient = new CheckInRestClient(CommonUtil.SERVER_URL, token, new HttpClientCallback<String>() {
-                                @Override
-                                public void onSuccess(String response) {
-                                    Log.d(TAG, "onSuccess: " + response);
-
-                                    activity.runOnUiThread(new Runnable() {
-                                        public void run() {
-                                            Toast.makeText(activity, "task deleted: " + task.getId(), Toast.LENGTH_LONG).show();
-                                            NavHostFragment.findNavController(TaskFragment.this).navigateUp();
-                                        }
-                                    });
-                                }
-
-                                @Override
-                                public void onFailure(int code, String message) {
-                                    Log.e(TAG, "deleteTask error: " + code + " msg: " + message);
-                                }
-                            });
-                            if (task.getId() > 0) {
-                                checkInRestClient.deleteTask(task);
-                            }
-                        } else {
+                        if (token == null) {
                             Log.e(TAG, "token invalid");
+                            return;
+                        }
+                        CheckInRestClient checkInRestClient = new CheckInRestClient(CommonUtil.SERVER_URL, token, new HttpClientCallback<String>() {
+                            @Override
+                            public void onSuccess(String response) {
+                                Log.d(TAG, "onSuccess: " + response);
+
+                                activity.runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        Toast.makeText(activity, "task deleted: " + task.getId(), Toast.LENGTH_LONG).show();
+                                        taskResult(2, task);
+                                        NavHostFragment.findNavController(TaskFragment.this).navigateUp();
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onFailure(int code, String message) {
+                                Log.e(TAG, "deleteTask error: " + code + " msg: " + message);
+                            }
+                        });
+                        if (task.getId() > 0) {
+                            checkInRestClient.deleteTask(task);
                         }
                     }})
                 .setNegativeButton(android.R.string.no, null).show();
@@ -247,6 +254,9 @@ public class TaskFragment extends BaseFragment {
 
         return task;
     }
+
+
+
     private void saveTask() {
         Log.d(TAG, "saveTask");
         Task task = validateTask();
@@ -257,36 +267,84 @@ public class TaskFragment extends BaseFragment {
         final Activity activity = this.getActivity();
         String token = CommonUtil.getUserToken(activity);
         Log.d(TAG, "saveTask: " + token);
-        if (token != null) {
-            CheckInRestClient checkInRestClient = new CheckInRestClient(CommonUtil.SERVER_URL, token, new HttpClientCallback<Task>() {
-                @Override
-                public void onSuccess(Task task) {
-                    Log.d(TAG, "onSuccess: " + task.getId());
-
-                    activity.runOnUiThread(new Runnable() {
-                        public void run() {
-                            Toast.makeText(activity, "new task saved: " + task.getId(), Toast.LENGTH_LONG).show();
-
-                            NavHostFragment.findNavController(TaskFragment.this).navigateUp();
-//                                    .navigate(R.id.action_CodeFragment_to_TaskFragment);
-                        }
-                    });
-                }
-
-                @Override
-                public void onFailure(int code, String message) {
-                    Log.e(TAG, "getTicketData error: " + code + " msg: " + message);
-
-                }
-            });
-            if (task.getId() > 0) {
-                checkInRestClient.updateTask(task);
-            } else {
-                checkInRestClient.saveTask(task);
-            }
-        } else {
+        if (token == null) {
             Log.e(TAG, "token invalid");
+            return;
         }
+        CheckInRestClient checkInRestClient = new CheckInRestClient(CommonUtil.SERVER_URL, token, new HttpClientCallback<Task>() {
+            @Override
+            public void onSuccess(Task task) {
+                Log.d(TAG, "onSuccess: " + task.getId());
+
+                activity.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(activity, "new task saved: " + task.getId(), Toast.LENGTH_LONG).show();
+                        taskResult(0, task);
+                        NavHostFragment.findNavController(TaskFragment.this).navigateUp();
+//                                    .navigate(R.id.action_CodeFragment_to_TaskFragment);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(int code, String message) {
+                Log.e(TAG, "getTicketData error: " + code + " msg: " + message);
+
+            }
+        });
+        checkInRestClient.saveTask(task);
+    }
+
+
+    private void updateTask() {
+        Log.d(TAG, "updateTask");
+        Task task = validateTask();
+        if (task == null) {
+            return;
+        }
+
+        final Activity activity = this.getActivity();
+        String token = CommonUtil.getUserToken(activity);
+        Log.d(TAG, "updateTask: " + token);
+        if (token == null) {
+            Log.e(TAG, "token invalid");
+            return;
+        }
+        CheckInRestClient checkInRestClient = new CheckInRestClient(CommonUtil.SERVER_URL, token, new HttpClientCallback<Task>() {
+            @Override
+            public void onSuccess(Task task) {
+                Log.d(TAG, "onSuccess: " + task.getId());
+
+                activity.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(activity, "task updated: " + task.getId(), Toast.LENGTH_LONG).show();
+                        taskResult(1, task);
+                        NavHostFragment.findNavController(TaskFragment.this).navigateUp();
+//                                    .navigate(R.id.action_CodeFragment_to_TaskFragment);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(int code, String message) {
+                Log.e(TAG, "getTicketData error: " + code + " msg: " + message);
+
+            }
+        });
+        checkInRestClient.updateTask(task);
+    }
+
+    /**
+     *
+     * @param state: 0 save; 1 update; 2 delete
+     * @task Task
+     */
+    private void taskResult(int state, Task task) {
+        Log.d(TAG, "taskResult: " + state);
+        Bundle result = new Bundle();
+        result.putInt("state", state);
+        result.putSerializable("task", task);
+        getParentFragmentManager().setFragmentResult("TASK_RESULT", result);
     }
 
     @Override

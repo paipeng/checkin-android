@@ -50,7 +50,6 @@ import com.paipeng.checkin.location.CLocation;
 import com.paipeng.checkin.location.GoogleLocationService;
 import com.paipeng.checkin.restclient.CheckInRestClient;
 import com.paipeng.checkin.restclient.base.HttpClientCallback;
-import com.paipeng.checkin.restclient.module.Role;
 import com.paipeng.checkin.restclient.module.Task;
 import com.paipeng.checkin.restclient.module.User;
 import com.paipeng.checkin.utils.CommonUtil;
@@ -418,7 +417,7 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         public void run() {
                             if (firstFragment != null) {
-                                firstFragment.updateTaskListView(tasks);
+                                firstFragment.initTaskListView(tasks);
                             }
                         }
                     });

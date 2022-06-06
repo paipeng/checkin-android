@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.paipeng.checkin.databinding.FragmentFirstBinding;
@@ -62,12 +63,29 @@ public class FirstFragment extends BaseFragment {
             this.tasks = ((MainActivity) getActivity()).getTaskList();
         }
         if (this.tasks != null) {
-            updateTaskListView(this.tasks);
+            initTaskListView(this.tasks);
         } else {
             Log.e(TAG, "task invalid: null");
         }
 
         //switchIdCard(null, null, null);
+
+        getParentFragmentManager().setFragmentResultListener("TASK_RESULT", this, new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle bundle) {
+                Log.d(TAG, "onFragmentResult: " + requestKey);
+                // We use a String here, but any type that can be put in a Bundle is supported
+                if (requestKey.equals("TASK_RESULT")) {
+                    int state = bundle.getInt("state");
+                    Log.d(TAG, "state: " + state);
+                    Task task = (Task)bundle.getSerializable("task");
+                    // Do something with the result
+                    Log.d(TAG, "task: " + task);
+                    updateTaskListView(state, task);
+
+                }
+            }
+        });
     }
 
     @Override
@@ -93,8 +111,15 @@ public class FirstFragment extends BaseFragment {
         switchIdCard(tagId, ndefMessages, textData, data);
     }
 
-    public void updateTaskListView(List<Task> tasks) {
-        this.tasks = tasks;
+    private void updateTaskListView(int state, Task task) {
+        TaskArrayAdapter taskArrayAdapter = (TaskArrayAdapter)binding.taskListView.getAdapter();
+        if (taskArrayAdapter != null) {
+            taskArrayAdapter.updateTask(state, task);
+        }
+    }
+
+    public void initTaskListView(List<Task> tasks) {
+        //this.tasks = tasks;
         TaskArrayAdapter taskArrayAdapter = new TaskArrayAdapter(this.getActivity(), R.layout.task_array_adapter, tasks);
 
         binding.taskListView.setAdapter(taskArrayAdapter);
