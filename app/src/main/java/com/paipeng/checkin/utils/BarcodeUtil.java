@@ -1,5 +1,7 @@
 package com.paipeng.checkin.utils;
 
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.util.Log;
 
 import com.google.zxing.BarcodeFormat;
@@ -7,9 +9,12 @@ import com.google.zxing.BinaryBitmap;
 import com.google.zxing.ChecksumException;
 import com.google.zxing.DecodeHintType;
 import com.google.zxing.FormatException;
+import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.Result;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
 
@@ -46,6 +51,26 @@ public class BarcodeUtil {
                 System.err.println("decodeQR: " + strResult);
                 return strResult;
             }
+        }
+        return null;
+    }
+
+    public static Bitmap generateBarcode(String data) {
+        MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+        try {
+            BitMatrix bitMatrix = multiFormatWriter.encode(data, BarcodeFormat.QR_CODE,400,400);
+
+            int height = bitMatrix.getHeight();
+            int width = bitMatrix.getWidth();
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+            for (int x = 0; x < width; x++){
+                for (int y = 0; y < height; y++){
+                    bitmap.setPixel(x, y, bitMatrix.get(x,y) ? Color.BLACK : Color.WHITE);
+                }
+            }
+            return bitmap;
+        } catch (WriterException e) {
+            e.printStackTrace();
         }
         return null;
     }

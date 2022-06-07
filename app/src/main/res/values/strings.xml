@@ -27,6 +27,7 @@
     <string name="distance">打卡距离（千米）</string>
     <string name="random_serialnumber">随机生成</string>
     <string name="current_location">当前位置</string>
+    <string name="show_barcode">显示二维码</string>
 
     <string name="hello_first_fragment"></string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>

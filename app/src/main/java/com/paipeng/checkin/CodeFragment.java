@@ -2,12 +2,14 @@ package com.paipeng.checkin;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,6 +23,7 @@ import com.paipeng.checkin.restclient.CheckInRestClient;
 import com.paipeng.checkin.restclient.base.HttpClientCallback;
 import com.paipeng.checkin.restclient.module.Code;
 import com.paipeng.checkin.restclient.module.Task;
+import com.paipeng.checkin.utils.BarcodeUtil;
 import com.paipeng.checkin.utils.CommonUtil;
 
 import java.math.BigDecimal;
@@ -63,7 +66,9 @@ public class CodeFragment extends Fragment {
         binding.randomButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                binding.serialNumberEditText.setText(CommonUtil.getInstance().generateRandomSerialNumber());
+                String serialNumber = CommonUtil.getInstance().generateRandomSerialNumber();
+                Log.d(TAG, "generateRandomSerialNumber: " + serialNumber);
+                binding.serialNumberEditText.setText(serialNumber);
             }
         });
         binding.currentLocationButton.setOnClickListener(new View.OnClickListener() {
@@ -77,7 +82,12 @@ public class CodeFragment extends Fragment {
                 binding.longitudeEditText.setText(String.valueOf(location.getLongitude()));
             }
         });
-
+        binding.showBarcodeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showBarcodeDialog();
+            }
+        });
         Bundle bundle = this.getArguments();
 
         if (bundle != null) {
@@ -95,6 +105,31 @@ public class CodeFragment extends Fragment {
                 binding.deleteButton.setEnabled(false);
             }
         }
+    }
+
+    private void showBarcodeDialog() {
+        Log.d(TAG, "showBarcodeDialog");
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        //Yes Button
+        builder.setPositiveButton(getString(com.arcsoft.arcfacedemo.R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //Toast.makeText(getActivity(), "Yes button Clicked", Toast.LENGTH_LONG).show();
+                Log.i(TAG, "Yes button Clicked!");
+                dialog.dismiss();
+            }
+        });
+
+        LayoutInflater inflater = getLayoutInflater();
+        View dialoglayout = inflater.inflate(R.layout.dialog_showbarcode, null);
+
+        ImageView barcodeImageView = (ImageView) dialoglayout.findViewById(R.id.barcodeImageView);
+        // gen barcode (qrcode)
+        Bitmap bitmap = BarcodeUtil.generateBarcode(code.getSerialNumber());
+        barcodeImageView.setImageBitmap(bitmap);
+
+        builder.setView(dialoglayout);
+        builder.show();
     }
 
     private void initCode() {
