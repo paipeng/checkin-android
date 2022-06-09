@@ -32,7 +32,7 @@ import java.util.TimerTask;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class SplashActivity extends AppCompatActivity {
+public class SplashActivity extends BaseActivity {
     private static final String TAG = SplashActivity.class.getSimpleName();
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -206,24 +206,29 @@ public class SplashActivity extends AppCompatActivity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
+    @Override
+    protected void loginSuccess() {
+        gotoMain();
+    }
+
+    @Override
+    protected void loginFailed() {
+        gotoLogin();
+    }
+
     class SplashTimerTask extends TimerTask {
         @Override
         public void run() {
-            LoggedInUser loggedInUser = CommonUtil.getLoggedInUser(SplashActivity.this);
-            if (loggedInUser == null) {
-                gotoLogin();
-            } else {
-                login(loggedInUser);
-                //intent.setClass(SplashActivity.this, MainActivity.class);
-            }
-
+            checkLogin();
         }
 
         public long scheduledExecutionTime() {
             return super.scheduledExecutionTime();
         }
     }
-    private void gotoLogin() {
+
+    @Override
+    protected void gotoLogin() {
         Intent intent = new Intent();
         intent.setClass(SplashActivity.this, LoginActivity.class);
         startActivity(intent);
@@ -232,7 +237,8 @@ public class SplashActivity extends AppCompatActivity {
         splashTimerTask.cancel();
     }
 
-    private void gotoMain() {
+    @Override
+    protected void gotoMain() {
         Intent intent = new Intent();
         intent.setClass(SplashActivity.this, MainActivity.class);
         startActivity(intent);
@@ -241,35 +247,4 @@ public class SplashActivity extends AppCompatActivity {
         splashTimerTask.cancel();
     }
 
-    private void login(LoggedInUser loggedInUser) {
-        CheckInRestClient checkInRestClient = new CheckInRestClient(CommonUtil.SERVER_URL);
-        checkInRestClient.setHttpClientCallback(new HttpClientCallback<User>() {
-            @Override
-            public void onSuccess(User user) {
-                Log.d(TAG, "onSuccess: " + user.getToken());
-
-                CommonUtil.setUserToken(SplashActivity.this, user.getToken());
-                CommonUtil.setUser(user);
-                gotoMain();
-            }
-
-            @Override
-            public void onFailure(int code, String message) {
-                Log.e(TAG, "getTicketData error: " + code + " msg: " + message);
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        Toast.makeText(SplashActivity.this, ("getTicketData error: " + code + " msg: " + message), Toast.LENGTH_LONG);
-                    }
-                });
-                gotoLogin();
-            }
-        });
-
-        User user = new User();
-        user.setUsername(loggedInUser.getUsername());
-        user.setPassword(loggedInUser.getPassword());
-        user.setTenant("tenant_1");
-
-        checkInRestClient.login(user);
-    }
 }

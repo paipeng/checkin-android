@@ -197,6 +197,15 @@ public class FirstFragment extends BaseFragment {
                 public void onFailure(int code, String message) {
                     Log.e(TAG, "getTicketData error: " + code + " msg: " + message);
                     showWaitDialog(false);
+
+                    if (code == 401) {
+                        ((MainActivity) activity).checkLogin();
+                    }
+                    activity.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(activity, "record log error: " + code + " - " + message, Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
             });
 

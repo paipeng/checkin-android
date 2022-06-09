@@ -65,7 +65,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private AppBarConfiguration appBarConfiguration;
@@ -565,4 +565,16 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+
+    @Override
+    protected void loginSuccess() {
+        Log.d(TAG, "loginSuccess");
+    }
+
+    @Override
+    protected void loginFailed() {
+        Log.e(TAG, "loginFailed");
+    }
+
 }
