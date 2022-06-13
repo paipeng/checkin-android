@@ -52,7 +52,7 @@ public class StringUtil {
             }
             stringBuilder.append(hv);
         }
-        return stringBuilder.toString();
+        return stringBuilder.toString().toUpperCase();
     }
 
     /**
