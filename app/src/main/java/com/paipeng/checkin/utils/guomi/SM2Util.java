@@ -101,7 +101,7 @@ public class SM2Util {
             ECDomainParameters domainParameters = new ECDomainParameters(parameterSpec.getCurve(), parameterSpec.getG(),
                     parameterSpec.getN(), parameterSpec.getH());
             ECPublicKeyParameters ecPublicKeyParameters = new ECPublicKeyParameters(publicKey.getQ(), domainParameters);
-            SM2Engine engine = new SM2Engine(SM2Engine.Mode.C1C3C2);
+            SM2Engine engine = new SM2Engine(SM2Engine.Mode.C1C2C3);
             ParametersWithRandom pwr = new ParametersWithRandom(ecPublicKeyParameters, new SecureRandom());
             engine.init(true, pwr);
             sm2Byte = engine.processBlock(dataByte, 0, dataByte.length);
@@ -119,7 +119,7 @@ public class SM2Util {
             ECDomainParameters domainParameters = new ECDomainParameters(parameterSpec.getCurve(), parameterSpec.getG(),
                     parameterSpec.getN(), parameterSpec.getH());
             ECPrivateKeyParameters ecPrivateKeyParameters = new ECPrivateKeyParameters(privateKey.getD(), domainParameters);
-            SM2Engine engine = new SM2Engine(SM2Engine.Mode.C1C3C2);
+            SM2Engine engine = new SM2Engine(SM2Engine.Mode.C1C2C3);
             engine.init(false, ecPrivateKeyParameters);
             sm2Byte = engine.processBlock(dataByte, 0, dataByte.length);
         } catch (InvalidCipherTextException e) {
@@ -133,7 +133,7 @@ public class SM2Util {
     public byte[] encode(ECPublicKeyParameters ecPublicKeyParameters, byte[] dataByte) {
         byte[] sm2Byte = null;
         try {
-            SM2Engine engine = new SM2Engine(SM2Engine.Mode.C1C3C2);
+            SM2Engine engine = new SM2Engine(SM2Engine.Mode.C1C2C3);
             ParametersWithRandom pwr = new ParametersWithRandom(ecPublicKeyParameters, new SecureRandom());
             engine.init(true, pwr);
             sm2Byte = engine.processBlock(dataByte, 0, dataByte.length);
@@ -148,7 +148,7 @@ public class SM2Util {
     public byte[] decode(ECPrivateKeyParameters ecPrivateKeyParameters, byte[] dataByte) {
         byte[] sm2Byte = null;
         try {
-            SM2Engine engine = new SM2Engine(SM2Engine.Mode.C1C3C2);
+            SM2Engine engine = new SM2Engine(SM2Engine.Mode.C1C2C3);
             engine.init(false, ecPrivateKeyParameters);
             sm2Byte = engine.processBlock(dataByte, 0, dataByte.length);
         } catch (InvalidCipherTextException e) {
