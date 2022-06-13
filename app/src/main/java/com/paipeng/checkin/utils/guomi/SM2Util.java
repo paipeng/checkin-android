@@ -4,9 +4,13 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.X500NameBuilder;
+import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.engines.SM2Engine;
 import org.bouncycastle.crypto.params.ECDomainParameters;
+import org.bouncycastle.crypto.params.ECKeyParameters;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.crypto.params.ParametersWithRandom;
@@ -14,10 +18,18 @@ import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECParameterSpec;
+import org.bouncycastle.math.ec.ECCurve;
+import org.bouncycastle.math.ec.ECPoint;
+import org.bouncycastle.math.ec.custom.gm.SM2P256V1Curve;
+import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -25,12 +37,41 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.security.Security;
+import java.security.cert.CertificateEncodingException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 
 public class SM2Util {
     private static final String SM_EC = "EC";
+    public static final SM2P256V1Curve CURVE = new SM2P256V1Curve();
+    public final static BigInteger SM2_ECC_P = CURVE.getQ();
+    public final static BigInteger SM2_ECC_A = CURVE.getA().toBigInteger();
+    public final static BigInteger SM2_ECC_B = CURVE.getB().toBigInteger();
+    public final static BigInteger SM2_ECC_N = CURVE.getOrder();
+    public final static BigInteger SM2_ECC_H = CURVE.getCofactor();
+    public final static BigInteger SM2_ECC_GX = new BigInteger(
+            "32C4AE2C1F1981195F9904466A39C9948FE30BBFF2660BE1715A4589334C74C7", 16);
+    public final static BigInteger SM2_ECC_GY = new BigInteger(
+            "BC3736A2F4F6779C59BDCEE36B692153D0A9877CC62A474002DF32E52139F0A0", 16);
 
-    public static KeyPair generateKeyPair(ECDomainParameters domainParameters, SecureRandom random)
+    public static final ECPoint G_POINT = CURVE.createPoint(SM2_ECC_GX, SM2_ECC_GY);
+    public static final ECDomainParameters DOMAIN_PARAMS = new ECDomainParameters(CURVE, G_POINT,
+            SM2_ECC_N, SM2_ECC_H);
+    private static SM2Util INSTANCE;
+
+    public static SM2Util getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new SM2Util();
+        }
+        return INSTANCE;
+    }
+    public SM2Util() {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+
+    public KeyPair generateKeyPair(ECDomainParameters domainParameters, SecureRandom random)
             throws NoSuchProviderException, NoSuchAlgorithmException,
             InvalidAlgorithmParameterException {
         KeyPairGenerator kpg = KeyPairGenerator.getInstance(SM_EC, BouncyCastleProvider.PROVIDER_NAME);
@@ -40,8 +81,9 @@ public class SM2Util {
         return kpg.generateKeyPair();
     }
 
+
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public static void savePrivateKey2File(PrivateKey privateKey, File outPutFile) throws Exception {
+    public void savePrivateKey2File(PrivateKey privateKey, File outPutFile) throws Exception {
         byte[] prks = Base64.getEncoder().encode(privateKey.getEncoded());
         FileOutputStream fos = new FileOutputStream(outPutFile);
         fos.write(prks);
@@ -58,7 +100,7 @@ public class SM2Util {
         fos.close();
     }
 
-    public static byte[] encode(BCECPublicKey publicKey, byte[] dataByte) {
+    public byte[] encode(BCECPublicKey publicKey, byte[] dataByte) {
         byte[] sm2Byte = null;
         try {
             ECParameterSpec parameterSpec = publicKey.getParameters();
@@ -76,7 +118,36 @@ public class SM2Util {
         return sm2Byte;
     }
 
-    public static byte[] decode(BCECPrivateKey privateKey, byte[] dataByte) {
+
+    public byte[] encode(ECPublicKeyParameters ecPublicKeyParameters, byte[] dataByte) {
+        byte[] sm2Byte = null;
+        try {
+            SM2Engine engine = new SM2Engine(SM2Engine.Mode.C1C3C2);
+            ParametersWithRandom pwr = new ParametersWithRandom(ecPublicKeyParameters, new SecureRandom());
+            engine.init(true, pwr);
+            sm2Byte = engine.processBlock(dataByte, 0, dataByte.length);
+        } catch (InvalidCipherTextException e) {
+            e.printStackTrace();
+        }
+
+        return sm2Byte;
+    }
+
+
+    public byte[] decode(ECPrivateKeyParameters ecPrivateKeyParameters, byte[] dataByte) {
+        byte[] sm2Byte = null;
+        try {
+            SM2Engine engine = new SM2Engine(SM2Engine.Mode.C1C3C2);
+            engine.init(false, ecPrivateKeyParameters);
+            sm2Byte = engine.processBlock(dataByte, 0, dataByte.length);
+        } catch (InvalidCipherTextException e) {
+            e.printStackTrace();
+        }
+
+        return sm2Byte;
+    }
+
+    public byte[] decode(BCECPrivateKey privateKey, byte[] dataByte) {
         byte[] sm2Byte = null;
         try {
             ECParameterSpec parameterSpec = privateKey.getParameters();
@@ -93,4 +164,67 @@ public class SM2Util {
         return sm2Byte;
     }
 
+    public BCECPrivateKey parseBCECPrivateKey(byte[] data) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        KeyFactory kf = KeyFactory.getInstance(SM_EC);
+        PrivateKey prv_recovered = kf.generatePrivate(new PKCS8EncodedKeySpec(data));
+
+        return null;//prv_recovered;
+    }
+
+
+    public static int getCurveLength(ECKeyParameters ecKey) {
+        return getCurveLength(ecKey.getParameters());
+    }
+
+    public static int getCurveLength(ECDomainParameters domainParams) {
+        return (domainParams.getCurve().getFieldSize() + 7) / 8;
+    }
+
+
+    public static byte[] fixToCurveLengthBytes(int curveLength, byte[] src) {
+        if (src.length == curveLength) {
+            return src;
+        }
+
+        byte[] result = new byte[curveLength];
+        if (src.length > curveLength) {
+            System.arraycopy(src, src.length - result.length, result, 0, result.length);
+        } else {
+            System.arraycopy(src, 0, result, result.length - src.length, src.length);
+        }
+        return result;
+    }
+
+    /**
+     * @param xHex             十六进制形式的公钥x分量，如果是SM2算法，Hex字符串长度应该是64（即32字节）
+     * @param yHex             十六进制形式的公钥y分量，如果是SM2算法，Hex字符串长度应该是64（即32字节）
+     * @param curve            EC曲线参数，一般是固定的，如果是SM2算法的可参考{@link SM2Util#CURVE}
+     * @param domainParameters EC Domain参数，一般是固定的，如果是SM2算法的可参考{@link SM2Util#DOMAIN_PARAMS}
+     * @return
+     */
+    public static ECPublicKeyParameters createECPublicKeyParameters(
+            String xHex, String yHex, ECCurve curve, ECDomainParameters domainParameters) {
+        return createECPublicKeyParameters(ByteUtils.fromHexString(xHex), ByteUtils.fromHexString(yHex),
+                curve, domainParameters);
+    }
+
+    /**
+     * @param xBytes           十六进制形式的公钥x分量，如果是SM2算法，应该是32字节
+     * @param yBytes           十六进制形式的公钥y分量，如果是SM2算法，应该是32字节
+     * @param curve            EC曲线参数，一般是固定的，如果是SM2算法的可参考{@link SM2Util#CURVE}
+     * @param domainParameters EC Domain参数，一般是固定的，如果是SM2算法的可参考{@link SM2Util#DOMAIN_PARAMS}
+     * @return
+     */
+    public static ECPublicKeyParameters createECPublicKeyParameters(
+            byte[] xBytes, byte[] yBytes, ECCurve curve, ECDomainParameters domainParameters) {
+        final byte uncompressedFlag = 0x04;
+        int curveLength = getCurveLength(domainParameters);
+        xBytes = fixToCurveLengthBytes(curveLength, xBytes);
+        yBytes = fixToCurveLengthBytes(curveLength, yBytes);
+        byte[] encodedPubKey = new byte[1 + xBytes.length + yBytes.length];
+        encodedPubKey[0] = uncompressedFlag;
+        System.arraycopy(xBytes, 0, encodedPubKey, 1, xBytes.length);
+        System.arraycopy(yBytes, 0, encodedPubKey, 1 + xBytes.length, yBytes.length);
+        return new ECPublicKeyParameters(curve.decodePoint(encodedPubKey), domainParameters);
+    }
 }
