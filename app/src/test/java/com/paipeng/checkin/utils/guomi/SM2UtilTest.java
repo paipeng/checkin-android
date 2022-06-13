@@ -177,4 +177,82 @@ public class SM2UtilTest extends TestCase {
             Assert.assertEquals(input_data[i], output_data[i]);
         }
     }
+
+    public void testParserKey3() {
+        String priHex = "055d5686bbbcc3ad82d0747e9156ea576c2c3f6d8c835ee84e9feb9a97e084b2";
+        String xHex = "57d89b75344be04a202f0e1ea44c8749677a9d9f1e2fdc72ee3e6c3d111baf13";
+        String yHex = "7d73cd69272713576f817091136fcd4b71a713f1bfb71dc69e65ea7ed31104ac";
+        String encodedPubHex = "0457d89b75344be04a202f0e1ea44c8749677a9d9f1e2fdc72ee3e6c3d111baf137d73cd69272713576f817091136fcd4b71a713f1bfb71dc69e65ea7ed31104ac";
+        /*
+        String signHex = "30450220213C6CD6EBD6A4D5C2D0AB38E29D441836D1457A8118D34864C247D727831962022100D9248480342AC8513CCDF0F89A2250DC8F6EB4F2471E144E9A812E0AF497F801";
+        byte[] signBytes = ByteUtils.fromHexString(signHex);
+        byte[] src = ByteUtils.fromHexString("0102030405060708010203040506070801020304050607080102030405060708");
+        byte[] withId = ByteUtils.fromHexString("31323334353637383132333435363738");
+
+         */
+        priHex = priHex.toUpperCase();
+        xHex = xHex.toUpperCase();
+        yHex = yHex.toUpperCase();
+        ECPrivateKeyParameters privateKey = new ECPrivateKeyParameters(new BigInteger(ByteUtils.fromHexString(priHex)), SM2Util.DOMAIN_PARAMS);
+        ECPublicKeyParameters publicKey = SM2Util.createECPublicKeyParameters(xHex, yHex, SM2Util.CURVE, SM2Util.DOMAIN_PARAMS);
+
+        System.out.println("private key data:" + StringUtil.bytesToHexString(privateKey.getD().toByteArray()) + " size: " + privateKey.getD().toByteArray().length);
+        System.out.println("public key data:" + StringUtil.bytesToHexString(publicKey.getQ().getEncoded(false)) + " size: " + publicKey.getQ().getEncoded(false).length);
+
+
+        //private key data:008f5bb6eaf16a30d998e1a3b342951f9eb2d131dc957c50ee18ab046bb9137531 size: 33
+        //public key data:0471f39ab071e16e5d5e38944fc8386fc279a90ba282562c511a4072d4b7f200c474b635906c9bb8d8df3ee120641532f5bb09f3032cb090765bc248c0655a7ad7 size: 65
+
+        byte[] input_data = new byte[128];
+        for (int i = 0; i < 128; i++) {
+            input_data[i] = (byte) i;
+        }
+
+        System.out.println("input:" + StringUtil.bytesToHexString(input_data));
+
+
+        byte[] cipher = SM2Util.getInstance().encode(publicKey, input_data);
+        System.out.println("cipher:" + StringUtil.bytesToHexString(cipher));
+        byte[] output_data = SM2Util.getInstance().decode(privateKey, cipher);
+        System.out.println("output_data:" + StringUtil.bytesToHexString(output_data));
+
+        for (int i = 0; i < 128; i++) {
+            Assert.assertEquals(input_data[i], output_data[i]);
+        }
+    }
+
+
+
+    public void testParserKey4() {
+        String priHex = "055d5686bbbcc3ad82d0747e9156ea576c2c3f6d8c835ee84e9feb9a97e084b2";
+        String xHex = "57d89b75344be04a202f0e1ea44c8749677a9d9f1e2fdc72ee3e6c3d111baf13";
+        String yHex = "7d73cd69272713576f817091136fcd4b71a713f1bfb71dc69e65ea7ed31104ac";
+        String encodedPubHex = "0457d89b75344be04a202f0e1ea44c8749677a9d9f1e2fdc72ee3e6c3d111baf137d73cd69272713576f817091136fcd4b71a713f1bfb71dc69e65ea7ed31104ac";
+
+        priHex = priHex.toUpperCase();
+        xHex = xHex.toUpperCase();
+        yHex = yHex.toUpperCase();
+        ECPrivateKeyParameters privateKey = SM2Util.getInstance().genereateECPrivateKeyParameters(ByteUtils.fromHexString(priHex));
+        ECPublicKeyParameters publicKey = SM2Util.getInstance().genereateECPublicKeyParameters(ByteUtils.fromHexString(xHex), ByteUtils.fromHexString(yHex));
+
+        System.out.println("private key data:" + StringUtil.bytesToHexString(privateKey.getD().toByteArray()) + " size: " + privateKey.getD().toByteArray().length);
+        System.out.println("public key data:" + StringUtil.bytesToHexString(publicKey.getQ().getEncoded(false)) + " size: " + publicKey.getQ().getEncoded(false).length);
+
+        byte[] input_data = new byte[128];
+        for (int i = 0; i < 128; i++) {
+            input_data[i] = (byte) i;
+        }
+
+        System.out.println("input:" + StringUtil.bytesToHexString(input_data));
+
+
+        byte[] cipher = SM2Util.getInstance().encode(publicKey, input_data);
+        System.out.println("cipher:" + StringUtil.bytesToHexString(cipher));
+        byte[] output_data = SM2Util.getInstance().decode(privateKey, cipher);
+        System.out.println("output_data:" + StringUtil.bytesToHexString(output_data));
+
+        for (int i = 0; i < 128; i++) {
+            Assert.assertEquals(input_data[i], output_data[i]);
+        }
+    }
 }

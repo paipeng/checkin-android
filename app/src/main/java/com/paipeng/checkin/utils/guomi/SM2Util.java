@@ -4,9 +4,6 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x500.X500NameBuilder;
-import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.engines.SM2Engine;
 import org.bouncycastle.crypto.params.ECDomainParameters;
@@ -21,15 +18,12 @@ import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.math.ec.custom.gm.SM2P256V1Curve;
-import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -38,11 +32,11 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Security;
-import java.security.cert.CertificateEncodingException;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 
+/**
+ * 旧标准的加密排序C1C2C3 新标准 C1C3C2，C1为65字节第1字节为压缩标识，这里固定为0x04，后面64字节为xy分量各32字节。C3为32字节。C2长度与原文一致。
+ */
 public class SM2Util {
     private static final String SM_EC = "EC";
     public static final SM2P256V1Curve CURVE = new SM2P256V1Curve();
@@ -67,6 +61,7 @@ public class SM2Util {
         }
         return INSTANCE;
     }
+
     public SM2Util() {
         Security.addProvider(new BouncyCastleProvider());
     }
@@ -80,7 +75,6 @@ public class SM2Util {
         kpg.initialize(parameterSpec, random);
         return kpg.generateKeyPair();
     }
-
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void savePrivateKey2File(PrivateKey privateKey, File outPutFile) throws Exception {
@@ -118,6 +112,23 @@ public class SM2Util {
         return sm2Byte;
     }
 
+    public byte[] decode(BCECPrivateKey privateKey, byte[] dataByte) {
+        byte[] sm2Byte = null;
+        try {
+            ECParameterSpec parameterSpec = privateKey.getParameters();
+            ECDomainParameters domainParameters = new ECDomainParameters(parameterSpec.getCurve(), parameterSpec.getG(),
+                    parameterSpec.getN(), parameterSpec.getH());
+            ECPrivateKeyParameters ecPrivateKeyParameters = new ECPrivateKeyParameters(privateKey.getD(), domainParameters);
+            SM2Engine engine = new SM2Engine(SM2Engine.Mode.C1C3C2);
+            engine.init(false, ecPrivateKeyParameters);
+            sm2Byte = engine.processBlock(dataByte, 0, dataByte.length);
+        } catch (InvalidCipherTextException e) {
+            e.printStackTrace();
+        }
+
+        return sm2Byte;
+    }
+
 
     public byte[] encode(ECPublicKeyParameters ecPublicKeyParameters, byte[] dataByte) {
         byte[] sm2Byte = null;
@@ -147,28 +158,18 @@ public class SM2Util {
         return sm2Byte;
     }
 
-    public byte[] decode(BCECPrivateKey privateKey, byte[] dataByte) {
-        byte[] sm2Byte = null;
-        try {
-            ECParameterSpec parameterSpec = privateKey.getParameters();
-            ECDomainParameters domainParameters = new ECDomainParameters(parameterSpec.getCurve(), parameterSpec.getG(),
-                    parameterSpec.getN(), parameterSpec.getH());
-            ECPrivateKeyParameters ecPrivateKeyParameters = new ECPrivateKeyParameters(privateKey.getD(), domainParameters);
-            SM2Engine engine = new SM2Engine(SM2Engine.Mode.C1C3C2);
-            engine.init(false, ecPrivateKeyParameters);
-            sm2Byte = engine.processBlock(dataByte, 0, dataByte.length);
-        } catch (InvalidCipherTextException e) {
-            e.printStackTrace();
-        }
-
-        return sm2Byte;
+    public ECPrivateKeyParameters genereateECPrivateKeyParameters(byte[] privateBytes) {
+        ECDomainParameters ecDomainParameters = new ECDomainParameters(CURVE, G_POINT, SM2_ECC_N, SM2_ECC_H);
+        ECPrivateKeyParameters ecPrivateKeyParameters = new ECPrivateKeyParameters(new BigInteger(privateBytes), ecDomainParameters);
+        return ecPrivateKeyParameters;
     }
 
-    public BCECPrivateKey parseBCECPrivateKey(byte[] data) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        KeyFactory kf = KeyFactory.getInstance(SM_EC);
-        PrivateKey prv_recovered = kf.generatePrivate(new PKCS8EncodedKeySpec(data));
 
-        return null;//prv_recovered;
+    public ECPublicKeyParameters genereateECPublicKeyParameters(byte[] xBytes, byte[] yBytes) {
+        ECDomainParameters ecDomainParameters = new ECDomainParameters(CURVE, G_POINT, SM2_ECC_N, SM2_ECC_H);
+        ECPublicKeyParameters ecPublicKeyParameters = SM2Util.createECPublicKeyParameters(xBytes, yBytes, SM2Util.CURVE, ecDomainParameters);
+
+        return ecPublicKeyParameters;
     }
 
 
