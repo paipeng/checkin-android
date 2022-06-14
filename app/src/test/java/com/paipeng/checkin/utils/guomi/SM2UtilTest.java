@@ -270,7 +270,6 @@ public class SM2UtilTest extends TestCase {
         for (int i = 0; i < 128; i++) {
             Assert.assertEquals(input_data[i], output_data[i]);
         }
-
     }
 
 
@@ -299,7 +298,6 @@ public class SM2UtilTest extends TestCase {
 
         String cipherBase64 = Base64.toBase64String(cipher);
         System.out.println("cipher base64:" + cipherBase64);
-
 
 
         byte[] cipher1 = new byte[224];
@@ -355,5 +353,55 @@ public class SM2UtilTest extends TestCase {
         byte[] output_data = SM2Util.getInstance().decode(privateKey, StringUtil.hexStringToByte(aa));
         System.out.println("output_data:" + StringUtil.bytesToHexString(output_data));
 
+    }
+
+    public void testSign() {
+        String priHex = "055d5686bbbcc3ad82d0747e9156ea576c2c3f6d8c835ee84e9feb9a97e084b2";
+        String xHex = "57d89b75344be04a202f0e1ea44c8749677a9d9f1e2fdc72ee3e6c3d111baf13";
+        String yHex = "7d73cd69272713576f817091136fcd4b71a713f1bfb71dc69e65ea7ed31104ac";
+
+        String id = "SM2SignTest";
+
+        ECPrivateKeyParameters privateKey = SM2Util.getInstance().genereateECPrivateKeyParameters(ByteUtils.fromHexString(priHex));
+        ECPublicKeyParameters publicKey = SM2Util.getInstance().genereateECPublicKeyParameters(ByteUtils.fromHexString(xHex), ByteUtils.fromHexString(yHex));
+
+
+        String text = "This is a SM2 signature test";
+        byte[] input_data = text.getBytes();
+        System.out.println("input:" + StringUtil.bytesToHexString(input_data));
+
+        byte[] signature = SM2Util.getInstance().sign(privateKey, input_data, id);
+        System.out.println("signature:" + StringUtil.bytesToHexString(signature));
+
+        String sign = Base64.toBase64String(signature);
+        System.out.println("signature:" + sign);
+
+
+        boolean verifiied = SM2Util.getInstance().verifySign(publicKey, signature, input_data, id);
+        Assert.assertTrue(verifiied);
+    }
+
+
+    public void testVerify() {
+        String priHex = "055d5686bbbcc3ad82d0747e9156ea576c2c3f6d8c835ee84e9feb9a97e084b2";
+        String xHex = "57d89b75344be04a202f0e1ea44c8749677a9d9f1e2fdc72ee3e6c3d111baf13";
+        String yHex = "7d73cd69272713576f817091136fcd4b71a713f1bfb71dc69e65ea7ed31104ac";
+
+        String id = "SM2SignTest";
+
+        ECPrivateKeyParameters privateKey = SM2Util.getInstance().genereateECPrivateKeyParameters(ByteUtils.fromHexString(priHex));
+        ECPublicKeyParameters publicKey = SM2Util.getInstance().genereateECPublicKeyParameters(ByteUtils.fromHexString(xHex), ByteUtils.fromHexString(yHex));
+
+
+        String text = "This is a SM2 signature test";
+        byte[] input_data = text.getBytes();
+        System.out.println("input:" + StringUtil.bytesToHexString(input_data));
+
+
+        String b = "tVT7YIuSxTNRheMke7RRRux6cCV9p1pGIiq+iS90wY7yDMWDWrKhaOIRNKcfZdDxefIRE/j7wWGx97Ztx0/umw==";
+        byte[] signature2 = Base64.decode(b);
+        System.out.println("signature2:" + StringUtil.bytesToHexString(signature2));
+        boolean verifiied = SM2Util.getInstance().verifySign(publicKey, signature2, input_data, id);
+        Assert.assertTrue(verifiied);
     }
 }

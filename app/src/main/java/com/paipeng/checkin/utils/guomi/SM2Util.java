@@ -7,13 +7,18 @@ import androidx.annotation.RequiresApi;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.crypto.CipherParameters;
+import org.bouncycastle.crypto.CryptoException;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.engines.SM2Engine;
 import org.bouncycastle.crypto.params.ECDomainParameters;
 import org.bouncycastle.crypto.params.ECKeyParameters;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+import org.bouncycastle.crypto.params.ParametersWithID;
+import org.bouncycastle.crypto.params.ParametersWithIV;
 import org.bouncycastle.crypto.params.ParametersWithRandom;
+import org.bouncycastle.crypto.signers.SM2Signer;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -23,10 +28,12 @@ import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.math.ec.custom.gm.SM2P256V1Curve;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
+import org.bouncycastle.util.Strings;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyFactory;
@@ -236,5 +243,31 @@ public class SM2Util {
         System.arraycopy(xBytes, 0, encodedPubKey, 1, xBytes.length);
         System.arraycopy(yBytes, 0, encodedPubKey, 1 + xBytes.length, yBytes.length);
         return new ECPublicKeyParameters(curve.decodePoint(encodedPubKey), domainParameters);
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public byte[] sign(ECPrivateKeyParameters ecPrivateKeyParameters, byte[] data, String id) {
+        try {
+            SM2Signer signer = new SM2Signer();
+            CipherParameters param = new ParametersWithRandom(ecPrivateKeyParameters, new SecureRandom());
+            ParametersWithID parametersWithID = new ParametersWithID(param, Strings.toByteArray(id));
+            //ParametersWithIV parametersWithIV = new ParametersWithIV(param, Strings.toByteArray("PAIPENG"));
+            signer.init(true, parametersWithID);
+            signer.update(data, 0, data.length);
+            return signer.generateSignature();
+        } catch (CryptoException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean verifySign(ECPublicKeyParameters ecPublicKeyParameters, byte[] signature, byte[] data, String id) {
+        SM2Signer signer = new SM2Signer();
+        ParametersWithID parametersWithID = new ParametersWithID(ecPublicKeyParameters, Strings.toByteArray(id));
+        signer.init(false, parametersWithID);
+        //signer.init(false, ecPublicKeyParameters);
+        signer.update(data, 0, data.length);
+        return signer.verifySignature(signature);
     }
 }
